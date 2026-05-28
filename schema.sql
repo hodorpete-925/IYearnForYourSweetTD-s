@@ -119,6 +119,20 @@ CREATE TABLE roster_seasons (
     CHECK (drc >= 1 AND drc <= 16),
     CHECK (acquisition_event IN ('drafted', 'kept', 'trade_acquired', 'waiver_pickup', 'free_agent_pickup'))
 );
+
+-- =========================================================================
+-- MANUAL OVERRIDES — Pete's commissioner annotations
+-- =========================================================================
+
+CREATE TABLE transaction_overrides (
+    transaction_id           INTEGER PRIMARY KEY,
+    override_type            TEXT    NOT NULL,        -- e.g. 'trade_from'
+    source_team_season_id    INTEGER,                 -- for 'trade_from': the actual source team
+    note                     TEXT,                    -- free-text explanation
+    FOREIGN KEY (transaction_id)        REFERENCES transactions(transaction_id),
+    FOREIGN KEY (source_team_season_id) REFERENCES teams(team_season_id),
+    CHECK (override_type IN ('trade_from'))
+);
 -- =========================================================================
 -- FINAL ROSTERS — end-of-season snapshots (raw data; DRC computed later)
 -- =========================================================================
