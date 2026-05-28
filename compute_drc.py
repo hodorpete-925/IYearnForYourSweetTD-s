@@ -17,6 +17,20 @@ from pathlib import Path
 DB_PATH = Path(__file__).parent / "fantasy.db"
 TARGET_SEASON = 2026
 
+# Team lineage bridges: when a manager inherited a roster from a predecessor
+# who left the league, search both the manager's own teams AND the predecessor's
+# teams. This makes the backward-walk find original drafts/anchors for players
+# carried over via the handoff.
+#
+# Handoff history in this league:
+#   Vescuso left after 2023 -> Lewitus took over for 2024+
+#   BRick left after 2024 -> Vescuso returned and took over for 2025+
+HANDOFF_BRIDGES = {
+    # Lewitus inherited Vescuso's 2023 roster (team 11)
+    "WOCEV3POTYE7XLIJXO3CCNL56I": [11],
+    # Vescuso (2025+) inherited BRick's full history (teams 10 in 2023, 16 in 2024)
+    "NEIABZUWA773ZR2666V7TNMUNE": [10, 16],
+}
 
 def get_team_year(conn, team_season_id):
     row = conn.execute(
@@ -33,11 +47,21 @@ def get_manager_id(conn, team_season_id):
 
 
 def get_manager_team_ids(conn, manager_id):
+    """All team_season_ids for a manager across all years, plus any
+    additional team_season_ids inherited via handoff (see HANDOFF_BRIDGES)."""
     rows = conn.execute(
         "SELECT team_season_id FROM teams WHERE manager_id = ?", (manager_id,)
     ).fetchall()
-    return [r[0] for r in rows]
+    team_ids = [r[0] for r in rows]
 
+    # If this manager inherited from a predecessor, extend the search set
+    guid_row = conn.execute(
+        "SELECT yahoo_guid FROM managers WHERE manager_id = ?", (manager_id,)
+    ).fetchone()
+    if guid_row and guid_row[0] in HANDOFF_BRIDGES:
+        team_ids.extend(HANDOFF_BRIDGES[guid_row[0]])
+
+    return team_ids
 
 def find_most_recent_incoming(conn, player_id, team_id_set, before=None):
     """Returns (transaction_id, timestamp, source_type, counterparty_team_season_id) or None."""
@@ -46,8 +70,8 @@ def find_most_recent_incoming(conn, player_id, team_id_set, before=None):
     placeholders = ",".join("?" * len(team_id_set))
     sql = f"""
         SELECT tp.transaction_id, t.timestamp, tp.source_type, tp.counterparty_team_season_id
-        FROM transactions t
-        JOIN transaction_players tp ON tp.transaction_id = t.transaction_id
+        FROM all_transactions t
+        JOIN all_transaction_players tp ON tp.transaction_id = t.transaction_id
         WHERE tp.player_id = ?
           AND tp.team_season_id IN ({placeholders})
           AND tp.direction = 'incoming'
@@ -217,10 +241,10 @@ def main():
         drc, event, note = result
         by_manager.setdefault(manager, []).append((player_name, drc, event, note))
 
-    print(f"=== Pete Hodor (Are Bonita Fish Big?) — DRC for {TARGET_SEASON} ===\n")
-    for player_name, drc, event, note in sorted(by_manager.get("Pete Hodor", []),
-                                                 key=lambda x: (x[1], x[0])):
-        print(f"  DRC {drc:>2}  {player_name:<25}  [{event}]  // {note}")
+    for manager in sorted(by_manager.keys()):
+        print(f"\n=== {manager} — DRC for {TARGET_SEASON} ===\n")
+        for player_name, drc, event, note in sorted(by_manager[manager], key=lambda x: (x[1], x[0])):
+            print(f"  DRC {drc:>2}  {player_name:<25}  [{event}]  // {note}")
 
     total = sum(len(v) for v in by_manager.values())
     print(f"\nTotal: {total} computed, {len(failures)} failures.")
