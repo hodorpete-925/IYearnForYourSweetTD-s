@@ -157,3 +157,35 @@ INSERT INTO drc_dollar_lookup (drc, drc_dollars) VALUES
     (1, 200), (2, 100), (3, 80),  (4, 60),  (5, 50),
     (6, 30),  (7, 30),  (8, 30),  (9, 30),
     (10, 10), (11, 10), (12, 10), (13, 10), (14, 10), (15, 10), (16, 10);
+
+-- =========================================================================
+-- VIEWS — unioned real + synthetic transactions, with vetoed filtered out
+-- =========================================================================
+-- all_transactions and all_transaction_players are the entry points for the
+-- DRC walk. They union real Yahoo-ingested transactions with synthetic ones
+-- (used to model off-season trades Yahoo didn't capture cleanly), and
+-- exclude any transaction whose status != 'successful' (i.e. vetoed,
+-- rejected, or pending trade proposals). Synthetic trades are always
+-- treated as successful since they're manually curated.
+
+CREATE VIEW all_transactions AS
+    SELECT transaction_id, timestamp, event_type, season, status, 0 AS is_synthetic
+    FROM transactions
+    WHERE status = 'successful'
+    UNION ALL
+    SELECT synth_id + 1000000 AS transaction_id, timestamp, event_type, season,
+           'successful' AS status, 1 AS is_synthetic
+    FROM synthetic_transactions;
+
+CREATE VIEW all_transaction_players AS
+    SELECT tp.transaction_id, tp.player_id, tp.direction, tp.team_season_id,
+           tp.source_type, tp.destination_type, tp.counterparty_team_season_id,
+           0 AS is_synthetic
+    FROM transaction_players tp
+    JOIN transactions t ON t.transaction_id = tp.transaction_id
+    WHERE t.status = 'successful'
+    UNION ALL
+    SELECT synth_id + 1000000 AS transaction_id, player_id, direction, team_season_id,
+           source_type, destination_type, counterparty_team_season_id,
+           1 AS is_synthetic
+    FROM synthetic_transaction_players;

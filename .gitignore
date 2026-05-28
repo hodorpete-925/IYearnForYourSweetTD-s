@@ -12,3 +12,7 @@ __pycache__/
 # OS
 Thumbs.db
 .DS_Store
+
+# SQLite database files (regenerable from API)
+*.db
+*.
