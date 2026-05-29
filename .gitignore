@@ -37,3 +37,6 @@ setup_summary.md
 system_report.txt
 test_write.txt
 _write_test.txt
+
+# ADP review output (regenerable)
+adp_unmatched.csv

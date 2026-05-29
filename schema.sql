@@ -189,3 +189,33 @@ CREATE VIEW all_transaction_players AS
            source_type, destination_type, counterparty_team_season_id,
            1 AS is_synthetic
     FROM synthetic_transaction_players;
+-- =========================================================================
+-- ADP — Average Draft Position pulled from FantasyPros (or other source)
+-- =========================================================================
+-- One row per (season, source, raw player name). player_id may be NULL
+-- until the matcher resolves it. raw player name keys the upsert so re-runs
+-- update existing rows in place.
+
+CREATE TABLE IF NOT EXISTS adp (
+    season              INTEGER NOT NULL,
+    source              TEXT    NOT NULL DEFAULT 'fantasypros',
+    player_name_raw     TEXT    NOT NULL,
+    player_id           INTEGER,
+    overall_rank        INTEGER NOT NULL,
+    position_rank       TEXT,                          -- 'WR1', 'RB14', etc.
+    nfl_team            TEXT,
+    bye_week            INTEGER,
+    adp                 REAL    NOT NULL,              -- the avg/ADP value
+    fetched_at          DATETIME NOT NULL,
+    PRIMARY KEY (season, source, player_name_raw),
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+);
+
+-- Manual override for cases the fuzzy matcher can't resolve.
+CREATE TABLE IF NOT EXISTS adp_name_mapping (
+    raw_name            TEXT    PRIMARY KEY,
+    player_id           INTEGER NOT NULL,
+    note                TEXT,
+    FOREIGN KEY (player_id) REFERENCES players(player_id)
+);
+
