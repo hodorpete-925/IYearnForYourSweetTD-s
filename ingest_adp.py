@@ -56,20 +56,86 @@ def fetch_page(url):
     return resp.text
 
 
-# Compact parser: each row tuple is
-# (overall_rank, name, pos_rank, nfl_team, bye_week, adp_value)
+# FantasyPros tags some rows with player status suffixes after the team/bye.
+# Single letters: O Q D P R / Multi: IR SUS NA OUT QUE DTD
+_STATUS_SUFFIX = r"O|Q|D|P|R|IR|SUS|NA|OUT|QUE|DTD"
+
+
+def _parse_player_cell(text):
+    """Parse the player-name cell. Returns (name, nfl_team, bye_week).
+
+    Handles four shapes:
+      "Joe Burrow CIN (7) O"   -> ("Joe Burrow", "CIN", 7)
+      "Joe Burrow CIN (7)"     -> ("Joe Burrow", "CIN", 7)
+      "Nick Chubb O"           -> ("Nick Chubb", None, None)
+      "Amari Cooper"           -> ("Amari Cooper", None, None)
+    """
+    text = text.strip()
+
+    # name + TEAM + (bye) + optional status
+    m = re.match(
+        rf"^(.*?)\s+([A-Z]{{2,4}})\s+\((\d+)\)(?:\s+(?:{_STATUS_SUFFIX}))?\s*$",
+        text,
+    )
+    if m:
+        return m.group(1).strip(), m.group(2).strip(), int(m.group(3))
+
+    # name + status (no team/bye) — only strip recognized status tokens
+    m = re.match(rf"^(.+?)\s+(?:{_STATUS_SUFFIX})\s*$", text)
+    if m:
+        return m.group(1).strip(), None, None
+
+    return text, None, None
+
+
+def _is_adp_row(cells):
+    """A cell list looks like an ADP row if cell[0] is an integer
+    (overall rank) and one of the later cells is a decimal (ADP value)."""
+    if len(cells) < 4:
+        return False
+    try:
+        int(cells[0].get_text(strip=True))
+    except ValueError:
+        return False
+    for c in cells[3:]:
+        txt = c.get_text(strip=True).split()[0] if c.get_text(strip=True) else ""
+        if "." in txt:
+            try:
+                v = float(txt)
+                if 0 < v < 500:
+                    return True
+            except ValueError:
+                pass
+    return False
+
+
+def _pick_best_table(soup):
+    """Find the table with the most ADP-shaped rows. Resilient to
+    FantasyPros table id/class changes across years."""
+    best_table = None
+    best_count = 0
+    for t in soup.find_all("table"):
+        count = sum(1 for tr in t.find_all("tr") if _is_adp_row(tr.find_all("td")))
+        if count > best_count:
+            best_count = count
+            best_table = t
+    return best_table, best_count
+
+
+# Each row tuple is (overall_rank, name, pos_rank, nfl_team, bye_week, adp_value)
 def parse_table(html):
     """Pull rows out of the FantasyPros ADP table."""
     soup = BeautifulSoup(html, "html.parser")
-    table = soup.find("table", id="data") or soup.find("table")
-    if table is None:
-        raise RuntimeError("No table found on page - did FantasyPros change layout?")
+    table, count = _pick_best_table(soup)
+    if table is None or count == 0:
+        raise RuntimeError("No ADP-shaped table found on page")
+    print(f"  selected table with {count} candidate rows")
 
     rows = []
     for tr in table.find_all("tr"):
         cells = tr.find_all("td")
-        if len(cells) < 7:
-            continue  # header row or filler
+        if not _is_adp_row(cells):
+            continue
 
         # Cell 0: overall rank (e.g. "1")
         try:
@@ -77,22 +143,16 @@ def parse_table(html):
         except ValueError:
             continue
 
-        # Cell 1: player name + team + bye
+        # Cell 1: player name + team + bye + optional status indicator
         # Examples:
-        #   "Ja'Marr Chase CIN (10)"
+        #   "Ja'Marr Chase CIN (10)"               - normal
         #   "Christian McCaffrey SF (14)"
+        #   "Joe Burrow CIN (7) O"                 - O = Out
+        #   "Justin Herbert LAC (5) Q"             - Q = Questionable
+        #   "Nick Chubb O"                         - no team, has status
+        #   "Amari Cooper"                         - just name
         player_cell_text = cells[1].get_text(" ", strip=True)
-        # Pull team abbreviation and bye week off the end
-        m = re.match(r"^(.*?)\s+([A-Z]{2,4})\s+\((\d+)\)\s*$", player_cell_text)
-        if m:
-            name = m.group(1).strip()
-            nfl_team = m.group(2).strip()
-            bye_week = int(m.group(3))
-        else:
-            # Defenses sometimes show "Kansas City Chiefs KC (10)" or similar.
-            name = player_cell_text
-            nfl_team = None
-            bye_week = None
+        name, nfl_team, bye_week = _parse_player_cell(player_cell_text)
 
         # Cell 2: position rank ("WR1", "RB12")
         pos_rank = cells[2].get_text(strip=True)
@@ -139,24 +199,26 @@ def upsert_rows(conn, season, rows, fetched_at):
         ).fetchone()
 
         if existing is None:
-            conn.execute("""
-                INSERT INTO adp
-                  (season, source, player_name_raw, overall_rank,
-                   position_rank, nfl_team, bye_week, adp, fetched_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (season, SOURCE, r["name"], r["overall_rank"],
-                  r["pos_rank"], r["nfl_team"], r["bye_week"],
-                  r["adp"], fetched_at))
+            conn.execute(
+                "INSERT INTO adp "
+                "(season, source, player_name_raw, overall_rank, "
+                " position_rank, nfl_team, bye_week, adp, fetched_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (season, SOURCE, r["name"], r["overall_rank"],
+                 r["pos_rank"], r["nfl_team"], r["bye_week"],
+                 r["adp"], fetched_at)
+            )
             inserted += 1
         else:
-            conn.execute("""
-                UPDATE adp
-                   SET overall_rank=?, position_rank=?, nfl_team=?,
-                       bye_week=?, adp=?, fetched_at=?
-                 WHERE season=? AND source=? AND player_name_raw=?
-            """, (r["overall_rank"], r["pos_rank"], r["nfl_team"],
-                  r["bye_week"], r["adp"], fetched_at,
-                  season, SOURCE, r["name"]))
+            conn.execute(
+                "UPDATE adp SET "
+                "  overall_rank=?, position_rank=?, nfl_team=?, "
+                "  bye_week=?, adp=?, fetched_at=? "
+                "WHERE season=? AND source=? AND player_name_raw=?",
+                (r["overall_rank"], r["pos_rank"], r["nfl_team"],
+                 r["bye_week"], r["adp"], fetched_at,
+                 season, SOURCE, r["name"])
+            )
             updated += 1
     return inserted, updated
 
@@ -182,6 +244,8 @@ def main():
     p.add_argument("season", help="Season year (2023|2024|2025|2026) or 'all'")
     p.add_argument("--polite-delay", type=float, default=2.0,
                    help="Seconds between requests when ingesting multiple seasons")
+    p.add_argument("--clear", action="store_true",
+                   help="Wipe existing adp rows for the target season(s) first")
     args = p.parse_args()
 
     conn = sqlite3.connect(DB_PATH)
@@ -196,4 +260,26 @@ def main():
         if seasons[0] not in URLS:
             sys.exit(f"No URL configured for season {seasons[0]}")
 
- 
+    if args.clear:
+        placeholders = ",".join("?" * len(seasons))
+        n = conn.execute(
+            f"DELETE FROM adp WHERE season IN ({placeholders})",
+            seasons,
+        ).rowcount
+        conn.commit()
+        print(f"Cleared {n} existing rows for seasons {seasons}")
+
+    total_ins = total_upd = 0
+    for i, season in enumerate(seasons):
+        if i > 0:
+            time.sleep(args.polite_delay)
+        ins, upd = ingest_season(conn, season)
+        total_ins += ins
+        total_upd += upd
+
+    conn.close()
+    print(f"\nDone. Total inserted={total_ins}, updated={total_upd}")
+
+
+if __name__ == "__main__":
+    main()
