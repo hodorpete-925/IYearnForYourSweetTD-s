@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>I Yearn For Your Sweet TD&#x27;s · Keeper ledger · 2026</title>
+<title>I Yearn For Your Sweet TD&#x27;s - Keeper ledger - 2026</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -232,6 +232,95 @@ table.roster tr.total td {
 .pill.tier-value   { background: #fff8e1; color: #8a6a1a; }
 .pill.tier-cheap   { background: var(--gray-100); color: var(--gray-600); }
 
+.pill.value-steal      { background: #eef7ee; color: #1d6b3a; }
+.pill.value-fair       { background: var(--gray-100); color: var(--gray-600); }
+.pill.value-overpriced { background: #fff0e6; color: #b04a00; }
+
+/* --- Expandable player history ---------------------------------------- */
+.expand-btn {
+  background: none;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  margin-right: 8px;
+  line-height: 1;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.15s ease;
+}
+.expand-btn:hover { color: var(--blue-600); border-color: var(--blue-400); }
+.expand-btn.open  { transform: rotate(90deg); color: var(--blue-600); border-color: var(--blue-600); }
+
+.expand-col { width: 28px; text-align: center; }
+
+tr.history-row > td.history-cell {
+  padding: 0;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+.history-cards {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px 18px 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.year-card {
+  flex: 1 1 0;
+  min-width: 180px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px 16px;
+}
+.year-card.card-empty {
+  background: #fafafa;
+  border-color: #ececec;
+  opacity: 0.65;
+}
+.year-card .year-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue-600);
+  margin-bottom: 12px;
+}
+.year-card.card-empty .year-label { color: var(--gray-500); }
+.year-card .year-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--gray-100);
+}
+.year-card .year-metric:first-of-type { border-top: none; padding-top: 0; }
+.year-card .m-label {
+  color: var(--gray-500);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.year-card .m-val {
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+/* Pos-rank color tiers using Advent palette (gentle) */
+.m-val.pos-rank.tier-top      { color: #6B7D00; }   /* Green 600 */
+.m-val.pos-rank.tier-mid-perf { color: #A88100; }   /* Yellow 600 */
+.m-val.pos-rank.tier-low      { color: #982B09; }   /* Red 600 */
+
+
 /* --- Footnote ---------------------------------------------------------- */
 .footnote {
   margin-top: 48px;
@@ -249,7 +338,7 @@ table.roster tr.total td {
     <aside class="sidebar">
       <div class="brand">League 4416</div>
       <div class="brand-title">I Yearn For Your Sweet TD&#x27;s</div>
-      <div class="brand-sub">Keeper ledger · 2026</div>
+      <div class="brand-sub">Keeper ledger - 2026</div>
 
       <h3>League view</h3>
       <a class="nav-link" data-target="summary">Summary &amp; standings</a>
@@ -394,7 +483,7 @@ table.roster tr.total td {
           </tr></tbody>
       </table>
 
-      <p class="footnote">Generated 2026-05-28 23:55 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
+      <p class="footnote">Generated 2026-05-28 22:45 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
     </section>
 
     <section class="team-section" id="team-alex-schlosberg" hidden>
@@ -430,7 +519,9 @@ table.roster tr.total td {
             <th>NFL</th>
             <th class="num">DRC</th>
             <th class="num">Cost</th>
-            <th>Acquisition chain</th>
+            <th class="num">2026 ADP</th>
+            <th class="num">Value</th>
+            <th class="expand-col"></th>
           </tr>
         </thead>
         <tbody>
@@ -440,7 +531,73 @@ table.roster tr.total td {
           <td class="meta">Phi</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
+          <td class="num">26.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-31883" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-31883" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">181.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">22.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR13</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">183.4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">10.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">237.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">14.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Christian McCaffrey</td>
@@ -448,7 +605,73 @@ table.roster tr.total td {
           <td class="meta">SF</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2023</td>
+          <td class="num">7.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-30121" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-30121" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">352.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">10.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">RB52</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">40.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">1.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">355.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">1.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jahmyr Gibbs</td>
@@ -456,7 +679,73 @@ table.roster tr.total td {
           <td class="meta">Det</td>
           <td class="num"><span class="pill tier-premium">2</span></td>
           <td class="num cost">$100</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 3 in 2023)) [OVERRIDE]</td>
+          <td class="num">2.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40059" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40059" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">307.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">4.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">293.4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">11.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">205.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">31.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Tony Pollard</td>
@@ -464,7 +753,73 @@ table.roster tr.total td {
           <td class="meta">Ten</td>
           <td class="num"><span class="pill tier-premium">2</span></td>
           <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
+          <td class="num">77.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-31960" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-31960" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB21</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">159.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">63.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB21</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">174.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">79.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">175.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">15.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Rome Odunze</td>
@@ -472,7 +827,73 @@ table.roster tr.total td {
           <td class="meta">Chi</td>
           <td class="num"><span class="pill tier-mid">4</span></td>
           <td class="num cost">$60</td>
-          <td class="chain">originally drafted round 5 in 2025</td>
+          <td class="num">57.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40901" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40901" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR33</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">124.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">79.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR43</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">113.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">91.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">C.J. Stroud</td>
@@ -480,7 +901,73 @@ table.roster tr.total td {
           <td class="meta">Hou</td>
           <td class="num"><span class="pill tier-mid">5</span></td>
           <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 8 in 2023</td>
+          <td class="num">141.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40030" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40030" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB20</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">223.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">132.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">248.4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">50.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB13</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">289.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">195.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Michael Pittman Jr.</td>
@@ -488,7 +975,73 @@ table.roster tr.total td {
           <td class="meta">Pit</td>
           <td class="num"><span class="pill tier-mid">5</span></td>
           <td class="num cost">$50</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 7 in 2023)</td>
+          <td class="num">107.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-32704" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-32704" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">160.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">109.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR39</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">121.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">36.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">188.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">79.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Aaron Rodgers</td>
@@ -496,7 +1049,73 @@ table.roster tr.total td {
           <td class="meta">Pit</td>
           <td class="num"><span class="pill tier-cheap">13</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2023</td>
+          <td class="num">170.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-7200" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-7200" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 14</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB17</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">248.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">186.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 15</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB15</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">273.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">139.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB55</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">0.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">102.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jalen McMillan</td>
@@ -504,7 +1123,73 @@ table.roster tr.total td {
           <td class="meta">TB</td>
           <td class="num"><span class="pill tier-cheap">14</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
+          <td class="num">148.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40954" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40954" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR78</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">22.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">222.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR70</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">45.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">236.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jaylen Warren</td>
@@ -512,7 +1197,73 @@ table.roster tr.total td {
           <td class="meta">Pit</td>
           <td class="num"><span class="pill tier-cheap">14</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2024</td>
+          <td class="num">79.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-34447" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-34447" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 15</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">182.7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">80.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB39</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">92.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">88.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R11</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB25</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">158.4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">121.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Dallas Goedert</td>
@@ -520,7 +1271,73 @@ table.roster tr.total td {
           <td class="meta">Phi</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">135.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-31019" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-31019" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">TE2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">155.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">141.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">TE18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">60.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">115.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">TE10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">105.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">68.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Devin Neal</td>
@@ -528,7 +1345,73 @@ table.roster tr.total td {
           <td class="meta">NO</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">279.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41972" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41972" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">RB56</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">33.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">251.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Harold Fannin Jr.</td>
@@ -536,7 +1419,73 @@ table.roster tr.total td {
           <td class="meta">Cle</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">93.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41877" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41877" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">TE17</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">74.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">247.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jaguars</td>
@@ -544,7 +1493,73 @@ table.roster tr.total td {
           <td class="meta">Jax</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">—</td>
+          <td class="num"></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-100030" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-100030" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">DEF15</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">94.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">296.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R13</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">DEF25</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">47.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">311.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">DEF14</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">79.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">199.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jalen Coker</td>
@@ -552,7 +1567,73 @@ table.roster tr.total td {
           <td class="meta">Car</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">133.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41293" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41293" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR81</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">13.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">269.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR83</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">10.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Ricky Pearsall</td>
@@ -560,7 +1641,73 @@ table.roster tr.total td {
           <td class="meta">SF</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2024 (waiver in 2024)</td>
+          <td class="num">100.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40892" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40892" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR52</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">70.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">83.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR59</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">62.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">224.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Tyler Loop</td>
@@ -568,7 +1715,73 @@ table.roster tr.total td {
           <td class="meta">Bal</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">—</td>
+          <td class="num"></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41988" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41988" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">K9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">92.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">255.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jacoby Brissett</td>
@@ -576,12 +1789,78 @@ table.roster tr.total td {
           <td class="meta">Ari</td>
           <td class="num"><span class="pill tier-cheap">16</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
+          <td class="num">188.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-29325" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-29325" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">251.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R14</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB42</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">33.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">196.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr></tbody>
         <tr class="total">
           <td colspan="4">Total committed</td>
           <td class="num cost">$870</td>
-          <td></td>
+          <td colspan="3"></td>
         </tr>
       </table>
     </section>
@@ -619,7 +1898,9 @@ table.roster tr.total td {
             <th>NFL</th>
             <th class="num">DRC</th>
             <th class="num">Cost</th>
-            <th>Acquisition chain</th>
+            <th class="num">2026 ADP</th>
+            <th class="num">Value</th>
+            <th class="expand-col"></th>
           </tr>
         </thead>
         <tbody>
@@ -629,7 +1910,73 @@ table.roster tr.total td {
           <td class="meta">LV</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
+          <td class="num">12.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41791" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41791" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">RB15</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">204.7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">9.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Justin Jefferson</td>
@@ -637,7 +1984,73 @@ table.roster tr.total td {
           <td class="meta">Min</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2023</td>
+          <td class="num">10.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-32692" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-32692" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR26</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">145.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">5.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">257.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">5.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR36</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">138.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">1.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Cam Ward</td>
@@ -645,7 +2058,73 @@ table.roster tr.total td {
           <td class="meta">Ten</td>
           <td class="num"><span class="pill tier-premium">2</span></td>
           <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
+          <td class="num">136.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41786" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41786" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB24</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">199.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">166.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Malik Nabers</td>
@@ -653,7 +2132,73 @@ table.roster tr.total td {
           <td class="meta">NYG</td>
           <td class="num"><span class="pill tier-premium">2</span></td>
           <td class="num cost">$100</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 2 in 2024))</td>
+          <td class="num">24.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40899" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40899" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR64</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">48.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">9.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">202.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">44.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Deebo Samuel</td>
@@ -661,7 +2206,73 @@ table.roster tr.total td {
           <td class="meta">Was</td>
           <td class="num"><span class="pill tier-mid">3</span></td>
           <td class="num cost">$80</td>
-          <td class="chain">mid-season trade in 2023 (drafted round 5 in 2023)</td>
+          <td class="num">166.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-31868" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-31868" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR27</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">145.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">85.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR38</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">126.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">26.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">207.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">38.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jacory Croskey-Merritt</td>
@@ -669,7 +2280,73 @@ table.roster tr.total td {
           <td class="meta">Was</td>
           <td class="num"><span class="pill tier-mid">3</span></td>
           <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 4 in 2025</td>
+          <td class="num">115.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-42010" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-42010" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R4</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB28</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">130.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">185.5</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Brandon Aubrey</td>
@@ -677,7 +2354,73 @@ table.roster tr.total td {
           <td class="meta">Dal</td>
           <td class="num"><span class="pill tier-value">7</span></td>
           <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 8 in 2025</td>
+          <td class="num">—</td>
+          <td class="num"></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40819" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40819" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 14</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">K1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">189.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">187.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">K1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">190.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">133.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">K3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">136.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">288.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Justin Fields</td>
@@ -685,7 +2428,73 @@ table.roster tr.total td {
           <td class="meta">KC</td>
           <td class="num"><span class="pill tier-value">8</span></td>
           <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 10 in 2024</td>
+          <td class="num">275.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-33399" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-33399" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB27</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">154.7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">120.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB32</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">119.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">205.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">241.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">45.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jameson Williams</td>
@@ -693,7 +2502,73 @@ table.roster tr.total td {
           <td class="meta">Det</td>
           <td class="num"><span class="pill tier-value">9</span></td>
           <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2024 (trade in 2024 (drafted round 10 in 2023))</td>
+          <td class="num">47.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-33967" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-33967" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR11</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">177.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">59.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR18</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">176.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">107.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR57</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">66.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">152.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Shedeur Sanders</td>
@@ -701,7 +2576,73 @@ table.roster tr.total td {
           <td class="meta">Cle</td>
           <td class="num"><span class="pill tier-value">9</span></td>
           <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 10 in 2025</td>
+          <td class="num">236.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41930" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41930" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R10</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB37</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">91.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">259.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Braelon Allen</td>
@@ -709,7 +2650,73 @@ table.roster tr.total td {
           <td class="meta">NYJ</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">200.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40981" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40981" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R14</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">RB64</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">14.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">140.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB48</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">49.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">170.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Chimere Dike</td>
@@ -717,7 +2724,73 @@ table.roster tr.total td {
           <td class="meta">Ten</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">250.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41903" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41903" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">WR72</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">33.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Deshaun Watson</td>
@@ -725,7 +2798,73 @@ table.roster tr.total td {
           <td class="meta">Cle</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">214.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-30125" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-30125" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB54</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">0.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB36</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">82.7</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">171.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB31</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">94.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">84.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Joe Milton III</td>
@@ -733,7 +2872,73 @@ table.roster tr.total td {
           <td class="meta">Dal</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">353.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41060" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41060" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB55</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">-0.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Lions</td>
@@ -741,7 +2946,73 @@ table.roster tr.total td {
           <td class="meta">Det</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">—</td>
+          <td class="num"></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-100008" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-100008" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R11</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">DEF13</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">96.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">214.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">DEF17</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">75.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">256.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">DEF19</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">59.0</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">283.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Romeo Doubs</td>
@@ -749,7 +3020,73 @@ table.roster tr.total td {
           <td class="meta">NE</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">113.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-34088" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-34088" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR45</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">87.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">190.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 12</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">WR45</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">109.1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">121.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R13</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR33</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">142.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">145.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Theo Johnson</td>
@@ -757,7 +3094,73 @@ table.roster tr.total td {
           <td class="meta">NYG</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
+          <td class="num">245.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41003" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41003" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">TE23</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">41.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">245.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Tyrone Tracy Jr.</td>
@@ -765,7 +3168,73 @@ table.roster tr.total td {
           <td class="meta">NYG</td>
           <td class="num"><span class="pill tier-cheap">15</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
+          <td class="num">129.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-41048" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-41048" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB32</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">118.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">74.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">RB30</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">129.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">179.0</span>
+          </div>
+        </div>
+        <div class="year-card card-empty">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank ">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">—</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">—</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Bryce Young</td>
@@ -773,12 +3242,78 @@ table.roster tr.total td {
           <td class="meta">Car</td>
           <td class="num"><span class="pill tier-cheap">16</span></td>
           <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2025 (waiver in 2024))</td>
+          <td class="num">153.0</td>
+          <td class="num"><span class="pill value-steal">Steal</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-40029" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-40029" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB19</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">239.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">165.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 16</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB25</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">173.6</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">198.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB25</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">164.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">177.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr></tbody>
         <tr class="total">
           <td colspan="4">Total committed</td>
           <td class="num cost">$970</td>
-          <td></td>
+          <td colspan="3"></td>
         </tr>
       </table>
     </section>
@@ -816,7 +3351,9 @@ table.roster tr.total td {
             <th>NFL</th>
             <th class="num">DRC</th>
             <th class="num">Cost</th>
-            <th>Acquisition chain</th>
+            <th class="num">2026 ADP</th>
+            <th class="num">Value</th>
+            <th class="expand-col"></th>
           </tr>
         </thead>
         <tbody>
@@ -826,7 +3363,73 @@ table.roster tr.total td {
           <td class="meta">Cin</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2024</td>
+          <td class="num">3.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-33393" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-33393" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">231.5</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">1.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">318.9</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">6.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">WR11</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">206.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">4.5</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Joe Burrow</td>
@@ -834,7 +3437,73 @@ table.roster tr.total td {
           <td class="meta">Cin</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">mid-season trade in 2023 (drafted round 1 in 2023)</td>
+          <td class="num">63.0</td>
+          <td class="num"><span class="pill value-overpriced">Overpriced</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-32671" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-32671" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-low">QB29</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">141.3</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">37.5</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2024</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC 1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-top">QB2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">433.8</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">68.0</span>
+          </div>
+        </div>
+        <div class="year-card">
+          <div class="year-label">2023</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">R1</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank tier-mid-perf">QB22</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">175.2</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">34.0</span>
+          </div>
+        </div></div>
+          </td>
         </tr>
         <tr>
           <td class="player-name">Jonathan Taylor</td>
@@ -842,1908 +3511,15 @@ table.roster tr.total td {
           <td class="meta">Ind</td>
           <td class="num"><span class="pill tier-premium">1</span></td>
           <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 4 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jaxon Smith-Njigba</td>
-          <td class="meta">WR</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 4 in 2023)) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tetairoa McMillan</td>
-          <td class="meta">WR</td>
-          <td class="meta">Car</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 4 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">James Cook III</td>
-          <td class="meta">RB</td>
-          <td class="meta">Buf</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">off-season trade in 2024 (drafted round 7 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">George Pickens</td>
-          <td class="meta">WR</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">off-season trade in 2024 (drafted round 8 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">De&#x27;Von Achane</td>
-          <td class="meta">RB</td>
-          <td class="meta">Mia</td>
-          <td class="num"><span class="pill tier-value">8</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 10 in 2023)) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Drake Maye</td>
-          <td class="meta">QB</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-value">9</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 11 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chris Godwin Jr.</td>
-          <td class="meta">WR</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Trey McBride</td>
-          <td class="meta">TE</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2025 (waiver in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Anthony Richardson Sr.</td>
-          <td class="meta">QB</td>
-          <td class="meta">Ind</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brandon Aiyuk</td>
-          <td class="meta">WR</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Buccaneers</td>
-          <td class="meta">DEF</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Cam Little</td>
-          <td class="meta">K</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jayden Higgins</td>
-          <td class="meta">WR</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tua Tagovailoa</td>
-          <td class="meta">QB</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyreek Hill</td>
-          <td class="meta">WR</td>
-          <td class="meta">Mia</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Woody Marks</td>
-          <td class="meta">RB</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$1,000</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-dan-macnulty" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">TheDarkKnight06</h1>
-      <p class="manager-name">Dan MacNulty</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$710</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">18</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">3</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">12</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Marvin Harrison Jr.</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 2 in 2024))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Caleb Williams</td>
-          <td class="meta">QB</td>
-          <td class="meta">Chi</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Travis Etienne Jr.</td>
-          <td class="meta">RB</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">mid-season trade in 2024 (drafted round 4 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">DK Metcalf</td>
-          <td class="meta">WR</td>
-          <td class="meta">Pit</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 3 in 2025)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jaxson Dart</td>
-          <td class="meta">QB</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-mid">4</span></td>
-          <td class="num cost">$60</td>
-          <td class="chain">originally drafted round 5 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jakobi Meyers</td>
-          <td class="meta">WR</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 7 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Sam LaPorta</td>
-          <td class="meta">TE</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-cheap">12</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">originally drafted round 15 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Hunter Henry</td>
-          <td class="meta">TE</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Alec Pierce</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ind</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Bucky Irving</td>
-          <td class="meta">RB</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2024 (waiver in 2024)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Dalton Schultz</td>
-          <td class="meta">TE</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Darius Slayton</td>
-          <td class="meta">WR</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Elic Ayomanor</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Harrison Butker</td>
-          <td class="meta">K</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jawhar Jordan</td>
-          <td class="meta">RB</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Sean Tucker</td>
-          <td class="meta">RB</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Steelers</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Pit</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tank Dell</td>
-          <td class="meta">WR</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$710</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-dan-vescuso" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">Fear the Peel</h1>
-      <p class="manager-name">Dan Vescuso</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$450</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">17</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">1</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">10</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Davante Adams</td>
-          <td class="meta">WR</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kenneth Walker III</td>
-          <td class="meta">RB</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 5 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chris Olave</td>
-          <td class="meta">WR</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 6 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">D&#x27;Andre Swift</td>
-          <td class="meta">RB</td>
-          <td class="meta">Chi</td>
-          <td class="num"><span class="pill tier-value">7</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 9 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jordan Love</td>
-          <td class="meta">QB</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-value">7</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 10 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kyler Murray</td>
-          <td class="meta">QB</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-value">8</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 10 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Michael Penix Jr.</td>
-          <td class="meta">QB</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-value">9</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 11 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jake Ferguson</td>
-          <td class="meta">TE</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-cheap">11</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">originally drafted round 12 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rashid Shaheed</td>
-          <td class="meta">WR</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-cheap">11</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 12 in 2024)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rachaad White</td>
-          <td class="meta">RB</td>
-          <td class="meta">Was</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kenneth Gainwell</td>
-          <td class="meta">RB</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kirk Cousins</td>
-          <td class="meta">QB</td>
-          <td class="meta">LV</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Marcus Mariota</td>
-          <td class="meta">QB</td>
-          <td class="meta">Was</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Mark Andrews</td>
-          <td class="meta">TE</td>
-          <td class="meta">Bal</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2025 (waiver in 2024) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rams</td>
-          <td class="meta">DEF</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tre Tucker</td>
-          <td class="meta">WR</td>
-          <td class="meta">LV</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Will Reichard</td>
-          <td class="meta">K</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$450</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-george-mensing" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">Dreorge Bledsoe</h1>
-      <p class="manager-name">George Mensing</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$1,200</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">18</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">5</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">8</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Breece Hall</td>
-          <td class="meta">RB</td>
-          <td class="meta">NYJ</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">James Conner</td>
-          <td class="meta">RB</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jaylen Waddle</td>
-          <td class="meta">WR</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 3 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Josh Allen</td>
-          <td class="meta">QB</td>
-          <td class="meta">Buf</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">mid-season trade in 2023 (drafted round 1 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">DeVonta Smith</td>
-          <td class="meta">WR</td>
-          <td class="meta">Phi</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Zay Flowers</td>
-          <td class="meta">WR</td>
-          <td class="meta">Bal</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 4 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brian Thomas Jr.</td>
-          <td class="meta">WR</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">mid-season trade in 2024 (drafted round 6 in 2024) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Javonte Williams</td>
-          <td class="meta">RB</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 7 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Mike Evans</td>
-          <td class="meta">WR</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2024 (drafted round 8 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">David Montgomery</td>
-          <td class="meta">RB</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-value">9</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 11 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">J.J. McCarthy</td>
-          <td class="meta">QB</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-cheap">12</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2024 (drafted round 13 in 2024) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Colby Parkinson</td>
-          <td class="meta">TE</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jason Myers</td>
-          <td class="meta">K</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Juwan Johnson</td>
-          <td class="meta">TE</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tank Bigsby</td>
-          <td class="meta">RB</td>
-          <td class="meta">Phi</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Texans</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyjae Spears</td>
-          <td class="meta">RB</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyler Shough</td>
-          <td class="meta">QB</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-cheap">16</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$1,200</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-greg-pearson" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">Mr. McGibblets</h1>
-      <p class="manager-name">Greg Pearson</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$810</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">19</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">3</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">12</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Garrett Wilson</td>
-          <td class="meta">WR</td>
-          <td class="meta">NYJ</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 2 in 2023)) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Justin Herbert</td>
-          <td class="meta">QB</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">off-season trade in 2024 (drafted round 1 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tee Higgins</td>
-          <td class="meta">WR</td>
-          <td class="meta">Cin</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">off-season trade in 2024 (trade in 2023 (drafted round 4 in 2023))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brock Purdy</td>
-          <td class="meta">QB</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 6 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Travis Kelce</td>
-          <td class="meta">TE</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 6 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Alvin Kamara</td>
-          <td class="meta">RB</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 8 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Matthew Stafford</td>
-          <td class="meta">QB</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-value">9</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2023 (drafted round 11 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chuba Hubbard</td>
-          <td class="meta">RB</td>
-          <td class="meta">Car</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Dalton Kincaid</td>
-          <td class="meta">TE</td>
-          <td class="meta">Buf</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2025 (waiver in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Quentin Johnston</td>
-          <td class="meta">WR</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Audric Estime</td>
-          <td class="meta">RB</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Blake Corum</td>
-          <td class="meta">RB</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chase McLaughlin</td>
-          <td class="meta">K</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Michael Wilson</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rhamondre Stevenson</td>
-          <td class="meta">RB</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rico Dowdle</td>
-          <td class="meta">RB</td>
-          <td class="meta">Pit</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2025 (waiver in 2024) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Seahawks</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyler Allgeier</td>
-          <td class="meta">RB</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Christian Watson</td>
-          <td class="meta">WR</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-cheap">16</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$810</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-jon-lewitus" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">The Lady Boys</h1>
-      <p class="manager-name">TBD</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$760</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">18</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">3</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">11</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Saquon Barkley</td>
-          <td class="meta">RB</td>
-          <td class="meta">Phi</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Trevor Lawrence</td>
-          <td class="meta">QB</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Isiah Pacheco</td>
-          <td class="meta">RB</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 3 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Bo Nix</td>
-          <td class="meta">QB</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-mid">4</span></td>
-          <td class="num cost">$60</td>
-          <td class="chain">originally drafted round 6 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brian Robinson Jr.</td>
-          <td class="meta">RB</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 7 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyler Warren</td>
-          <td class="meta">TE</td>
-          <td class="meta">Ind</td>
-          <td class="num"><span class="pill tier-value">7</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 8 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Nick Chubb</td>
-          <td class="meta">RB</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-value">8</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 9 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Nico Collins</td>
-          <td class="meta">WR</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">10</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">originally drafted round 13 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Courtland Sutton</td>
-          <td class="meta">WR</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Keenan Allen</td>
-          <td class="meta">WR</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Rashee Rice</td>
-          <td class="meta">WR</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2024 (trade in 2023 (waiver in 2023)) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">49ers</td>
-          <td class="meta">DEF</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">DeAndre Hopkins</td>
-          <td class="meta">WR</td>
-          <td class="meta">Bal</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Devin Singletary</td>
-          <td class="meta">RB</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jake Elliott</td>
-          <td class="meta">K</td>
-          <td class="meta">Phi</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kyle Pitts Sr.</td>
-          <td class="meta">TE</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Saints</td>
-          <td class="meta">DEF</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tyrod Taylor</td>
-          <td class="meta">QB</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$760</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-paul-lewis" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">Briguy’s Strange Boutte</h1>
-      <p class="manager-name">Paul Lewis</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$1,130</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">19</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">5</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">12</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Amon-Ra St. Brown</td>
-          <td class="meta">WR</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 3 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Bijan Robinson</td>
-          <td class="meta">RB</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Dak Prescott</td>
-          <td class="meta">QB</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Josh Jacobs</td>
-          <td class="meta">RB</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2025 (drafted round 1 in 2025))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jared Goff</td>
-          <td class="meta">QB</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">originally drafted round 5 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Stefon Diggs</td>
-          <td class="meta">WR</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 4 in 2024)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Quinshon Judkins</td>
-          <td class="meta">RB</td>
-          <td class="meta">Cle</td>
-          <td class="num"><span class="pill tier-value">8</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 9 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Tucker Kraft</td>
-          <td class="meta">TE</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brenton Strange</td>
-          <td class="meta">TE</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Broncos</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chris Rodriguez Jr.</td>
-          <td class="meta">RB</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Dylan Sampson</td>
-          <td class="meta">RB</td>
-          <td class="meta">Cle</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Emanuel Wilson</td>
-          <td class="meta">RB</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Ka&#x27;imi Fairbairn</td>
-          <td class="meta">K</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Khalil Shakir</td>
-          <td class="meta">WR</td>
-          <td class="meta">Buf</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Parker Washington</td>
-          <td class="meta">WR</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Patriots</td>
-          <td class="meta">DEF</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Taysom Hill</td>
-          <td class="meta">TE</td>
-          <td class="meta">NO</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Wan&#x27;Dale Robinson</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$1,130</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-pete-hodor" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">Are Bonita Fish Big?</h1>
-      <p class="manager-name">Pete Hodor</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$620</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">19</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">1</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">12</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Lamar Jackson</td>
-          <td class="meta">QB</td>
-          <td class="meta">Bal</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">off-season trade in 2024 (drafted round 2 in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Emeka Egbuka</td>
-          <td class="meta">WR</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 4 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">RJ Harvey</td>
-          <td class="meta">RB</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-mid">4</span></td>
-          <td class="num cost">$60</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2025 (drafted round 4 in 2025))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Cam Skattebo</td>
-          <td class="meta">RB</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 6 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Matthew Golden</td>
-          <td class="meta">WR</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 5 in 2025)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Ladd McConkey</td>
-          <td class="meta">WR</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-value">6</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">originally drafted round 8 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Sam Darnold</td>
-          <td class="meta">QB</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-value">8</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">mid-season trade in 2024 (trade in 2024 (drafted round 9 in 2024))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kyren Williams</td>
-          <td class="meta">RB</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-cheap">13</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jauan Jennings</td>
-          <td class="meta">WR</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Bhayshul Tuten</td>
-          <td class="meta">RB</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Colston Loveland</td>
-          <td class="meta">TE</td>
-          <td class="meta">Chi</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Isaac TeSlaa</td>
-          <td class="meta">WR</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jaylin Noel</td>
-          <td class="meta">WR</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kimani Vidal</td>
-          <td class="meta">RB</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kyle Williams</td>
-          <td class="meta">WR</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Luther Burden III</td>
-          <td class="meta">WR</td>
-          <td class="meta">Chi</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Panthers</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Car</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Trey Benson</td>
-          <td class="meta">RB</td>
-          <td class="meta">Ari</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Troy Franklin</td>
-          <td class="meta">WR</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$620</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-scott-montgomery" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">JUST THE TUA US</h1>
-      <p class="manager-name">Scott Montgomery</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$580</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">19</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">1</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">14</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">Jayden Daniels</td>
-          <td class="meta">QB</td>
-          <td class="meta">Was</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Aaron Jones Sr.</td>
-          <td class="meta">RB</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">originally drafted round 4 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Terry McLaurin</td>
-          <td class="meta">WR</td>
-          <td class="meta">Was</td>
-          <td class="num"><span class="pill tier-mid">4</span></td>
-          <td class="num cost">$60</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 6 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Brock Bowers</td>
-          <td class="meta">TE</td>
-          <td class="meta">LV</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">originally drafted round 7 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">DJ Moore</td>
-          <td class="meta">WR</td>
-          <td class="meta">Buf</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 6 in 2023))</td>
-        </tr>
-        <tr>
-          <td class="player-name">J.K. Dobbins</td>
-          <td class="meta">RB</td>
-          <td class="meta">Den</td>
-          <td class="num"><span class="pill tier-cheap">10</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">originally drafted round 12 in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Chase Brown</td>
-          <td class="meta">RB</td>
-          <td class="meta">Cin</td>
-          <td class="num"><span class="pill tier-cheap">13</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Baker Mayfield</td>
-          <td class="meta">QB</td>
-          <td class="meta">TB</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2024 (waiver in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Calvin Ridley</td>
-          <td class="meta">WR</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Daniel Jones</td>
-          <td class="meta">QB</td>
-          <td class="meta">Ind</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Darnell Mooney</td>
-          <td class="meta">WR</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Geno Smith</td>
-          <td class="meta">QB</td>
-          <td class="meta">NYJ</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Giants</td>
-          <td class="meta">DEF</td>
-          <td class="meta">NYG</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jayden Reed</td>
-          <td class="meta">WR</td>
-          <td class="meta">GB</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Joe Mixon</td>
-          <td class="meta">RB</td>
-          <td class="meta">Hou</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Malik Davis</td>
-          <td class="meta">RB</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Michael Carter</td>
-          <td class="meta">RB</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Oronde Gadsden</td>
-          <td class="meta">TE</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Zane Gonzalez</td>
-          <td class="meta">K</td>
-          <td class="meta">Mia</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$580</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-
-    <section class="team-section" id="team-tom-watson" hidden>
-      <div class="eyebrow">Manager</div>
-      <h1 class="team-name">The Prince of Darkness</h1>
-      <p class="manager-name">Tom Watson</p>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
-          <div class="v">$1,350</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">19</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">6</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">8</div>
-        </div>
-      </div>
-
-      <h2>Roster</h2>
-      <table class="roster">
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Pos</th>
-            <th>NFL</th>
-            <th class="num">DRC</th>
-            <th class="num">Cost</th>
-            <th>Acquisition chain</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="player-name">CeeDee Lamb</td>
-          <td class="meta">WR</td>
-          <td class="meta">Dal</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 1 in 2023))</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jalen Hurts</td>
-          <td class="meta">QB</td>
-          <td class="meta">Phi</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 1 in 2023</td>
-        </tr>
-        <tr>
-          <td class="player-name">Patrick Mahomes</td>
-          <td class="meta">QB</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 1 in 2023)</td>
-        </tr>
-        <tr>
-          <td class="player-name">TreVeyon Henderson</td>
-          <td class="meta">RB</td>
-          <td class="meta">NE</td>
-          <td class="num"><span class="pill tier-premium">1</span></td>
-          <td class="num cost">$200</td>
-          <td class="chain">originally drafted round 2 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Derrick Henry</td>
-          <td class="meta">RB</td>
-          <td class="meta">Bal</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">off-season trade in 2025 (drafted round 4 in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Omarion Hampton</td>
-          <td class="meta">RB</td>
-          <td class="meta">LAC</td>
-          <td class="num"><span class="pill tier-premium">2</span></td>
-          <td class="num cost">$100</td>
-          <td class="chain">mid-season trade in 2025 (drafted round 2 in 2025)</td>
-        </tr>
-        <tr>
-          <td class="player-name">Drake London</td>
-          <td class="meta">WR</td>
-          <td class="meta">Atl</td>
-          <td class="num"><span class="pill tier-mid">3</span></td>
-          <td class="num cost">$80</td>
-          <td class="chain">off-season trade in 2024 (drafted round 5 in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Travis Hunter</td>
-          <td class="meta">WR</td>
-          <td class="meta">Jax</td>
-          <td class="num"><span class="pill tier-mid">4</span></td>
-          <td class="num cost">$60</td>
-          <td class="chain">originally drafted round 5 in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">George Kittle</td>
-          <td class="meta">TE</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">off-season trade in 2025 (drafted round 7 in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Xavier Worthy</td>
-          <td class="meta">WR</td>
-          <td class="meta">KC</td>
-          <td class="num"><span class="pill tier-mid">5</span></td>
-          <td class="num cost">$50</td>
-          <td class="chain">off-season trade in 2025 (drafted round 6 in 2024) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jordan Addison</td>
-          <td class="meta">WR</td>
-          <td class="meta">Min</td>
-          <td class="num"><span class="pill tier-value">7</span></td>
-          <td class="num cost">$30</td>
-          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 8 in 2023)) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Puka Nacua</td>
-          <td class="meta">WR</td>
-          <td class="meta">LAR</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">off-season trade in 2024 (waiver in 2023) [OVERRIDE]</td>
-        </tr>
-        <tr>
-          <td class="player-name">Zach Charbonnet</td>
-          <td class="meta">RB</td>
-          <td class="meta">Sea</td>
-          <td class="num"><span class="pill tier-cheap">14</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2024</td>
-        </tr>
-        <tr>
-          <td class="player-name">Jake Bates</td>
-          <td class="meta">K</td>
-          <td class="meta">Det</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Kyle Monangai</td>
-          <td class="meta">RB</td>
-          <td class="meta">Chi</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Mac Jones</td>
-          <td class="meta">QB</td>
-          <td class="meta">SF</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Michael Mayer</td>
-          <td class="meta">TE</td>
-          <td class="meta">LV</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Quinn Ewers</td>
-          <td class="meta">QB</td>
-          <td class="meta">Mia</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from freeagents in 2025</td>
-        </tr>
-        <tr>
-          <td class="player-name">Titans</td>
-          <td class="meta">DEF</td>
-          <td class="meta">Ten</td>
-          <td class="num"><span class="pill tier-cheap">15</span></td>
-          <td class="num cost">$10</td>
-          <td class="chain">waiver from waivers in 2025</td>
-        </tr></tbody>
-        <tr class="total">
-          <td colspan="4">Total committed</td>
-          <td class="num cost">$1,350</td>
-          <td></td>
-        </tr>
-      </table>
-    </section>
-</main>
-</div>
-<script>
-(function() {
-  const links = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('.team-section');
-
-  function show(targetId) {
-    sections.forEach(s => s.hidden = (s.id !== targetId));
-    links.forEach(l => l.classList.toggle('active', l.dataset.target === targetId));
-    window.scrollTo({top: 0, behavior: 'instant'});
-  }
-
-  // Sidebar nav
-  links.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      show(link.dataset.target);
-    });
-  });
-
-  // Inline team links in summary table
-  document.querySelectorAll('a[data-target]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      show(a.dataset.target);
-    });
-  });
-
-  // Default: summary
-  show('summary');
-})();
-</script>
-</body>
-</html>
+          <td class="num">6.0</td>
+          <td class="num"><span class="pill value-fair">Fair</span></td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-32711" aria-label="Show prior years">›</button>
+          </td>
+        </tr>
+        <tr class="history-row" id="hist-32711" hidden>
+          <td colspan="8" class="history-cell">
+            <div class="history-cards">
+        <div class="year-card">
+          <div class="year-label">2025</div>
+          <div class="year-metric">

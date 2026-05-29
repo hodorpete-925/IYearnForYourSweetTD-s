@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 import compute_drc as drc  # reuse Phase B walk
+import player_history as hist  # per-year history helper
 
 DB_PATH = Path(__file__).parent / "fantasy.db"
 OUT_PATH = Path(__file__).parent / "dashboard.html"
@@ -52,6 +53,11 @@ def build_data():
     adp_2026 = {r["player_id"]: r["adp"] for r in conn.execute(
         "SELECT player_id, adp FROM adp WHERE season = 2026 AND player_id IS NOT NULL")}
 
+    # Pre-built lookup dicts for per-year history (ADP all years, points, pos rank)
+    adp_by_year = hist.load_adp_by_year(conn)
+    pts_by_year = hist.load_season_points_by_player(conn)
+    pos_rank_by_year = hist.load_position_rank_by_player(conn)
+
     rosters = conn.execute("""
         SELECT fr.player_id, fr.team_season_id, fr.selected_position,
                p.player_name, p.position, p.nfl_team,
@@ -83,7 +89,13 @@ def build_data():
                 "team_name": team_names.get(row["manager_id"], "(no team)"),
                 "players": [],
             }
+        history = hist.build_history_for_player(
+            conn, row["player_id"], row["team_season_id"],
+            adp_by_year, pts_by_year, pos_rank_by_year,
+            player_position=row["position"],
+        )
         by_manager[mgr]["players"].append({
+            "player_id": row["player_id"],
             "name": row["player_name"],
             "position": row["position"] or "—",
             "nfl_team": row["nfl_team"] or "—",
@@ -91,6 +103,7 @@ def build_data():
             "drc_dollars": drc_dollars,
             "adp_2026": adp_2026.get(row["player_id"]),
             "chain": chain,
+            "history": history,
         })
 
     # Sort players within each team by DRC ascending (most expensive first), then name
@@ -152,6 +165,111 @@ def _adp_value_class(drc_int, adp):
     return "fair"
 
 
+def _fmt(x, decimals=1):
+    if x is None:
+        return "—"
+    if isinstance(x, float):
+        return f"{x:.{decimals}f}"
+    return str(x)
+
+
+def _round_or_drc_label(yr_record):
+    """For an expanded-year cell: show 'R4' if drafted that year, 'DRC 3'
+    if kept, '—' if not in our league."""
+    if not yr_record:
+        return "—"
+    if yr_record.get("draft_round") is not None:
+        return f"R{yr_record['draft_round']}"
+    return f"DRC {yr_record['drc']}"
+
+
+def _format_pos_rank(rec):
+    """Combine position code + rank: 'WR15', 'RB2', 'QB1', 'DEF10'.
+    Returns em-dash if not available."""
+    if not rec:
+        return "—"
+    rank = rec.get("pos_rank")
+    pos = rec.get("position")
+    if rank is None or pos is None:
+        return "—"
+    return f"{pos}{rank}"
+
+
+def _pos_rank_tier(rec):
+    """Classify pos rank into a color tier for visual styling.
+    Advent palette: green for top tier, gold for mid, red for low."""
+    if not rec:
+        return ""
+    rank = rec.get("pos_rank")
+    pos = rec.get("position")
+    if rank is None or pos is None:
+        return ""
+    # Position-aware cutoffs (12-team league lens).
+    # Top tier = starter-quality, mid = bench-flex, low = bottom-of-roster.
+    if pos in ("QB", "TE", "K", "DEF"):
+        top_n, mid_n = 12, 24
+    elif pos == "RB":
+        top_n, mid_n = 24, 48
+    elif pos == "WR":
+        top_n, mid_n = 36, 60
+    else:
+        top_n, mid_n = 12, 24
+    if rank <= top_n:
+        return "tier-top"
+    if rank <= mid_n:
+        return "tier-mid-perf"
+    return "tier-low"
+
+
+def render_year_card(year, rec):
+    """Render one year's data as a vertically-stacked card. Card is greyed
+    if the player wasn't in our league that year (rec is None)."""
+    empty = rec is None
+    extra_class = " card-empty" if empty else ""
+
+    round_drc = _round_or_drc_label(rec)
+    pos_rank_str = _format_pos_rank(rec)
+    pos_rank_tier = _pos_rank_tier(rec)
+    pts_str = _fmt(rec.get("pts") if rec else None, 1)
+    adp_str = _fmt(rec.get("adp") if rec else None, 1)
+
+    return f"""
+        <div class="year-card{extra_class}">
+          <div class="year-label">{year}</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">{round_drc}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pos rank</span>
+            <span class="m-val pos-rank {pos_rank_tier}">{pos_rank_str}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Pts</span>
+            <span class="m-val">{pts_str}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">{adp_str}</span>
+          </div>
+        </div>"""
+
+
+def render_history_subrow(player_id, history, colspan):
+    """Render history as horizontal year-cards (descending: 2025, 2024, 2023).
+    2026 isn't here - it's already in the main row."""
+    cards = "".join(
+        render_year_card(year, history.get(year))
+        for year in (2025, 2024, 2023)
+    )
+    return f"""
+        <tr class="history-row" id="hist-{player_id}" hidden>
+          <td colspan="{colspan}" class="history-cell">
+            <div class="history-cards">{cards}</div>
+          </td>
+        </tr>"""
+
+
 def render_player_row(p):
     adp = p.get("adp_2026")
     adp_display = f"{adp:.1f}" if adp is not None else "—"
@@ -160,7 +278,9 @@ def render_player_row(p):
     if value_tag:
         labels = {"steal": "Steal", "fair": "Fair", "overpriced": "Overpriced"}
         value_pill = f'<span class="pill value-{value_tag}">{labels[value_tag]}</span>'
-    return f"""
+
+    pid = p.get("player_id", id(p))
+    main_row = f"""
         <tr>
           <td class="player-name">{html.escape(p['name'])}</td>
           <td class="meta">{html.escape(p['position'])}</td>
@@ -169,8 +289,13 @@ def render_player_row(p):
           <td class="num cost">${p['drc_dollars']}</td>
           <td class="num">{adp_display}</td>
           <td class="num">{value_pill}</td>
-          <td class="chain">{html.escape(p['chain'])}</td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-{pid}" aria-label="Show prior years">›</button>
+          </td>
         </tr>"""
+
+    sub_row = render_history_subrow(pid, p.get("history", {}), colspan=8)
+    return main_row + sub_row
 
 
 def render_team_section(data, slug):
@@ -216,7 +341,7 @@ def render_team_section(data, slug):
             <th class="num">Cost</th>
             <th class="num">2026 ADP</th>
             <th class="num">Value</th>
-            <th>Acquisition chain</th>
+            <th class="expand-col"></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
@@ -525,6 +650,91 @@ table.roster tr.total td {
 .pill.value-fair       { background: var(--gray-100); color: var(--gray-600); }
 .pill.value-overpriced { background: #fff0e6; color: #b04a00; }
 
+/* --- Expandable player history ---------------------------------------- */
+.expand-btn {
+  background: none;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  margin-right: 8px;
+  line-height: 1;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.15s ease;
+}
+.expand-btn:hover { color: var(--blue-600); border-color: var(--blue-400); }
+.expand-btn.open  { transform: rotate(90deg); color: var(--blue-600); border-color: var(--blue-600); }
+
+.expand-col { width: 28px; text-align: center; }
+
+tr.history-row > td.history-cell {
+  padding: 0;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+.history-cards {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px 18px 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.year-card {
+  flex: 1 1 0;
+  min-width: 180px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px 16px;
+}
+.year-card.card-empty {
+  background: #fafafa;
+  border-color: #ececec;
+  opacity: 0.65;
+}
+.year-card .year-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue-600);
+  margin-bottom: 12px;
+}
+.year-card.card-empty .year-label { color: var(--gray-500); }
+.year-card .year-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--gray-100);
+}
+.year-card .year-metric:first-of-type { border-top: none; padding-top: 0; }
+.year-card .m-label {
+  color: var(--gray-500);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.year-card .m-val {
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+/* Pos-rank color tiers using Advent palette (gentle) */
+.m-val.pos-rank.tier-top      { color: #6B7D00; }   /* Green 600 */
+.m-val.pos-rank.tier-mid-perf { color: #A88100; }   /* Yellow 600 */
+.m-val.pos-rank.tier-low      { color: #982B09; }   /* Red 600 */
+
+
 /* --- Footnote ---------------------------------------------------------- */
 .footnote {
   margin-top: 48px;
@@ -547,7 +757,6 @@ JS = r"""
     window.scrollTo({top: 0, behavior: 'instant'});
   }
 
-  // Sidebar nav
   links.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -555,7 +764,6 @@ JS = r"""
     });
   });
 
-  // Inline team links in summary table
   document.querySelectorAll('a[data-target]').forEach(a => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
@@ -563,21 +771,31 @@ JS = r"""
     });
   });
 
-  // Default: summary
   show('summary');
+
+  // Expand-on-click for player history sub-rows
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = btn.dataset.target;
+      const row = document.getElementById(targetId);
+      if (!row) return;
+      const opening = row.hasAttribute('hidden');
+      if (opening) {
+        row.removeAttribute('hidden');
+        btn.classList.add('open');
+      } else {
+        row.setAttribute('hidden', '');
+        btn.classList.remove('open');
+      }
+    });
+  });
 })();
 """
 
 
 def build_sidebar(by_manager):
     teams = sorted(by_manager.values(), key=lambda d: d["team_name"].lower())
-    items = ''.join(
-        f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
-        f'{html.escape(t["team_name"])}'
-        f'<span class="manager">{html.escape(t["manager"])}</span>'
-        f'</a>'
-        for t in teams
-    )
     items = ''.join(
         f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
         f'{html.escape(t["team_name"])}'
