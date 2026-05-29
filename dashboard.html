@@ -1,0 +1,2749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>I Yearn For Your Sweet TD&#x27;s · Keeper ledger · 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-800: #022479;
+  --blue-600: #0038FF;
+  --blue-400: #269AFF;
+  --blue-200: #77CEFF;
+  --gold-400: #E1B523;
+  --gray-700: #2a2a2e;
+  --gray-600: #606C71;
+  --gray-500: #8e8e93;
+  --gray-200: #ebebed;
+  --gray-100: #f5f5f5;
+  --gray-50:  #fcfcfd;
+  --off-white: #fafafb;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+  background: #fff;
+  color: #000;
+  font-size: 14.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* --- Sidebar ----------------------------------------------------------- */
+.sidebar {
+  background: var(--blue-800);
+  color: #fff;
+  padding: 32px 24px 40px;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar .brand {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue-200);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.sidebar .brand-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-bottom: 4px;
+  color: #fff;
+}
+.sidebar .brand-sub {
+  font-size: 11.5px;
+  color: var(--blue-200);
+  margin-bottom: 36px;
+}
+.sidebar h3 {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue-200);
+  margin: 24px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.nav-link {
+  display: block;
+  padding: 9px 10px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  font-size: 13.5px;
+  border-radius: 4px;
+  margin-bottom: 1px;
+  cursor: pointer;
+}
+.nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.nav-link.active {
+  background: var(--blue-600);
+  color: #fff;
+  font-weight: 500;
+}
+.nav-link .manager {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 1px;
+}
+.nav-link.active .manager { color: rgba(255, 255, 255, 0.75); }
+
+/* --- Main content ------------------------------------------------------ */
+.content {
+  padding: 56px 64px 96px;
+  max-width: 1100px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+}
+h1.team-name {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.15;
+  color: #000;
+}
+.manager-name {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  margin: 10px 0 0;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 56px 0 16px;
+  color: #000;
+}
+
+/* --- KPI cards --------------------------------------------------------- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 36px;
+}
+.kpi {
+  padding: 18px 20px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  background: var(--gray-50);
+}
+.kpi .k {
+  font-size: 10.5px;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.kpi .v {
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--blue-800);
+}
+
+/* --- Tables ------------------------------------------------------------ */
+table.roster {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+table.roster th {
+  font-size: 10.5px;
+  color: var(--gray-500);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px 10px;
+  border-bottom: 1.5px solid var(--gray-200);
+  text-align: left;
+}
+table.roster th.num { text-align: right; }
+table.roster td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+table.roster td.num { text-align: right; }
+table.roster td.player-name { font-weight: 500; color: #000; }
+table.roster td.player-name a {
+  color: var(--blue-600);
+  text-decoration: none;
+}
+table.roster td.player-name a:hover { text-decoration: underline; }
+table.roster td.meta { color: var(--gray-600); font-size: 13px; }
+table.roster td.chain { color: var(--gray-600); font-size: 12.5px; }
+table.roster td.cost { font-weight: 500; }
+table.roster td.rank { color: var(--gray-500); width: 32px; }
+
+table.roster tr.total td {
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  font-weight: 600;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* --- Pills (DRC tier) -------------------------------------------------- */
+.pill {
+  display: inline-block;
+  padding: 2px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  min-width: 28px;
+  text-align: center;
+}
+.pill.tier-premium { background: #0038FF; color: #fff; }
+.pill.tier-mid     { background: var(--blue-200); color: var(--blue-800); }
+.pill.tier-value   { background: #fff8e1; color: #8a6a1a; }
+.pill.tier-cheap   { background: var(--gray-100); color: var(--gray-600); }
+
+/* --- Footnote ---------------------------------------------------------- */
+.footnote {
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+      <div class="brand">League 4416</div>
+      <div class="brand-title">I Yearn For Your Sweet TD&#x27;s</div>
+      <div class="brand-sub">Keeper ledger · 2026</div>
+
+      <h3>League view</h3>
+      <a class="nav-link" data-target="summary">Summary &amp; standings</a>
+
+      <h3>Teams</h3>
+      <a class="nav-link" data-target="team-pete-hodor">Are Bonita Fish Big?<span class="manager">Pete Hodor</span></a><a class="nav-link" data-target="team-paul-lewis">Briguy’s Strange Boutte<span class="manager">Paul Lewis</span></a><a class="nav-link" data-target="team-george-mensing">Dreorge Bledsoe<span class="manager">George Mensing</span></a><a class="nav-link" data-target="team-dan-vescuso">Fear the Peel<span class="manager">Dan Vescuso</span></a><a class="nav-link" data-target="team-aric-tao">High Priest Gabagool 🤌🏻<span class="manager">Aric Tao</span></a><a class="nav-link" data-target="team-scott-montgomery">JUST THE TUA US<span class="manager">Scott Montgomery</span></a><a class="nav-link" data-target="team-brian-malconian">King Of The Castle<span class="manager">Brian Malconian</span></a><a class="nav-link" data-target="team-greg-pearson">Mr. McGibblets<span class="manager">Greg Pearson</span></a><a class="nav-link" data-target="team-jon-lewitus">The Lady Boys<span class="manager">TBD</span></a><a class="nav-link" data-target="team-tom-watson">The Prince of Darkness<span class="manager">Tom Watson</span></a><a class="nav-link" data-target="team-dan-macnulty">TheDarkKnight06<span class="manager">Dan MacNulty</span></a><a class="nav-link" data-target="team-alex-schlosberg">Vesco’s banging bathroom<span class="manager">Alex Schlosberg</span></a>
+    </aside>
+<main class="content">
+
+    <section class="team-section" id="summary">
+      <div class="eyebrow">League 4416 · 2026 keeper window</div>
+      <h1 class="team-name">League cap commitment</h1>
+      <p class="manager-name">Dollars each team will spend to keep their 2026 keepers.</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total league cap committed</div>
+          <div class="v">$10,450</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Average team cap</div>
+          <div class="v">$870</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers leaguewide</div>
+          <div class="v">39</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Teams</div>
+          <div class="v">12</div>
+        </div>
+      </div>
+
+      <h2>Teams ranked by 2026 cap commitment</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th>Manager</th>
+            <th class="num">Players</th>
+            <th class="num">Premium</th>
+            <th class="num">Total cap</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rank">1</td>
+            <td class="player-name"><a href="#" data-target="team-tom-watson">The Prince of Darkness</a></td>
+            <td class="meta">Tom Watson</td>
+            <td class="num">19</td>
+            <td class="num">6</td>
+            <td class="num cost">$1,350</td>
+          </tr>
+          <tr>
+            <td class="rank">2</td>
+            <td class="player-name"><a href="#" data-target="team-george-mensing">Dreorge Bledsoe</a></td>
+            <td class="meta">George Mensing</td>
+            <td class="num">18</td>
+            <td class="num">5</td>
+            <td class="num cost">$1,200</td>
+          </tr>
+          <tr>
+            <td class="rank">3</td>
+            <td class="player-name"><a href="#" data-target="team-paul-lewis">Briguy’s Strange Boutte</a></td>
+            <td class="meta">Paul Lewis</td>
+            <td class="num">19</td>
+            <td class="num">5</td>
+            <td class="num cost">$1,130</td>
+          </tr>
+          <tr>
+            <td class="rank">4</td>
+            <td class="player-name"><a href="#" data-target="team-brian-malconian">King Of The Castle</a></td>
+            <td class="meta">Brian Malconian</td>
+            <td class="num">19</td>
+            <td class="num">3</td>
+            <td class="num cost">$1,000</td>
+          </tr>
+          <tr>
+            <td class="rank">5</td>
+            <td class="player-name"><a href="#" data-target="team-aric-tao">High Priest Gabagool 🤌🏻</a></td>
+            <td class="meta">Aric Tao</td>
+            <td class="num">19</td>
+            <td class="num">4</td>
+            <td class="num cost">$970</td>
+          </tr>
+          <tr>
+            <td class="rank">6</td>
+            <td class="player-name"><a href="#" data-target="team-alex-schlosberg">Vesco’s banging bathroom</a></td>
+            <td class="meta">Alex Schlosberg</td>
+            <td class="num">18</td>
+            <td class="num">4</td>
+            <td class="num cost">$870</td>
+          </tr>
+          <tr>
+            <td class="rank">7</td>
+            <td class="player-name"><a href="#" data-target="team-greg-pearson">Mr. McGibblets</a></td>
+            <td class="meta">Greg Pearson</td>
+            <td class="num">19</td>
+            <td class="num">3</td>
+            <td class="num cost">$810</td>
+          </tr>
+          <tr>
+            <td class="rank">8</td>
+            <td class="player-name"><a href="#" data-target="team-jon-lewitus">The Lady Boys</a></td>
+            <td class="meta">TBD</td>
+            <td class="num">18</td>
+            <td class="num">3</td>
+            <td class="num cost">$760</td>
+          </tr>
+          <tr>
+            <td class="rank">9</td>
+            <td class="player-name"><a href="#" data-target="team-dan-macnulty">TheDarkKnight06</a></td>
+            <td class="meta">Dan MacNulty</td>
+            <td class="num">18</td>
+            <td class="num">3</td>
+            <td class="num cost">$710</td>
+          </tr>
+          <tr>
+            <td class="rank">10</td>
+            <td class="player-name"><a href="#" data-target="team-pete-hodor">Are Bonita Fish Big?</a></td>
+            <td class="meta">Pete Hodor</td>
+            <td class="num">19</td>
+            <td class="num">1</td>
+            <td class="num cost">$620</td>
+          </tr>
+          <tr>
+            <td class="rank">11</td>
+            <td class="player-name"><a href="#" data-target="team-scott-montgomery">JUST THE TUA US</a></td>
+            <td class="meta">Scott Montgomery</td>
+            <td class="num">19</td>
+            <td class="num">1</td>
+            <td class="num cost">$580</td>
+          </tr>
+          <tr>
+            <td class="rank">12</td>
+            <td class="player-name"><a href="#" data-target="team-dan-vescuso">Fear the Peel</a></td>
+            <td class="meta">Dan Vescuso</td>
+            <td class="num">17</td>
+            <td class="num">1</td>
+            <td class="num cost">$450</td>
+          </tr></tbody>
+      </table>
+
+      <p class="footnote">Generated 2026-05-28 23:55 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
+    </section>
+
+    <section class="team-section" id="team-alex-schlosberg" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Vesco’s banging bathroom</h1>
+      <p class="manager-name">Alex Schlosberg</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$870</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">18</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">4</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">11</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">A.J. Brown</td>
+          <td class="meta">WR</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Christian McCaffrey</td>
+          <td class="meta">RB</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jahmyr Gibbs</td>
+          <td class="meta">RB</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 3 in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tony Pollard</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rome Odunze</td>
+          <td class="meta">WR</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">originally drafted round 5 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">C.J. Stroud</td>
+          <td class="meta">QB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 8 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Michael Pittman Jr.</td>
+          <td class="meta">WR</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 7 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Aaron Rodgers</td>
+          <td class="meta">QB</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-cheap">13</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jalen McMillan</td>
+          <td class="meta">WR</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaylen Warren</td>
+          <td class="meta">RB</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Dallas Goedert</td>
+          <td class="meta">TE</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Devin Neal</td>
+          <td class="meta">RB</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Harold Fannin Jr.</td>
+          <td class="meta">TE</td>
+          <td class="meta">Cle</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaguars</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jalen Coker</td>
+          <td class="meta">WR</td>
+          <td class="meta">Car</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Ricky Pearsall</td>
+          <td class="meta">WR</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2024 (waiver in 2024)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyler Loop</td>
+          <td class="meta">K</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jacoby Brissett</td>
+          <td class="meta">QB</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-cheap">16</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$870</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-aric-tao" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">High Priest Gabagool 🤌🏻</h1>
+      <p class="manager-name">Aric Tao</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$970</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">4</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">9</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Ashton Jeanty</td>
+          <td class="meta">RB</td>
+          <td class="meta">LV</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Justin Jefferson</td>
+          <td class="meta">WR</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Cam Ward</td>
+          <td class="meta">QB</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Malik Nabers</td>
+          <td class="meta">WR</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 2 in 2024))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Deebo Samuel</td>
+          <td class="meta">WR</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">mid-season trade in 2023 (drafted round 5 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jacory Croskey-Merritt</td>
+          <td class="meta">RB</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 4 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brandon Aubrey</td>
+          <td class="meta">K</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-value">7</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 8 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Justin Fields</td>
+          <td class="meta">QB</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 10 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jameson Williams</td>
+          <td class="meta">WR</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2024 (trade in 2024 (drafted round 10 in 2023))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Shedeur Sanders</td>
+          <td class="meta">QB</td>
+          <td class="meta">Cle</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 10 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Braelon Allen</td>
+          <td class="meta">RB</td>
+          <td class="meta">NYJ</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chimere Dike</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Deshaun Watson</td>
+          <td class="meta">QB</td>
+          <td class="meta">Cle</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Joe Milton III</td>
+          <td class="meta">QB</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Lions</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Romeo Doubs</td>
+          <td class="meta">WR</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Theo Johnson</td>
+          <td class="meta">TE</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyrone Tracy Jr.</td>
+          <td class="meta">RB</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Bryce Young</td>
+          <td class="meta">QB</td>
+          <td class="meta">Car</td>
+          <td class="num"><span class="pill tier-cheap">16</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2025 (waiver in 2024))</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$970</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-brian-malconian" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">King Of The Castle</h1>
+      <p class="manager-name">Brian Malconian</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$1,000</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">3</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">10</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Ja&#x27;Marr Chase</td>
+          <td class="meta">WR</td>
+          <td class="meta">Cin</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Joe Burrow</td>
+          <td class="meta">QB</td>
+          <td class="meta">Cin</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">mid-season trade in 2023 (drafted round 1 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jonathan Taylor</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ind</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 4 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaxon Smith-Njigba</td>
+          <td class="meta">WR</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 4 in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tetairoa McMillan</td>
+          <td class="meta">WR</td>
+          <td class="meta">Car</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 4 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">James Cook III</td>
+          <td class="meta">RB</td>
+          <td class="meta">Buf</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">off-season trade in 2024 (drafted round 7 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">George Pickens</td>
+          <td class="meta">WR</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">off-season trade in 2024 (drafted round 8 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">De&#x27;Von Achane</td>
+          <td class="meta">RB</td>
+          <td class="meta">Mia</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 10 in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Drake Maye</td>
+          <td class="meta">QB</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 11 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chris Godwin Jr.</td>
+          <td class="meta">WR</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Trey McBride</td>
+          <td class="meta">TE</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2025 (waiver in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Anthony Richardson Sr.</td>
+          <td class="meta">QB</td>
+          <td class="meta">Ind</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brandon Aiyuk</td>
+          <td class="meta">WR</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Buccaneers</td>
+          <td class="meta">DEF</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Cam Little</td>
+          <td class="meta">K</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jayden Higgins</td>
+          <td class="meta">WR</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tua Tagovailoa</td>
+          <td class="meta">QB</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyreek Hill</td>
+          <td class="meta">WR</td>
+          <td class="meta">Mia</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Woody Marks</td>
+          <td class="meta">RB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$1,000</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-dan-macnulty" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">TheDarkKnight06</h1>
+      <p class="manager-name">Dan MacNulty</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$710</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">18</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">3</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">12</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Marvin Harrison Jr.</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 2 in 2024))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Caleb Williams</td>
+          <td class="meta">QB</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Travis Etienne Jr.</td>
+          <td class="meta">RB</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">mid-season trade in 2024 (drafted round 4 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">DK Metcalf</td>
+          <td class="meta">WR</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 3 in 2025)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaxson Dart</td>
+          <td class="meta">QB</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">originally drafted round 5 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jakobi Meyers</td>
+          <td class="meta">WR</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 7 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Sam LaPorta</td>
+          <td class="meta">TE</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-cheap">12</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">originally drafted round 15 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Hunter Henry</td>
+          <td class="meta">TE</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Alec Pierce</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ind</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Bucky Irving</td>
+          <td class="meta">RB</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2024 (waiver in 2024)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Dalton Schultz</td>
+          <td class="meta">TE</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Darius Slayton</td>
+          <td class="meta">WR</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Elic Ayomanor</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Harrison Butker</td>
+          <td class="meta">K</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jawhar Jordan</td>
+          <td class="meta">RB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Sean Tucker</td>
+          <td class="meta">RB</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Steelers</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tank Dell</td>
+          <td class="meta">WR</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$710</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-dan-vescuso" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Fear the Peel</h1>
+      <p class="manager-name">Dan Vescuso</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$450</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">17</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">1</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">10</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Davante Adams</td>
+          <td class="meta">WR</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kenneth Walker III</td>
+          <td class="meta">RB</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 5 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chris Olave</td>
+          <td class="meta">WR</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 6 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">D&#x27;Andre Swift</td>
+          <td class="meta">RB</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-value">7</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 9 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jordan Love</td>
+          <td class="meta">QB</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-value">7</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 10 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kyler Murray</td>
+          <td class="meta">QB</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 10 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Michael Penix Jr.</td>
+          <td class="meta">QB</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 11 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jake Ferguson</td>
+          <td class="meta">TE</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-cheap">11</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">originally drafted round 12 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rashid Shaheed</td>
+          <td class="meta">WR</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-cheap">11</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 12 in 2024)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rachaad White</td>
+          <td class="meta">RB</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kenneth Gainwell</td>
+          <td class="meta">RB</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kirk Cousins</td>
+          <td class="meta">QB</td>
+          <td class="meta">LV</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Marcus Mariota</td>
+          <td class="meta">QB</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Mark Andrews</td>
+          <td class="meta">TE</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2025 (waiver in 2024) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rams</td>
+          <td class="meta">DEF</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tre Tucker</td>
+          <td class="meta">WR</td>
+          <td class="meta">LV</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Will Reichard</td>
+          <td class="meta">K</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$450</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-george-mensing" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Dreorge Bledsoe</h1>
+      <p class="manager-name">George Mensing</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$1,200</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">18</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">5</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">8</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Breece Hall</td>
+          <td class="meta">RB</td>
+          <td class="meta">NYJ</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">James Conner</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaylen Waddle</td>
+          <td class="meta">WR</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 3 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Josh Allen</td>
+          <td class="meta">QB</td>
+          <td class="meta">Buf</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">mid-season trade in 2023 (drafted round 1 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">DeVonta Smith</td>
+          <td class="meta">WR</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Zay Flowers</td>
+          <td class="meta">WR</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 4 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brian Thomas Jr.</td>
+          <td class="meta">WR</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">mid-season trade in 2024 (drafted round 6 in 2024) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Javonte Williams</td>
+          <td class="meta">RB</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 7 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Mike Evans</td>
+          <td class="meta">WR</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2024 (drafted round 8 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">David Montgomery</td>
+          <td class="meta">RB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 11 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">J.J. McCarthy</td>
+          <td class="meta">QB</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-cheap">12</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2024 (drafted round 13 in 2024) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Colby Parkinson</td>
+          <td class="meta">TE</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jason Myers</td>
+          <td class="meta">K</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Juwan Johnson</td>
+          <td class="meta">TE</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tank Bigsby</td>
+          <td class="meta">RB</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Texans</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyjae Spears</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyler Shough</td>
+          <td class="meta">QB</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">16</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$1,200</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-greg-pearson" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Mr. McGibblets</h1>
+      <p class="manager-name">Greg Pearson</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$810</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">3</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">12</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Garrett Wilson</td>
+          <td class="meta">WR</td>
+          <td class="meta">NYJ</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 2 in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Justin Herbert</td>
+          <td class="meta">QB</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">off-season trade in 2024 (drafted round 1 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tee Higgins</td>
+          <td class="meta">WR</td>
+          <td class="meta">Cin</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">off-season trade in 2024 (trade in 2023 (drafted round 4 in 2023))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brock Purdy</td>
+          <td class="meta">QB</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 6 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Travis Kelce</td>
+          <td class="meta">TE</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 6 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Alvin Kamara</td>
+          <td class="meta">RB</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 8 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Matthew Stafford</td>
+          <td class="meta">QB</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-value">9</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2023 (drafted round 11 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chuba Hubbard</td>
+          <td class="meta">RB</td>
+          <td class="meta">Car</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Dalton Kincaid</td>
+          <td class="meta">TE</td>
+          <td class="meta">Buf</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2025 (waiver in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Quentin Johnston</td>
+          <td class="meta">WR</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Audric Estime</td>
+          <td class="meta">RB</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Blake Corum</td>
+          <td class="meta">RB</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chase McLaughlin</td>
+          <td class="meta">K</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Michael Wilson</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rhamondre Stevenson</td>
+          <td class="meta">RB</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rico Dowdle</td>
+          <td class="meta">RB</td>
+          <td class="meta">Pit</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2025 (waiver in 2024) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Seahawks</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyler Allgeier</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Christian Watson</td>
+          <td class="meta">WR</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-cheap">16</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">mid-season trade in 2025 (waiver in 2025)</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$810</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-jon-lewitus" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">The Lady Boys</h1>
+      <p class="manager-name">TBD</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$760</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">18</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">3</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">11</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Saquon Barkley</td>
+          <td class="meta">RB</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Trevor Lawrence</td>
+          <td class="meta">QB</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Isiah Pacheco</td>
+          <td class="meta">RB</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 3 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Bo Nix</td>
+          <td class="meta">QB</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">originally drafted round 6 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brian Robinson Jr.</td>
+          <td class="meta">RB</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 7 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyler Warren</td>
+          <td class="meta">TE</td>
+          <td class="meta">Ind</td>
+          <td class="num"><span class="pill tier-value">7</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 8 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Nick Chubb</td>
+          <td class="meta">RB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 9 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Nico Collins</td>
+          <td class="meta">WR</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">10</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">originally drafted round 13 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Courtland Sutton</td>
+          <td class="meta">WR</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Keenan Allen</td>
+          <td class="meta">WR</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Rashee Rice</td>
+          <td class="meta">WR</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2024 (trade in 2023 (waiver in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">49ers</td>
+          <td class="meta">DEF</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">DeAndre Hopkins</td>
+          <td class="meta">WR</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Devin Singletary</td>
+          <td class="meta">RB</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jake Elliott</td>
+          <td class="meta">K</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kyle Pitts Sr.</td>
+          <td class="meta">TE</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Saints</td>
+          <td class="meta">DEF</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tyrod Taylor</td>
+          <td class="meta">QB</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$760</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-paul-lewis" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Briguy’s Strange Boutte</h1>
+      <p class="manager-name">Paul Lewis</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$1,130</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">5</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">12</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Amon-Ra St. Brown</td>
+          <td class="meta">WR</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 3 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Bijan Robinson</td>
+          <td class="meta">RB</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Dak Prescott</td>
+          <td class="meta">QB</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Josh Jacobs</td>
+          <td class="meta">RB</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2025 (drafted round 1 in 2025))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jared Goff</td>
+          <td class="meta">QB</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">originally drafted round 5 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Stefon Diggs</td>
+          <td class="meta">WR</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 4 in 2024)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Quinshon Judkins</td>
+          <td class="meta">RB</td>
+          <td class="meta">Cle</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 9 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Tucker Kraft</td>
+          <td class="meta">TE</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brenton Strange</td>
+          <td class="meta">TE</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Broncos</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chris Rodriguez Jr.</td>
+          <td class="meta">RB</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Dylan Sampson</td>
+          <td class="meta">RB</td>
+          <td class="meta">Cle</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Emanuel Wilson</td>
+          <td class="meta">RB</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Ka&#x27;imi Fairbairn</td>
+          <td class="meta">K</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Khalil Shakir</td>
+          <td class="meta">WR</td>
+          <td class="meta">Buf</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Parker Washington</td>
+          <td class="meta">WR</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Patriots</td>
+          <td class="meta">DEF</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Taysom Hill</td>
+          <td class="meta">TE</td>
+          <td class="meta">NO</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Wan&#x27;Dale Robinson</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$1,130</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-pete-hodor" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">Are Bonita Fish Big?</h1>
+      <p class="manager-name">Pete Hodor</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$620</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">1</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">12</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Lamar Jackson</td>
+          <td class="meta">QB</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">off-season trade in 2024 (drafted round 2 in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Emeka Egbuka</td>
+          <td class="meta">WR</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 4 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">RJ Harvey</td>
+          <td class="meta">RB</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2025 (drafted round 4 in 2025))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Cam Skattebo</td>
+          <td class="meta">RB</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 6 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Matthew Golden</td>
+          <td class="meta">WR</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 5 in 2025)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Ladd McConkey</td>
+          <td class="meta">WR</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-value">6</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">originally drafted round 8 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Sam Darnold</td>
+          <td class="meta">QB</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-value">8</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">mid-season trade in 2024 (trade in 2024 (drafted round 9 in 2024))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kyren Williams</td>
+          <td class="meta">RB</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-cheap">13</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jauan Jennings</td>
+          <td class="meta">WR</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Bhayshul Tuten</td>
+          <td class="meta">RB</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Colston Loveland</td>
+          <td class="meta">TE</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Isaac TeSlaa</td>
+          <td class="meta">WR</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jaylin Noel</td>
+          <td class="meta">WR</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kimani Vidal</td>
+          <td class="meta">RB</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kyle Williams</td>
+          <td class="meta">WR</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Luther Burden III</td>
+          <td class="meta">WR</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Panthers</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Car</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Trey Benson</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ari</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Troy Franklin</td>
+          <td class="meta">WR</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$620</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-scott-montgomery" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">JUST THE TUA US</h1>
+      <p class="manager-name">Scott Montgomery</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$580</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">1</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">14</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">Jayden Daniels</td>
+          <td class="meta">QB</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Aaron Jones Sr.</td>
+          <td class="meta">RB</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">originally drafted round 4 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Terry McLaurin</td>
+          <td class="meta">WR</td>
+          <td class="meta">Was</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 6 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Brock Bowers</td>
+          <td class="meta">TE</td>
+          <td class="meta">LV</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">originally drafted round 7 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">DJ Moore</td>
+          <td class="meta">WR</td>
+          <td class="meta">Buf</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 6 in 2023))</td>
+        </tr>
+        <tr>
+          <td class="player-name">J.K. Dobbins</td>
+          <td class="meta">RB</td>
+          <td class="meta">Den</td>
+          <td class="num"><span class="pill tier-cheap">10</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">originally drafted round 12 in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Chase Brown</td>
+          <td class="meta">RB</td>
+          <td class="meta">Cin</td>
+          <td class="num"><span class="pill tier-cheap">13</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Baker Mayfield</td>
+          <td class="meta">QB</td>
+          <td class="meta">TB</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2024 (waiver in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Calvin Ridley</td>
+          <td class="meta">WR</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Daniel Jones</td>
+          <td class="meta">QB</td>
+          <td class="meta">Ind</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Darnell Mooney</td>
+          <td class="meta">WR</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Geno Smith</td>
+          <td class="meta">QB</td>
+          <td class="meta">NYJ</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Giants</td>
+          <td class="meta">DEF</td>
+          <td class="meta">NYG</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jayden Reed</td>
+          <td class="meta">WR</td>
+          <td class="meta">GB</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Joe Mixon</td>
+          <td class="meta">RB</td>
+          <td class="meta">Hou</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Malik Davis</td>
+          <td class="meta">RB</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Michael Carter</td>
+          <td class="meta">RB</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Oronde Gadsden</td>
+          <td class="meta">TE</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Zane Gonzalez</td>
+          <td class="meta">K</td>
+          <td class="meta">Mia</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$580</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="team-section" id="team-tom-watson" hidden>
+      <div class="eyebrow">Manager</div>
+      <h1 class="team-name">The Prince of Darkness</h1>
+      <p class="manager-name">Tom Watson</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Total 2026 keeper cost</div>
+          <div class="v">$1,350</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Players on roster</div>
+          <div class="v">19</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">6</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Cheap keepers (DRC ≥ 10)</div>
+          <div class="v">8</div>
+        </div>
+      </div>
+
+      <h2>Roster</h2>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pos</th>
+            <th>NFL</th>
+            <th class="num">DRC</th>
+            <th class="num">Cost</th>
+            <th>Acquisition chain</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="player-name">CeeDee Lamb</td>
+          <td class="meta">WR</td>
+          <td class="meta">Dal</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">mid-season trade in 2025 (trade in 2024 (drafted round 1 in 2023))</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jalen Hurts</td>
+          <td class="meta">QB</td>
+          <td class="meta">Phi</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 1 in 2023</td>
+        </tr>
+        <tr>
+          <td class="player-name">Patrick Mahomes</td>
+          <td class="meta">QB</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 1 in 2023)</td>
+        </tr>
+        <tr>
+          <td class="player-name">TreVeyon Henderson</td>
+          <td class="meta">RB</td>
+          <td class="meta">NE</td>
+          <td class="num"><span class="pill tier-premium">1</span></td>
+          <td class="num cost">$200</td>
+          <td class="chain">originally drafted round 2 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Derrick Henry</td>
+          <td class="meta">RB</td>
+          <td class="meta">Bal</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">off-season trade in 2025 (drafted round 4 in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Omarion Hampton</td>
+          <td class="meta">RB</td>
+          <td class="meta">LAC</td>
+          <td class="num"><span class="pill tier-premium">2</span></td>
+          <td class="num cost">$100</td>
+          <td class="chain">mid-season trade in 2025 (drafted round 2 in 2025)</td>
+        </tr>
+        <tr>
+          <td class="player-name">Drake London</td>
+          <td class="meta">WR</td>
+          <td class="meta">Atl</td>
+          <td class="num"><span class="pill tier-mid">3</span></td>
+          <td class="num cost">$80</td>
+          <td class="chain">off-season trade in 2024 (drafted round 5 in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Travis Hunter</td>
+          <td class="meta">WR</td>
+          <td class="meta">Jax</td>
+          <td class="num"><span class="pill tier-mid">4</span></td>
+          <td class="num cost">$60</td>
+          <td class="chain">originally drafted round 5 in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">George Kittle</td>
+          <td class="meta">TE</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">off-season trade in 2025 (drafted round 7 in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Xavier Worthy</td>
+          <td class="meta">WR</td>
+          <td class="meta">KC</td>
+          <td class="num"><span class="pill tier-mid">5</span></td>
+          <td class="num cost">$50</td>
+          <td class="chain">off-season trade in 2025 (drafted round 6 in 2024) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jordan Addison</td>
+          <td class="meta">WR</td>
+          <td class="meta">Min</td>
+          <td class="num"><span class="pill tier-value">7</span></td>
+          <td class="num cost">$30</td>
+          <td class="chain">off-season trade in 2025 (trade in 2024 (drafted round 8 in 2023)) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Puka Nacua</td>
+          <td class="meta">WR</td>
+          <td class="meta">LAR</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">off-season trade in 2024 (waiver in 2023) [OVERRIDE]</td>
+        </tr>
+        <tr>
+          <td class="player-name">Zach Charbonnet</td>
+          <td class="meta">RB</td>
+          <td class="meta">Sea</td>
+          <td class="num"><span class="pill tier-cheap">14</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2024</td>
+        </tr>
+        <tr>
+          <td class="player-name">Jake Bates</td>
+          <td class="meta">K</td>
+          <td class="meta">Det</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Kyle Monangai</td>
+          <td class="meta">RB</td>
+          <td class="meta">Chi</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Mac Jones</td>
+          <td class="meta">QB</td>
+          <td class="meta">SF</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Michael Mayer</td>
+          <td class="meta">TE</td>
+          <td class="meta">LV</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Quinn Ewers</td>
+          <td class="meta">QB</td>
+          <td class="meta">Mia</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from freeagents in 2025</td>
+        </tr>
+        <tr>
+          <td class="player-name">Titans</td>
+          <td class="meta">DEF</td>
+          <td class="meta">Ten</td>
+          <td class="num"><span class="pill tier-cheap">15</span></td>
+          <td class="num cost">$10</td>
+          <td class="chain">waiver from waivers in 2025</td>
+        </tr></tbody>
+        <tr class="total">
+          <td colspan="4">Total committed</td>
+          <td class="num cost">$1,350</td>
+          <td></td>
+        </tr>
+      </table>
+    </section>
+</main>
+</div>
+<script>
+(function() {
+  const links = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('.team-section');
+
+  function show(targetId) {
+    sections.forEach(s => s.hidden = (s.id !== targetId));
+    links.forEach(l => l.classList.toggle('active', l.dataset.target === targetId));
+    window.scrollTo({top: 0, behavior: 'instant'});
+  }
+
+  // Sidebar nav
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      show(link.dataset.target);
+    });
+  });
+
+  // Inline team links in summary table
+  document.querySelectorAll('a[data-target]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      show(a.dataset.target);
+    });
+  });
+
+  // Default: summary
+  show('summary');
+})();
+</script>
+</body>
+</html>
