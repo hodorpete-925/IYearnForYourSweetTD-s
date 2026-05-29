@@ -1,10 +1,11 @@
 """
 match_adp_players.py - link rows in the `adp` table to player_ids in the
-`players` table via three-pass matching:
+`players` table via three-pass matching, with extra DST handling:
 
   1. Manual override - check adp_name_mapping(raw_name -> player_id)
   2. Exact match    - player_name in players table
-  3. Fuzzy match    - normalized name (lowercase, strip suffixes & punctuation),
+  3. DST shortcut   - for position starts with 'DST', strip city, match nickname
+  4. Fuzzy match    - normalized name (lowercase, strip suffixes & punctuation),
                        verified against position and NFL team to avoid false
                        collisions
 
@@ -29,29 +30,18 @@ from pathlib import Path
 DB_PATH = Path(__file__).parent / "fantasy.db"
 UNMATCHED_CSV = Path(__file__).parent / "adp_unmatched.csv"
 
-# Yahoo and FantasyPros sometimes use different NFL team abbreviations.
-# Map FantasyPros -> Yahoo style. Add to this list when you find mismatches.
 TEAM_ALIAS = {
-    "JAC": "Jax",
-    "JAX": "Jax",
-    "WAS": "Was",
-    "WSH": "Was",
-    "LAR": "LAR",
-    "LV":  "LV",
-    "NO":  "NO",
-    "SF":  "SF",
-    "TB":  "TB",
-    "GB":  "GB",
-    "NE":  "NE",
-    "KC":  "KC",
-    "NYG": "NYG",
-    "NYJ": "NYJ",
-    "LAC": "LAC",
+    "JAC": "Jax", "JAX": "Jax",
+    "WAS": "Was", "WSH": "Was",
+    "LAR": "LAR", "LV": "LV",
+    "NO": "NO", "SF": "SF", "TB": "TB", "GB": "GB",
+    "NE": "NE", "KC": "KC",
+    "NYG": "NYG", "NYJ": "NYJ", "LAC": "LAC",
 }
 
 
 def normalize(name):
-    """Lowercase, strip suffix (Jr/Sr/II/III/IV/V), strip punctuation, collapse whitespace."""
+    """Lowercase, strip suffix (Jr/Sr/II/III/IV/V), strip punctuation."""
     if not name:
         return ""
     s = str(name).lower().strip()
@@ -69,7 +59,7 @@ def normalize_team(team):
 
 
 def normalize_position(pos):
-    """Strip position rank suffix - 'WR1' -> 'WR', 'RB14' -> 'RB'."""
+    """Strip position-rank suffix - 'WR1' -> 'WR'."""
     if not pos:
         return ""
     m = re.match(r"^([A-Za-z]+)", str(pos))
@@ -77,17 +67,25 @@ def normalize_position(pos):
 
 
 def build_player_index(conn):
-    """Build dicts for fast matching."""
-    exact = {}           # player_name (raw) -> player_id
-    by_norm_name = {}    # normalized_name -> [(player_id, position, nfl_team), ...]
+    exact = {}
+    by_norm_name = {}
     for row in conn.execute(
         "SELECT player_id, player_name, position, nfl_team FROM players"
     ):
         pid, name, pos, team = row
         exact[name] = pid
         nn = normalize(name)
-        by_norm_name.setdefault(nn, []).append((pid, normalize_position(pos), normalize_team(team)))
+        by_norm_name.setdefault(nn, []).append(
+            (pid, normalize_position(pos), normalize_team(team))
+        )
     return exact, by_norm_name
+
+
+def strip_def_city(name):
+    """'San Francisco 49ers' -> '49ers', 'Buffalo Bills' -> 'Bills'.
+    Yahoo uses the bare nickname for defenses; FantasyPros uses city+nickname."""
+    parts = name.strip().split()
+    return parts[-1] if parts else name
 
 
 def find_match(raw_name, raw_pos, raw_team, exact_idx, fuzzy_idx, overrides):
@@ -97,6 +95,20 @@ def find_match(raw_name, raw_pos, raw_team, exact_idx, fuzzy_idx, overrides):
     if raw_name in exact_idx:
         return exact_idx[raw_name], "exact"
 
+    # Defense-specific path: try nickname-only match
+    if raw_pos and raw_pos.upper().startswith("DST"):
+        nickname = strip_def_city(raw_name)
+        if nickname in exact_idx:
+            return exact_idx[nickname], "exact_def"
+        nn_def = normalize(nickname)
+        def_candidates = fuzzy_idx.get(nn_def, [])
+        if len(def_candidates) == 1:
+            return def_candidates[0][0], "fuzzy_def"
+        def_only = [c for c in def_candidates if c[1].upper() == "DEF"]
+        if len(def_only) == 1:
+            return def_only[0][0], "fuzzy_def_pos"
+
+    # Fuzzy normalize path
     nn = normalize(raw_name)
     candidates = fuzzy_idx.get(nn, [])
     if not candidates:
@@ -104,7 +116,6 @@ def find_match(raw_name, raw_pos, raw_team, exact_idx, fuzzy_idx, overrides):
     if len(candidates) == 1:
         return candidates[0][0], "fuzzy_unique"
 
-    # Multiple candidates - disambiguate by position + team
     np = normalize_position(raw_pos)
     nt = normalize_team(raw_team)
     qualified = [c for c in candidates if c[1] == np and c[2] == nt]
@@ -113,7 +124,6 @@ def find_match(raw_name, raw_pos, raw_team, exact_idx, fuzzy_idx, overrides):
     if len(qualified) > 1:
         return None, "fuzzy_ambiguous"
 
-    # Loosen to just position match
     qualified = [c for c in candidates if c[1] == np]
     if len(qualified) == 1:
         return qualified[0][0], "fuzzy_pos_only"
@@ -159,8 +169,7 @@ def main():
     rows = conn.execute(sql, params).fetchall()
     print(f"Matching {len(rows)} unmatched rows")
 
-    counts = {"override": 0, "exact": 0, "fuzzy_unique": 0,
-              "fuzzy_pos_team": 0, "fuzzy_pos_only": 0}
+    counts = {}
     unmatched = []
 
     for r in rows:
@@ -170,8 +179,10 @@ def main():
         )
         if pid is None:
             unmatched.append({
-                "season": r["season"], "name": r["player_name_raw"],
-                "position": r["position_rank"], "nfl_team": r["nfl_team"],
+                "season": r["season"],
+                "name": r["player_name_raw"],
+                "position": r["position_rank"],
+                "nfl_team": r["nfl_team"],
                 "reason": reason,
             })
             continue
@@ -183,13 +194,16 @@ def main():
     conn.commit()
 
     print("\nMatch results:")
-    for k, v in counts.items():
-        print(f"  {k:18s} {v}")
-    print(f"  unmatched          {len(unmatched)}")
+    for k in sorted(counts.keys()):
+        print(f"  {k:18s} {counts[k]}")
+    print(f"  {'unmatched':18s} {len(unmatched)}")
 
     if unmatched:
         with UNMATCHED_CSV.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=["season", "name", "position", "nfl_team", "reason"])
+            w = csv.DictWriter(
+                f,
+                fieldnames=["season", "name", "position", "nfl_team", "reason"],
+            )
             w.writeheader()
             w.writerows(unmatched)
         print(f"\nWrote {UNMATCHED_CSV} for review.")
