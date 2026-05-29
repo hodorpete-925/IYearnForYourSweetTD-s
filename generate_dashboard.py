@@ -48,6 +48,10 @@ def build_data():
     team_names = {r["manager_id"]: r["team_name"] for r in conn.execute(
         "SELECT manager_id, team_name FROM teams WHERE season = 2025")}
 
+    # 2026 ADP per player_id (where available - some players have no ADP match)
+    adp_2026 = {r["player_id"]: r["adp"] for r in conn.execute(
+        "SELECT player_id, adp FROM adp WHERE season = 2026 AND player_id IS NOT NULL")}
+
     rosters = conn.execute("""
         SELECT fr.player_id, fr.team_season_id, fr.selected_position,
                p.player_name, p.position, p.nfl_team,
@@ -85,6 +89,7 @@ def build_data():
             "nfl_team": row["nfl_team"] or "—",
             "drc": drc_int,
             "drc_dollars": drc_dollars,
+            "adp_2026": adp_2026.get(row["player_id"]),
             "chain": chain,
         })
 
@@ -113,7 +118,48 @@ def drc_tier_class(drc_int):
     return "tier-cheap"         # DRC 10-16: $10
 
 
+def _adp_value_class(drc_int, adp):
+    """Compare DRC (cost in rounds) to ADP (talent expressed in rounds).
+
+    Pete's framework:
+      - DRC is the round you're 'paying' to keep them. DRC 1 = round-1 cost ($200).
+        DRC 15 = round-15 cost ($10). Lower DRC = more expensive.
+      - ADP is the round they'd naturally go in a draft. ADP 1-12 = round 1,
+        13-24 = round 2, etc. Lower ADP = better player.
+      - Compare them on the same 'round' scale.
+
+      'overpriced' -> ADP round is LATER than DRC round (paying premium cost
+                       for a non-premium talent; you'd get them cheaper by
+                       drafting fresh)
+      'steal'      -> ADP round is EARLIER than DRC round (paying minimal cost
+                       for premium talent; you'd never get them at this cost
+                       in a draft)
+      'fair'       -> within ~1.5 rounds either way
+
+    NOTE: This is a 12-team-wide heuristic. Once the 2026 draft order is
+    finalized, we'll refine to compare against each manager's actual pick
+    slot (e.g. for the manager picking 7th, their round-1 pick is overall #7,
+    so a DRC 1 keeper costs them their pick #7 specifically).
+    """
+    if adp is None:
+        return ""
+    adp_round = adp / 12.0          # ADP overall converted to round number
+    delta = adp_round - drc_int     # positive = ADP later than DRC tier
+    if delta > 1.5:
+        return "overpriced"
+    if delta < -1.5:
+        return "steal"
+    return "fair"
+
+
 def render_player_row(p):
+    adp = p.get("adp_2026")
+    adp_display = f"{adp:.1f}" if adp is not None else "—"
+    value_tag = _adp_value_class(p["drc"], adp)
+    value_pill = ""
+    if value_tag:
+        labels = {"steal": "Steal", "fair": "Fair", "overpriced": "Overpriced"}
+        value_pill = f'<span class="pill value-{value_tag}">{labels[value_tag]}</span>'
     return f"""
         <tr>
           <td class="player-name">{html.escape(p['name'])}</td>
@@ -121,6 +167,8 @@ def render_player_row(p):
           <td class="meta">{html.escape(p['nfl_team'])}</td>
           <td class="num"><span class="pill {drc_tier_class(p['drc'])}">{p['drc']}</span></td>
           <td class="num cost">${p['drc_dollars']}</td>
+          <td class="num">{adp_display}</td>
+          <td class="num">{value_pill}</td>
           <td class="chain">{html.escape(p['chain'])}</td>
         </tr>"""
 
@@ -166,6 +214,8 @@ def render_team_section(data, slug):
             <th>NFL</th>
             <th class="num">DRC</th>
             <th class="num">Cost</th>
+            <th class="num">2026 ADP</th>
+            <th class="num">Value</th>
             <th>Acquisition chain</th>
           </tr>
         </thead>
@@ -173,7 +223,7 @@ def render_team_section(data, slug):
         <tr class="total">
           <td colspan="4">Total committed</td>
           <td class="num cost">${total:,}</td>
-          <td></td>
+          <td colspan="3"></td>
         </tr>
       </table>
     </section>"""
@@ -471,6 +521,10 @@ table.roster tr.total td {
 .pill.tier-value   { background: #fff8e1; color: #8a6a1a; }
 .pill.tier-cheap   { background: var(--gray-100); color: var(--gray-600); }
 
+.pill.value-steal      { background: #eef7ee; color: #1d6b3a; }
+.pill.value-fair       { background: var(--gray-100); color: var(--gray-600); }
+.pill.value-overpriced { background: #fff0e6; color: #b04a00; }
+
 /* --- Footnote ---------------------------------------------------------- */
 .footnote {
   margin-top: 48px;
@@ -524,11 +578,18 @@ def build_sidebar(by_manager):
         f'</a>'
         for t in teams
     )
+    items = ''.join(
+        f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
+        f'{html.escape(t["team_name"])}'
+        f'<span class="manager">{html.escape(t["manager"])}</span>'
+        f'</a>'
+        for t in teams
+    )
     return f"""
     <aside class="sidebar">
       <div class="brand">League 4416</div>
       <div class="brand-title">{html.escape(LEAGUE_NAME)}</div>
-      <div class="brand-sub">Keeper ledger · {TARGET_SEASON}</div>
+      <div class="brand-sub">Keeper ledger - {TARGET_SEASON}</div>
 
       <h3>League view</h3>
       <a class="nav-link" data-target="summary">Summary &amp; standings</a>
@@ -545,12 +606,11 @@ def render_html(by_manager, generated_at):
         render_team_section(data, slugify(data["manager_actual"]))
         for name, data in sorted(by_manager.items())
     )
-
     return f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>{html.escape(LEAGUE_NAME)} · Keeper ledger · {TARGET_SEASON}</title>
+<title>{html.escape(LEAGUE_NAME)} - Keeper ledger - {TARGET_SEASON}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -570,8 +630,6 @@ def render_html(by_manager, generated_at):
 </html>"""
 
 
-# ---------- Entry point ------------------------------------------------------
-
 def main():
     by_manager, failures = build_data()
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -582,7 +640,7 @@ def main():
     total_players = sum(len(d["players"]) for d in by_manager.values())
     print(f"  {len(by_manager)} managers, {total_players} players, {len(failures)} failures")
     for mgr, name in failures:
-        print(f"  FAILED: {mgr} — {name}")
+        print(f"  FAILED: {mgr} - {name}")
 
 
 if __name__ == "__main__":
