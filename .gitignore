@@ -1,4 +1,4 @@
-﻿# Virtual environment
+# Virtual environment
 venv/
 
 # Secrets and credentials
@@ -15,4 +15,25 @@ Thumbs.db
 
 # SQLite database files (regenerable from API)
 *.db
-*.
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Excel workbooks - Pete's manual tracking, kept in OneDrive/source-of-truth
+*.xlsx
+~$*.xlsx
+
+# Analysis intermediates - regenerable, not source
+diff_*.csv
+drc_validation*.csv
+trades_db_export.csv
+teams_export.csv
+db_only_review.txt
+
+# Setup scratch
+new_pc_setup_checklist.md
+scan_my_pc.ps1
+setup_summary.md
+system_report.txt
+test_write.txt
+_write_test.txt
