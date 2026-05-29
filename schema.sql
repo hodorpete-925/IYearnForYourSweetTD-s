@@ -219,3 +219,25 @@ CREATE TABLE IF NOT EXISTS adp_name_mapping (
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 );
 
+
+-- =========================================================================
+-- WEEKLY STATS — Yahoo player fantasy points per week, league scoring
+-- =========================================================================
+-- One row per (season, week, player_id). team_season_id captures who owned
+-- the player that week (nullable when the player was a free agent/on waivers).
+-- fantasy_points is what Yahoo computed using the league's scoring rules
+-- (PPR/half/etc.) - we consume it directly rather than recomputing.
+
+CREATE TABLE IF NOT EXISTS player_weekly_stats (
+    season              INTEGER NOT NULL,
+    week                INTEGER NOT NULL,
+    player_id           INTEGER NOT NULL,
+    team_season_id      INTEGER,
+    fantasy_points      REAL,
+    fetched_at          DATETIME NOT NULL,
+    PRIMARY KEY (season, week, player_id),
+    FOREIGN KEY (player_id)      REFERENCES players(player_id),
+    FOREIGN KEY (team_season_id) REFERENCES teams(team_season_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pws_player_season ON player_weekly_stats(player_id, season);
