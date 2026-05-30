@@ -18,6 +18,7 @@ Run:  python reconcile_excel_vs_db.py
 """
 
 import csv
+import difflib
 import re
 import sqlite3
 import sys
@@ -37,6 +38,8 @@ OUT_PICKS_FAAB = Path(__file__).parent / "diff_picks_and_faab.csv"
 OUT_NARRATIVE = Path(__file__).parent / "db_only_review.txt"
 
 DATE_TOLERANCE_DAYS = 2
+OFF_SEASON_TOLERANCE_DAYS = 35  # Excel logs trade-agreement date, DB logs execution
+NAME_FUZZ_THRESHOLD = 0.75       # difflib ratio cutoff for spelling variants
 
 
 # ---------- helpers ----------
@@ -68,11 +71,18 @@ def parse_excel_date(v):
 
 
 def is_pick_row(player_str):
-    """True if the 'player' value is actually a draft round / FAAB amount."""
+    """True if the 'player' value is actually a draft round / FAAB amount.
+    Catches 'Round 4', '3rd Round (Malco)', '4th Round', etc."""
     if not player_str:
         return False
     s = str(player_str).strip().lower()
-    return bool(re.match(r"^round\s+\d+", s)) or "faab" in s
+    if re.match(r"^round\s+\d+", s):
+        return True
+    if re.match(r"^\d+(st|nd|rd|th)?\s+round", s):
+        return True
+    if "faab" in s:
+        return True
+    return False
 
 
 # ---------- Excel side ----------
@@ -94,13 +104,14 @@ def read_excel_trades():
         row = {headers[j]: raw[j] for j in range(min(len(headers), len(raw)))}
         # Standardize to a small set of fields we care about. Excel column
         # names vary; try several common forms.
-        date = (row.get("trade_date") or row.get("Trade Date") or
-                row.get("Date") or row.get("date"))
-        player = (row.get("player") or row.get("Player") or
-                  row.get("Player Name") or row.get("Players"))
-        new_owner = (row.get("new_owner") or row.get("New Owner") or
-                     row.get("To Manager") or row.get("Receiver"))
-        trade_type = (row.get("trade_type") or row.get("Trade Type") or
+        date = (row.get("Date & Time") or row.get("trade_date") or
+                row.get("Trade Date") or row.get("Date") or row.get("date"))
+        player = (row.get("Player Name") or row.get("player") or
+                  row.get("Player") or row.get("Players"))
+        new_owner = (row.get("Manager Name (N)") or row.get("new_owner") or
+                     row.get("New Owner") or row.get("To Manager") or
+                     row.get("Receiver"))
+        trade_type = (row.get("Trade Type") or row.get("trade_type") or
                       row.get("Type") or "")
         d = parse_excel_date(date)
         if d is None:
@@ -217,52 +228,74 @@ def read_db_picks(conn):
 
 
 # ---------- matching ----------
+def _tolerance_for(er):
+    """Off-season trades get a much wider date window because the Excel
+    logs the agreement date while the DB logs the execution date."""
+    if "off-season" in (er.get("trade_type") or "").lower():
+        return OFF_SEASON_TOLERANCE_DAYS
+    return DATE_TOLERANCE_DAYS
+
+
+def _fuzzy_name_match(excel_name, db_name):
+    """Normalized exact match OR fuzzy ratio above threshold."""
+    a = normalize_name(excel_name)
+    b = normalize_name(db_name)
+    if a == b:
+        return True
+    if not a or not b:
+        return False
+    ratio = difflib.SequenceMatcher(None, a, b).ratio()
+    return ratio >= NAME_FUZZ_THRESHOLD
+
+
 def match_excel_to_db(excel_rows, db_rows, db_picks):
-    """Tolerant match: ±DATE_TOLERANCE_DAYS, normalized name, same new_owner."""
-    # Index DB rows by normalized player + new_owner
-    db_index = defaultdict(list)
-    for r in db_rows:
-        key = (normalize_name(r["player"]), r["new_owner"])
-        db_index[key].append(r)
-    # Index pick rows by round + new_owner
+    """Tolerant match: per-row date tolerance, fuzzy name, same new_owner."""
+    # Index DB picks by round + new_owner (exact match on these)
     pick_index = defaultdict(list)
     for r in db_picks:
-        # Excel format: "Round 4"
-        key = (r["round"], r["new_owner"])
-        pick_index[key].append(r)
+        pick_index[(r["round"], r["new_owner"])].append(r)
+    # Group DB player rows by new_owner only — we'll do fuzzy name within group
+    db_by_owner = defaultdict(list)
+    for r in db_rows:
+        db_by_owner[r["new_owner"]].append(r)
 
     for er in excel_rows:
+        tol = _tolerance_for(er)
         if er["is_pick"]:
-            # Parse the round number out of "Round X"
-            m = re.match(r"round\s+(\d+)", er["player"].lower())
+            pl = er["player"].lower()
+            m = re.match(r"round\s+(\d+)", pl) or re.match(r"^(\d+)(st|nd|rd|th)?\s+round", pl)
             if not m:
                 continue
             rnd = int(m.group(1))
-            key = (rnd, er["new_owner"])
-            for cand in pick_index[key]:
+            for cand in pick_index[(rnd, er["new_owner"])]:
                 if cand["matched"]:
                     continue
-                if abs((cand["date"] - er["date"]).days) <= DATE_TOLERANCE_DAYS:
+                if abs((cand["date"] - er["date"]).days) <= tol:
                     er["matched"] = True
                     cand["matched"] = True
                     break
         else:
-            key = (normalize_name(er["player"]), er["new_owner"])
-            for cand in db_index[key]:
+            for cand in db_by_owner.get(er["new_owner"], []):
                 if cand["matched"]:
                     continue
-                if abs((cand["date"] - er["date"]).days) <= DATE_TOLERANCE_DAYS:
+                if abs((cand["date"] - er["date"]).days) > tol:
+                    continue
+                if _fuzzy_name_match(er["player"], cand["player"]):
                     er["matched"] = True
                     cand["matched"] = True
                     break
 
 
 # ---------- output ----------
-def write_diffs(excel_rows, db_rows, db_picks):
+def write_diffs(excel_rows, db_rows, db_picks, excel_max_date):
     excel_only = [r for r in excel_rows if not r["matched"] and not r["is_pick"]]
-    db_only = [r for r in db_rows if not r["matched"]]
+    db_only_all = [r for r in db_rows if not r["matched"]]
+    db_only = [r for r in db_only_all if r["date"] <= excel_max_date]
+    db_out_of_scope = [r for r in db_only_all if r["date"] > excel_max_date]
     pick_diffs = [r for r in excel_rows if not r["matched"] and r["is_pick"]]
-    unmatched_db_picks = [r for r in db_picks if not r["matched"]]
+    unmatched_db_picks_all = [r for r in db_picks if not r["matched"]]
+    unmatched_db_picks = [r for r in unmatched_db_picks_all if r["date"] <= excel_max_date]
+    db_pick_out_of_scope = [r for r in unmatched_db_picks_all if r["date"] > excel_max_date]
 
     with open(OUT_EXCEL_ONLY, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -304,7 +337,7 @@ def write_diffs(excel_rows, db_rows, db_picks):
                 f.write(f"  {r['player']:<30} {r['old_owner']:<20} -> {r['new_owner']}\n")
             f.write("\n")
 
-    return excel_only, db_only, pick_diffs, unmatched_db_picks
+    return excel_only, db_only, pick_diffs, unmatched_db_picks, db_out_of_scope, db_pick_out_of_scope
 
 
 # ---------- main ----------
@@ -319,7 +352,13 @@ def main():
     db_rows = read_db_trades(conn)
     db_picks = read_db_picks(conn)
     match_excel_to_db(excel_rows, db_rows, db_picks)
-    excel_only, db_only, pick_diffs, db_pick_only = write_diffs(excel_rows, db_rows, db_picks)
+    excel_max_date = max((r["date"] for r in excel_rows), default=None)
+    if excel_max_date is None:
+        print("ERROR: no Excel rows; nothing to compare against.")
+        sys.exit(1)
+    print(f"Excel max date: {excel_max_date} (DB events after this counted as out-of-scope)")
+    excel_only, db_only, pick_diffs, db_pick_only, db_oos, db_pick_oos = write_diffs(
+        excel_rows, db_rows, db_picks, excel_max_date)
 
     print()
     print("=" * 60)
@@ -334,7 +373,12 @@ def main():
     print(f"  unmatched (db_only):            {len(db_only):>5}")
     print(f"DB pick trades:                   {len(db_picks):>5}")
     print(f"  matched to Excel:               {sum(1 for r in db_picks if r['matched']):>5}")
-    print(f"  unmatched (db_pick_only):       {len(db_pick_only):>5}")
+    print(f"  unmatched in scope:             {len(db_pick_only):>5}")
+    print(f"  out of scope (post-{excel_max_date}): {len(db_pick_oos):>5}")
+    print()
+    print(f"DB-only player movements:         {len(db_only) + len(db_oos):>5}")
+    print(f"  in scope (need reconciliation): {len(db_only):>5}")
+    print(f"  out of scope (post-{excel_max_date}): {len(db_oos):>5}")
     print()
     print("Files written:")
     print(f"  {OUT_EXCEL_ONLY.name}")
