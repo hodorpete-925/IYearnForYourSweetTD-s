@@ -2562,10 +2562,16 @@ tr.history-row > td.history-cell {
   .ps-input-wrap { max-width: 100%; padding-right: 2px; }
   .ps-input:focus { box-shadow: 0 0 0 2px rgba(0, 56, 255, 0.12); }
 
-  /* Roster/summary table: shrink padding + font so all columns fit. */
+  /* Roster/summary table: shrink padding + font and hide the two least-
+     critical columns (Players, Premium) so the most important data —
+     rank, team, manager, total cap — fits the viewport without clipping. */
   table.roster { font-size: 12px; }
   table.roster th, table.roster td { padding: 7px 6px; }
   table.roster th { font-size: 9.5px; letter-spacing: 0.08em; }
+  table.roster th:nth-child(4),
+  table.roster td:nth-child(4),
+  table.roster th:nth-child(5),
+  table.roster td:nth-child(5) { display: none; }
 
   /* KPI cards: stack 2-up, keep consistent visual height. */
   .kpis { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
