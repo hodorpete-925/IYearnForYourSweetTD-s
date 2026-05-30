@@ -2414,6 +2414,33 @@ tr.history-row > td.history-cell {
   font-weight: 500;
 }
 
+
+/* ---- Collapsible Teams in sidebar ---- */
+.sidebar details.sidebar-teams { margin-top: 4px; }
+.sidebar details.sidebar-teams > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 16px 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.sidebar details.sidebar-teams > summary::-webkit-details-marker { display: none; }
+.sidebar details.sidebar-teams > summary::after {
+  content: "+";
+  margin-left: 8px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 0.18s ease;
+}
+.sidebar details.sidebar-teams[open] > summary::after { content: "\2212"; }
+.sidebar-team-list { display: flex; flex-direction: column; }
+
 /* ====================================================================== */
 /* Mobile responsive layer (<= 720px) */
 /* ====================================================================== */
@@ -2525,6 +2552,14 @@ tr.history-row > td.history-cell {
   .ps-nb-table { font-size: 10.5px; }
   .ps-nb-rank { width: 32px; }
   .ps-nb-pts { width: 36px; }
+  /* Team section: keep content within viewport, scroll tables horizontally */
+  .team-section { max-width: 100%; overflow-x: hidden; }
+  .tab-panel { max-width: 100%; overflow-x: hidden; }
+  .player-table, .draft-table, .trade-table { width: 100%; }
+  .tab-panel table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Section header & body keep prose within bounds */
+  body { overflow-x: hidden; }
+  .content { overflow-x: hidden; }
 }
 
 @media (max-width: 480px) {
@@ -3437,8 +3472,10 @@ def build_sidebar(by_manager):
       <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
       <a class="nav-link" data-target="league-rules">League rules</a>
 
-      <h3>Teams</h3>
-      {items}
+      <details class="sidebar-teams">
+        <summary>Teams</summary>
+        <div class="sidebar-team-list">{items}</div>
+      </details>
     </aside>"""
 
 
