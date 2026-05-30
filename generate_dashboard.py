@@ -2386,6 +2386,34 @@ tr.history-row > td.history-cell {
   font-style: italic;
 }
 
+
+/* Player search: autocomplete suggestions dropdown */
+.ps-suggestions {
+  max-width: 560px;
+  margin-bottom: 18px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.ps-suggestion {
+  display: block;
+  padding: 9px 14px;
+  text-decoration: none;
+  color: var(--gray-800);
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+}
+.ps-suggestion:last-child { border-bottom: none; }
+.ps-suggestion:hover {
+  background: var(--gray-50);
+  color: var(--blue-800);
+  font-weight: 500;
+}
+
 /* ====================================================================== */
 /* Mobile responsive layer (<= 720px) */
 /* ====================================================================== */
@@ -2402,7 +2430,7 @@ tr.history-row > td.history-cell {
     display: flex;
     position: fixed;
     top: 0;
-    right: 0;
+    left: 0;
     width: 30px;
     height: 100vh;
     background: var(--blue-800);
@@ -2430,16 +2458,16 @@ tr.history-row > td.history-cell {
   .sidebar {
     position: fixed;
     top: 0;
-    right: 0;
+    left: 0;
     bottom: 0;
-    left: auto;
+    right: auto;
     width: min(280px, 82vw);
     z-index: 100;
-    transform: translateX(100%);
+    transform: translateX(-100%);
     transition: transform 0.22s ease;
     overflow-y: auto;
     overflow-x: hidden;
-    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
   body.sidebar-open .sidebar { transform: translateX(0); }
   .sidebar-backdrop {
@@ -2451,7 +2479,7 @@ tr.history-row > td.history-cell {
   }
   body.sidebar-open .sidebar-backdrop { display: block; }
   .content {
-    padding: 14px 42px 14px 14px;
+    padding: 14px 14px 14px 42px;
     margin-left: 0 !important;
   }
   .section-header { padding: 14px 0 18px 0; }
@@ -2501,7 +2529,7 @@ tr.history-row > td.history-cell {
 
 @media (max-width: 480px) {
   body { font-size: 13px; }
-  .content { padding: 10px 42px 10px 10px; }
+  .content { padding: 10px 10px 10px 42px; }
   .kpi-strip { grid-template-columns: 1fr 1fr; }
   .section-title { font-size: 20px; }
 }
@@ -2607,22 +2635,66 @@ JS = r"""
     const cards = document.querySelectorAll('#ps-results .player-card');
     const emptyState = document.getElementById('ps-empty');
     const noResults = document.getElementById('ps-no-results');
+    const suggestions = document.getElementById('ps-suggestions');
+    function hideAllCards() { cards.forEach(c => c.hidden = true); }
+    function selectPlayerByCard(card) {
+      hideAllCards();
+      card.hidden = false;
+      suggestions.hidden = true;
+      psInput.value = card.dataset.displayName || '';
+      if (emptyState) emptyState.hidden = true;
+      if (noResults) noResults.hidden = true;
+      card.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
     psInput.addEventListener('input', () => {
       const q = psInput.value.trim().toLowerCase();
+      hideAllCards();
       if (q.length < 2) {
-        cards.forEach(c => c.hidden = true);
+        suggestions.hidden = true;
+        suggestions.innerHTML = '';
         if (emptyState) emptyState.hidden = false;
         if (noResults) noResults.hidden = true;
         return;
       }
       if (emptyState) emptyState.hidden = true;
-      let visible = 0;
-      cards.forEach(c => {
-        const match = c.dataset.name.includes(q);
-        c.hidden = !match;
-        if (match) visible++;
-      });
-      if (noResults) noResults.hidden = visible > 0;
+      // Build matches list (cap at 25 to keep dropdown manageable)
+      const matches = [];
+      for (const c of cards) {
+        if (c.dataset.name.includes(q)) {
+          matches.push(c);
+          if (matches.length >= 25) break;
+        }
+      }
+      suggestions.innerHTML = '';
+      if (matches.length === 0) {
+        suggestions.hidden = true;
+        if (noResults) noResults.hidden = false;
+        return;
+      }
+      if (noResults) noResults.hidden = true;
+      for (const card of matches) {
+        const item = document.createElement('a');
+        item.className = 'ps-suggestion';
+        item.href = '#';
+        item.textContent = card.dataset.displayName || card.dataset.name;
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectPlayerByCard(card);
+        });
+        suggestions.appendChild(item);
+      }
+      suggestions.hidden = false;
+    });
+    // Enter key picks the top suggestion
+    psInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = suggestions.querySelector('.ps-suggestion');
+        if (first) first.click();
+      } else if (e.key === 'Escape') {
+        suggestions.hidden = true;
+        psInput.blur();
+      }
     });
     // Reset state if the user navigates to the page
     const psLink = document.querySelector('.nav-link[data-target="player-search"]');
@@ -3296,7 +3368,7 @@ def render_player_search_section(search_players):
 
         norm = p["name"].lower()
         cards.append(f"""
-        <div class="player-card" data-name="{html.escape(norm)}" hidden>
+        <div class="player-card" data-name="{html.escape(norm)}" data-display-name="{html.escape(p['name'])}" hidden>
           <div class="player-card-header">
             <div class="player-card-title">
               <span class="player-card-name">{html.escape(p['name'])}</span>
@@ -3337,6 +3409,7 @@ def render_player_search_section(search_players):
                placeholder="Search any player..." autocomplete="off" spellcheck="false">
         <div class="ps-input-meta">Showing players who have appeared on any roster, draft, or transaction.</div>
       </div>
+      <div id="ps-suggestions" class="ps-suggestions" hidden></div>
       <div id="ps-empty" class="ps-empty-state">Type at least 2 characters to search.</div>
       <div id="ps-no-results" class="ps-empty-state" hidden>No players match that search.</div>
       <div id="ps-results" class="ps-results">{cards_html}</div>
