@@ -1050,6 +1050,10 @@ h2 {
   border: 1px solid var(--gray-200);
   border-radius: 8px;
   background: var(--gray-50);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100px;
 }
 .kpi .k {
   font-size: 10.5px;
@@ -2557,6 +2561,17 @@ tr.history-row > td.history-cell {
      content padding (was getting cut off slightly on the right edge). */
   .ps-input-wrap { max-width: 100%; padding-right: 2px; }
   .ps-input:focus { box-shadow: 0 0 0 2px rgba(0, 56, 255, 0.12); }
+
+  /* Roster/summary table: shrink padding + font so all columns fit. */
+  table.roster { font-size: 12px; }
+  table.roster th, table.roster td { padding: 7px 6px; }
+  table.roster th { font-size: 9.5px; letter-spacing: 0.08em; }
+
+  /* KPI cards: stack 2-up, keep consistent visual height. */
+  .kpis { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+  .kpi { padding: 14px; min-height: 86px; }
+  .kpi .k { font-size: 9.5px; }
+  .kpi .v { font-size: 22px; margin-top: 8px; }
   /* Keep wide tables independently scrollable instead of overflowing the page.
      This lets the page itself stay at viewport width and preserves pinch-to-zoom. */
   .team-section, .tab-panel, section.team-section { max-width: 100%; }
