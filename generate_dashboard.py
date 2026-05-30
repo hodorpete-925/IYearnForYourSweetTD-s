@@ -2516,6 +2516,23 @@ JS = r"""
       });
     }
   }
+
+  // Mobile sidebar toggle
+  const menuToggle = document.querySelector('.menu-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = document.querySelector('.sidebar-backdrop');
+  function closeSidebar() {
+    document.body.classList.remove('sidebar-open');
+  }
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener('click', () => {
+      document.body.classList.toggle('sidebar-open');
+    });
+    if (backdrop) backdrop.addEventListener('click', closeSidebar);
+    sidebar.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', closeSidebar);
+    });
+  }
 })();
 """
 
