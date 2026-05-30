@@ -2385,6 +2385,126 @@ tr.history-row > td.history-cell {
   color: var(--gray-500);
   font-style: italic;
 }
+
+/* ====================================================================== */
+/* Mobile responsive layer (<= 720px) */
+/* ====================================================================== */
+.menu-toggle, .sidebar-tab { display: none; }
+.sidebar-backdrop { display: none; }
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+    display: block;
+  }
+  /* Always-visible right-edge tab that re-opens the menu. */
+  .sidebar-tab {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 100vh;
+    background: var(--blue-800);
+    color: #fff;
+    z-index: 95;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .sidebar-tab span {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    transform: rotate(180deg);
+  }
+  /* Old top hamburger hidden — replaced by the right tab. */
+  .menu-toggle { display: none; }
+  /* Sidebar slides in from the RIGHT, not the left. */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: min(280px, 82vw);
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.22s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.2);
+  }
+  body.sidebar-open .sidebar { transform: translateX(0); }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 90;
+  }
+  body.sidebar-open .sidebar-backdrop { display: block; }
+  .content {
+    padding: 14px 42px 14px 14px;
+    margin-left: 0 !important;
+  }
+  .section-header { padding: 14px 0 18px 0; }
+  .section-title { font-size: 22px; line-height: 1.15; }
+  .section-sub { font-size: 13px; }
+  .ps-two-col { grid-template-columns: 1fr; }
+  .ps-charts-row { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .psum-row-cards { grid-template-columns: 1fr; }
+  .desk-layout { grid-template-columns: 1fr; }
+  .desk-rail {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--gray-200);
+    gap: 6px;
+  }
+  .desk-post-link {
+    flex: 0 0 auto;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 8px 12px;
+  }
+  .desk-post-link.desk-active {
+    border-left: none;
+    border-bottom-color: var(--blue-600);
+  }
+  .desk-content { max-width: 100%; }
+  .desk-post-title { font-size: 20px; }
+  .trade-table, .draft-table, .player-table { font-size: 11.5px; }
+  .rules-grid { max-width: 100%; }
+  .rule-block { padding: 16px 18px; }
+  .rule-h2 { font-size: 16px; }
+  .ps-side-tiles { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .ps-side-tile { padding: 8px 6px; }
+  .ps-side-val { font-size: 14px; }
+  .ps-hero-big { font-size: 22px; }
+  .lineage-flow { flex-direction: column; }
+  .lineage-arrow { transform: rotate(90deg); padding: 4px 0; }
+  .lineage-node { flex: 1 1 auto; min-width: 0; }
+  .ps-nb-table { font-size: 10.5px; }
+  .ps-nb-rank { width: 32px; }
+  .ps-nb-pts { width: 36px; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 13px; }
+  .content { padding: 10px 42px 10px 10px; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .section-title { font-size: 20px; }
+}
 """
 
 JS = r"""
@@ -2519,6 +2639,12 @@ JS = r"""
 
   // Mobile sidebar toggle
   const menuToggle = document.querySelector('.menu-toggle');
+  const sidebarTab = document.querySelector('.sidebar-tab');
+  if (sidebarTab) {
+    sidebarTab.addEventListener('click', () => {
+      document.body.classList.toggle('sidebar-open');
+    });
+  }
   const sidebar = document.querySelector('.sidebar');
   const backdrop = document.querySelector('.sidebar-backdrop');
   function closeSidebar() {
@@ -3266,6 +3392,9 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 </head>
 <body>
 <div class="layout">
+<button class="menu-toggle" aria-label="Open menu" type="button"><span class="menu-icon"><span></span></span> Menu</button>
+<button class="sidebar-tab" aria-label="Open menu" type="button"><span>Menu</span></button>
+<div class="sidebar-backdrop"></div>
 {sidebar}
 <main class="content">
 {summary}
