@@ -1600,6 +1600,7 @@ tr.history-row > td.history-cell {
 }
 .ps-input {
   width: 100%;
+  box-sizing: border-box;
   padding: 12px 16px;
   font-family: inherit;
   font-size: 15px;
@@ -2552,14 +2553,21 @@ tr.history-row > td.history-cell {
   .ps-nb-table { font-size: 10.5px; }
   .ps-nb-rank { width: 32px; }
   .ps-nb-pts { width: 36px; }
-  /* Team section: keep content within viewport, scroll tables horizontally */
-  .team-section { max-width: 100%; overflow-x: hidden; }
-  .tab-panel { max-width: 100%; overflow-x: hidden; }
-  .player-table, .draft-table, .trade-table { width: 100%; }
-  .tab-panel table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  /* Section header & body keep prose within bounds */
-  body { overflow-x: hidden; }
-  .content { overflow-x: hidden; }
+  /* Player search input: make sure border + focus glow stay inside the
+     content padding (was getting cut off slightly on the right edge). */
+  .ps-input-wrap { max-width: 100%; padding-right: 2px; }
+  .ps-input:focus { box-shadow: 0 0 0 2px rgba(0, 56, 255, 0.12); }
+  /* Keep wide tables independently scrollable instead of overflowing the page.
+     This lets the page itself stay at viewport width and preserves pinch-to-zoom. */
+  .team-section, .tab-panel, section.team-section { max-width: 100%; }
+  /* Make every main-content table its own horizontal scroll region. */
+  .content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Don't strip overflow off the body/content — that breaks iOS pinch zoom. */
 }
 
 @media (max-width: 480px) {
