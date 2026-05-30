@@ -95,6 +95,73 @@ def find_earliest_draft(conn, player_id, team_id_set=None):
     return conn.execute(sql, params).fetchone()
 
 
+def get_keeper_status_override(conn, season, player_id, team_season_id):
+    """Returns 1 / 0 if Pete has manually flagged this draft_picks row, else None."""
+    row = conn.execute(
+        "SELECT is_keeper FROM keeper_status_overrides "
+        "WHERE season = ? AND player_id = ? AND team_season_id = ?",
+        (season, player_id, team_season_id),
+    ).fetchone()
+    return row[0] if row else None
+
+
+def find_anchor_draft(conn, player_id, team_id_set, max_season=None):
+    """Find the most recent FRESH draft of this player by this manager.
+
+    Walks draft_picks rows for the player+team set from newest to oldest. At
+    each row, decides "is this a keeper or a fresh anchor?" via:
+      1. keeper_status_overrides table (Pete's manual / Excel-driven truth)
+      2. Inference fallback: was the same manager on last year's draft_picks
+         for this player? If yes → keeper, walk back. If no → fresh anchor.
+
+    Returns (season, draft_round, team_season_id) of the anchor, or None.
+    """
+    if not team_id_set:
+        return None
+    placeholders = ",".join("?" * len(team_id_set))
+    sql = (
+        f"SELECT season, draft_round, team_season_id "
+        f"FROM draft_picks "
+        f"WHERE player_id = ? AND team_season_id IN ({placeholders})"
+    )
+    params = [player_id] + list(team_id_set)
+    if max_season is not None:
+        sql += " AND season <= ?"
+        params.append(max_season)
+    sql += " ORDER BY season DESC"
+    rows = list(conn.execute(sql, params))
+    if not rows:
+        return None
+
+    for season, draft_round, ts_id in rows:
+        override = get_keeper_status_override(conn, season, player_id, ts_id)
+        if override is not None:
+            if override == 0:
+                # Pete says fresh — anchor here
+                return (season, draft_round, ts_id)
+            else:
+                # Pete says kept — walk further back
+                continue
+        # No override: fall back to inference. Was the same manager on this
+        # player's draft_picks last year too?
+        prior = conn.execute(
+            f"SELECT 1 FROM draft_picks "
+            f"WHERE player_id = ? AND season = ? "
+            f"  AND team_season_id IN ({placeholders}) LIMIT 1",
+            [player_id, season - 1] + list(team_id_set),
+        ).fetchone()
+        if prior:
+            # Inferred keeper, walk back
+            continue
+        # No prior year → must be fresh anchor
+        return (season, draft_round, ts_id)
+
+    # If we walked all the way back and every row was a keeper, the earliest
+    # is the original anchor — but that's a logical paradox (a keeper has to
+    # be kept FROM somewhere). Use the earliest row as the anchor anyway.
+    return rows[-1]
+
+
 def get_override(conn, transaction_id):
     """Returns (override_type, source_team_season_id) or None."""
     return conn.execute(
@@ -164,8 +231,8 @@ def compute_drc(conn, player_id, team_season_id, depth=0):
             season_tag = "mid-season" if mid_season else "off-season"
             return drc, label, f"{season_tag} trade in {anchor_year} ({source_note}){override_tag}"
 
-    # Fallback: original draft by this manager
-    draft = find_earliest_draft(conn, player_id, team_id_set=manager_team_ids)
+    # Fallback: most recent FRESH draft by this manager (override-aware)
+    draft = find_anchor_draft(conn, player_id, team_id_set=manager_team_ids)
     if draft:
         season, draft_round, _ = draft
         drc = compute_drc_for_year(draft_round, season, TARGET_SEASON, is_mid_season=False)
@@ -205,7 +272,8 @@ def compute_drc_at_time(conn, player_id, team_season_id, before_timestamp, query
             drc = compute_drc_for_year(source_drc, anchor_year, query_year, is_mid_season=mid_season)
             return drc, "trade", f"trade in {anchor_year} ({source_note})"
 
-    draft = find_earliest_draft(conn, player_id, team_id_set=manager_team_ids)
+    draft = find_anchor_draft(conn, player_id, team_id_set=manager_team_ids,
+                              max_season=query_year)
     if draft:
         season, draft_round, _ = draft
         drc = compute_drc_for_year(draft_round, season, query_year, is_mid_season=False)

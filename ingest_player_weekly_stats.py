@@ -88,12 +88,18 @@ def ingest_team_week(query, conn, season, team_season_id, yahoo_team_id, week, f
     """Fetch one team's roster with weekly stats and upsert into the table.
     Returns the number of player-rows touched."""
     try:
-        roster = query.get_team_roster_player_stats_by_week(yahoo_team_id, week)
+        result = query.get_team_roster_player_stats_by_week(yahoo_team_id, week)
     except Exception as e:
         print(f"    week {week:>2}: FAILED {type(e).__name__}: {e}")
         return 0
 
-    players = getattr(roster, "players", None) or []
+    # yfpy 17: this method returns the player list directly (NOT wrapped in
+    # a roster object with a .players attribute). Other roster methods do
+    # wrap it; this one doesn't.
+    if isinstance(result, list):
+        players = result
+    else:
+        players = getattr(result, "players", None) or []
     rows = 0
     for p_wrapper in players:
         p = p_wrapper.player if hasattr(p_wrapper, "player") else p_wrapper

@@ -24,11 +24,22 @@ import compute_drc as drc
 def get_owner_at_year_end(conn, player_id, year):
     """Return team_season_id that owned this player at end of `year`, or None.
 
-    Looks at all incoming transactions for this player through Dec 31 of
-    `year`. The most recent incoming = current owner at year-end. Falls back
-    to draft_picks if no transaction history yet."""
-    row = conn.execute("""
-        SELECT tp.team_season_id
+    Two signals to consider:
+      1. The most recent incoming transaction for this player <= year-end.
+      2. The most recent draft_picks row for this player <= year.
+
+    Pick whichever is more recent. A draft_picks row in season N is treated
+    as occurring on Sept 1 of that season (a stable approximation of when
+    the keeper-selection roster locks in). This lets us correctly identify
+    silent off-season ownership changes — e.g., Scott traded Adams in Nov 2024
+    but didn't keep him, and Vescuso drafted Adams fresh in 2025. The 2025
+    draft is more recent than the Nov 2024 trade, so end-of-2025 owner =
+    Vescuso, not Scott.
+
+    Falls back gracefully if only one signal exists.
+    """
+    txn_row = conn.execute("""
+        SELECT tp.team_season_id, t.timestamp
         FROM all_transactions t
         JOIN all_transaction_players tp ON tp.transaction_id = t.transaction_id
         WHERE tp.player_id = ?
@@ -37,16 +48,26 @@ def get_owner_at_year_end(conn, player_id, year):
         ORDER BY t.timestamp DESC
         LIMIT 1
     """, (player_id, f"{year}-12-31")).fetchone()
-    if row:
-        return row[0]
 
-    # Fallback: drafted that year but no transaction (original draft pick).
-    row = conn.execute("""
-        SELECT team_season_id FROM draft_picks
+    dp_row = conn.execute("""
+        SELECT team_season_id, season FROM draft_picks
         WHERE player_id = ? AND season <= ?
         ORDER BY season DESC LIMIT 1
     """, (player_id, year)).fetchone()
-    return row[0] if row else None
+
+    if txn_row and dp_row:
+        txn_team, txn_ts = txn_row
+        dp_team, dp_season = dp_row
+        # Approximate draft timestamp as Sept 1 of the season
+        dp_ts_approx = f"{dp_season}-09-01 00:00:00"
+        if dp_ts_approx > str(txn_ts):
+            return dp_team
+        return txn_team
+    if txn_row:
+        return txn_row[0]
+    if dp_row:
+        return dp_row[0]
+    return None
 
 
 def get_draft_round_in_year(conn, player_id, year):
@@ -180,4 +201,37 @@ def load_position_rank_by_player(conn):
     rank = 0
     for season, position, player_id, total in rows:
         key = (season, position)
-        i
+        if key != current_key:
+            current_key = key
+            rank = 1
+        else:
+            rank += 1
+        out[(player_id, season)] = rank
+    return out
+
+
+def load_pos_rank_neighbors(conn):
+    """Build a reverse lookup so you can find 'who's WR7, WR8, WR9, ...' for
+    each (season, position). Returns {(season, position, rank): (player_id,
+    player_name, total_pts)}."""
+    rows = list(conn.execute("""
+        SELECT pws.season, p.position, pws.player_id, p.player_name,
+               SUM(pws.fantasy_points) AS total_pts
+        FROM player_weekly_stats pws
+        JOIN players p ON p.player_id = pws.player_id
+        WHERE pws.fantasy_points IS NOT NULL
+        GROUP BY pws.season, p.position, pws.player_id
+        ORDER BY pws.season, p.position, total_pts DESC
+    """))
+    out = {}
+    current_key = (None, None)
+    rank = 0
+    for season, position, pid, name, total in rows:
+        key = (season, position)
+        if key != current_key:
+            current_key = key
+            rank = 1
+        else:
+            rank += 1
+        out[(season, position, rank)] = (pid, name, float(total) if total else 0.0)
+    return out

@@ -1,0 +1,48 @@
+excel_row,player_name,manager_name,reason
+35,N/A,Brian Malconian,player not found in DB
+48,Darren Waller,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+49,Rashaad Penny,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+50,Gerald Everett,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+51,Kendrick Bourne,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+54,Tony Jones,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+84,--empty--,Pete Hodor,player not found in DB
+148,Jacksonville,Brian Malconian,player not found in DB
+149,Seattle,Brian Malconian,player not found in DB
+167,Tampa Bay,Dan MacNulty,player not found in DB
+169,Houston,Dan MacNulty,player not found in DB
+172,Romeo Doubs,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+173,Tyler Lockett,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+174,DeAndre Hopkins,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+175,Amari Cooper,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+178,D'Ernest Johnson,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+179,Greg Zuerlein,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+191,New York,George Mensing,player not found in DB
+234,Dallas,Paul Lewis,player not found in DB
+235,New Orleans,Paul Lewis,player not found in DB
+236,Cleveland,Paul Lewis,player not found in DB
+237,Los Angeles,Paul Lewis,player not found in DB
+255,Atlanta,Pete Hodor,player not found in DB
+259,San Francisco,Scott Montgomery,player not found in DB
+260,New England,Scott Montgomery,player not found in DB
+261,Cincinnati,Scott Montgomery,player not found in DB
+262,Las Vegas,Scott Montgomery,player not found in DB
+274,Miami,Tom Watson,player not found in DB
+276,Tennessee,Tom Watson,player not found in DB
+302,Buffalo,Aric Tao,player not found in DB
+303,Baltimore,Aric Tao,player not found in DB
+310,Jaxon Smith-Njigba,Brian Malconian,K=1 for 2024 but no draft_picks row
+319,Kansas City,Brian Malconian,player not found in DB
+329,Mark Andrews,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+330,Rachaad White,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+331,Jordan Love,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+332,Michael Penix Jr.,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+333,Patrick Mahomes,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+334,Josh Jacobs,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+335,Rome Odunze,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+336,Michael Pittman Jr.,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+337,Jerome Ford,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+338,Cameron Dicker,Dan Vescuso,"no team for (Dan Vescuso, 2024)"
+339,Pittsburgh,Dan Vescuso,player not found in DB
+380,Minnesota,Jon Lewitus,player not found in DB
+406,Travis Kelce,Pete Hodor,K=1 for 2024 but no draft_picks row
+442,Detroit,Tom Watson,player not found in DB

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keeper Roster Manager</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f7f8fa;
+    color: #1f2937;
+    margin: 0;
+    padding: 16px;
+    font-size: 14px;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 2px solid #e5e7eb;
+  }
+  header h1 { margin: 0; font-size: 22px; color: #0d2c54; }
+  .totals { display: flex; gap: 12px; flex-wrap: wrap; }
+  .totals .stat {
+    background: #fff; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .totals .stat .label {
+    font-size: 11px; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .totals .stat .value { font-size: 18px; font-weight: 600; color: #0d2c54; }
+  .totals .stat.cost .value { color: #b45309; }
+  .totals .stat.keepers .value { color: #047857; }
+  .totals .stat.ktc .value { color: #6d28d9; }
+  .totals .stat.eff .value { color: #0e7490; font-size: 16px; }
+  .totals .stat.overflow .value { color: #dc2626; }
+
+  main { display: grid; grid-template-columns: 360px 1fr; gap: 16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  section.card {
+    background: #fff; border: 1px solid #e5e7eb;
+    border-radius: 10px; padding: 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  section.card h2 {
+    margin: 0 0 12px 0; font-size: 15px; color: #0d2c54;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .roster-header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid #f3f4f6;
+  }
+  .roster-header h2 { margin: 0; }
+  .roster-totals { display: flex; gap: 8px; flex-wrap: wrap; }
+  .roster-total-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; border: 1px solid;
+  }
+  .roster-total-badge .label {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.5px; opacity: 0.7; font-weight: 700;
+  }
+  .roster-total-badge.cost { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+  .roster-total-badge.count { background: #d1fae5; border-color: #10b981; color: #065f46; }
+  .roster-total-badge.ktc { background: #ede9fe; border-color: #8b5cf6; color: #5b21b6; }
+
+  form#add-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  form#add-form input, form#add-form select {
+    padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 13px; background: #fff; font-family: inherit;
+  }
+  form#add-form input[name="name"] { grid-column: 1 / -1; }
+  form#add-form button {
+    grid-column: 1 / -1; padding: 8px 12px;
+    background: #0d2c54; color: #fff; border: none;
+    border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  form#add-form button:hover { background: #1e3a5f; }
+  .form-hint { font-size: 11px; color: #6b7280; margin: -4px 0 6px 0; }
+
+  .pool-controls { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .pool-controls label { font-size: 11px; color: #6b7280; }
+  .pool-controls select {
+    padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 5px;
+    font-size: 12px; background: #fff; font-family: inherit;
+  }
+
+  /* Pool sized to comfortably hold up to 6 player chips (~55px each + 6px gap + padding). */
+  #player-pool {
+    min-height: 380px;
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 8px; background: #f9fafb;
+    border: 2px dashed #d1d5db; border-radius: 8px;
+  }
+  #player-pool.drag-over { background: #eef2ff; border-color: #6366f1; }
+  #player-pool .empty {
+    text-align: center; color: #9ca3af; font-style: italic; padding: 12px;
+  }
+
+  .player {
+    display: grid; grid-template-columns: 32px 1fr auto;
+    align-items: center; gap: 8px;
+    padding: 8px 10px; background: #fff;
+    border: 1px solid #e5e7eb; border-radius: 7px;
+    cursor: grab; transition: all 0.15s;
+  }
+  .player.cascaded-back { border-left: 3px solid #f59e0b; }
+  .player.cascaded-up { border-left: 3px solid #f97316; }
+  .player.overflow { border-left: 3px solid #dc2626; background: #fef2f2; }
+  .player:hover { border-color: #0d2c54; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+  .player:active { cursor: grabbing; }
+  .player.dragging { opacity: 0.4; }
+  .player .pos {
+    font-size: 10px; font-weight: 700; text-align: center;
+    padding: 4px 0; border-radius: 4px; color: #fff;
+  }
+  .pos-QB { background: #dc2626; }
+  .pos-RB { background: #16a34a; }
+  .pos-WR { background: #2563eb; }
+  .pos-TE { background: #ea580c; }
+  .pos-K  { background: #7c3aed; }
+  .pos-DEF { background: #4b5563; }
+  .player .name { font-weight: 600; font-size: 13px; }
+  .player .meta { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+  .player .badge {
+    padding: 2px 6px; border-radius: 4px;
+    font-weight: 600; font-size: 10px; cursor: pointer;
+  }
+  .player .badge:hover { filter: brightness(0.95); }
+  .badge-round { background: #f3f4f6; color: #1f2937; }
+  .badge-round.cascaded-back { background: #fed7aa; color: #9a3412; }
+  .badge-round.cascaded-up { background: #fdba74; color: #7c2d12; }
+  .badge-round.overflow { background: #fecaca; color: #7f1d1d; cursor: default; }
+  .badge-cost  { background: #fef3c7; color: #92400e; }
+  .badge-ktc   { background: #ede9fe; color: #5b21b6; }
+  .badge-ktc.empty { background: #f3f4f6; color: #9ca3af; font-style: italic; }
+  .player .delete {
+    background: transparent; border: none; color: #9ca3af;
+    cursor: pointer; font-size: 16px; padding: 0 4px;
+  }
+  .player .delete:hover { color: #dc2626; }
+
+  .roster-group { margin-bottom: 14px; }
+  .roster-group h3 {
+    margin: 0 0 8px 0;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12px; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .roster-group h3 .group-total {
+    font-size: 12px; font-weight: 700; color: #b45309;
+    text-transform: none; letter-spacing: 0;
+  }
+  .slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .slot {
+    border: 2px dashed #d1d5db; border-radius: 8px;
+    padding: 8px; min-height: 56px;
+    display: flex; flex-direction: column;
+    background: #fafafa; transition: all 0.15s;
+  }
+  .slot.empty .slot-label {
+    text-align: center; color: #9ca3af; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 12px 0;
+  }
+  .slot.drag-valid { background: #ecfdf5; border-color: #10b981; }
+  .slot.drag-invalid { background: #fef2f2; border-color: #ef4444; }
+  .slot.filled { background: #fff; border-style: solid; border-color: #e5e7eb; }
+  .slot .slot-tag {
+    font-size: 9px; font-weight: 700; color: #6b7280;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;
+  }
+
+  #round-section { margin-top: 16px; }
+  .round-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
+  @media (max-width: 600px) { .round-grid { grid-template-columns: repeat(4, 1fr); } }
+  .round-cell {
+    border-radius: 8px; padding: 8px; min-height: 90px;
+    display: flex; flex-direction: column;
+    border: 1px solid; text-align: center;
+  }
+  .round-cell.open          { background: #d1fae5; border-color: #10b981; color: #065f46; }
+  .round-cell.taken         { background: #e5e7eb; border-color: #9ca3af; color: #4b5563; }
+  .round-cell.cascaded-back { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+  .round-cell.cascaded-up   { background: #ffedd5; border-color: #f97316; color: #9a3412; }
+  .round-cell .rnum   { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .round-cell .rcost  { font-size: 14px; font-weight: 700; margin-top: 2px; }
+  .round-cell .rkeeper{ font-size: 10px; margin-top: 4px; font-weight: 600; line-height: 1.3; }
+  .round-cell .rorigin{ font-size: 9px; opacity: 0.75; margin-top: 2px; }
+  .round-cell .rstatus{ font-size: 9px; margin-top: auto; padding-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; opacity: 0.85; }
+
+  .overflow-section {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 3px solid #dc2626;
+    border-radius: 6px;
+  }
+  .overflow-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #991b1b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .overflow-section .overflow-list {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .overflow-chip {
+    background: #fff;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .footer-note {
+    margin-top: 16px; padding: 10px 12px;
+    background: #fffbeb; border-left: 3px solid #f59e0b;
+    border-radius: 4px; font-size: 12px; color: #92400e;
+  }
+  .info-banner {
+    margin-bottom: 12px; padding: 10px 12px;
+    background: #eff6ff; border-left: 3px solid #2563eb;
+    border-radius: 4px; font-size: 12px; color: #1e40af;
+  }
+  .legend {
+    display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap;
+    font-size: 11px; color: #4b5563;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-swatch {
+    width: 14px; height: 14px; border-radius: 3px; border: 1px solid;
+  }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .actions button {
+    padding: 6px 10px; background: #fff; color: #0d2c54;
+    border: 1px solid #d1d5db; border-radius: 6px;
+    font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500;
+  }
+  .actions button:hover { background: #f3f4f6; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Brian's Dynasty Keepers — 2026</h1>
+  <div class="totals">
+    <div class="stat keepers"><div class="label">Keepers</div><div class="value" id="stat-keepers">0</div></div>
+    <div class="stat"><div class="label">Picks Used</div><div class="value" id="stat-rounds">0 / 17</div></div>
+    <div class="stat cost"><div class="label">Total Cost</div><div class="value" id="stat-cost">$0</div></div>
+    <div class="stat ktc"><div class="label">Total KTC</div><div class="value" id="stat-ktc">0</div></div>
+    <div class="stat eff"><div class="label">KTC / $</div><div class="value" id="stat-eff">—</div></div>
+    <div class="stat overflow"><div class="label">Overflow</div><div class="value" id="stat-overflow">0</div></div>
+  </div>
+</header>
+
+<div class="info-banner">
+  <strong>Split-direction cascade.</strong> Keepers in <strong>R1–R10</strong> slide BACKWARD on conflict (e.g. two R1 keepers → one stays R1, the other slides to R2 or next open). Keepers in <strong>R11–R17</strong> slide UPWARD on conflict (e.g. two R16 keepers → one stays R16, the other slides to R15 or next open). Within the same round, the higher-KTC player keeps the slot. Cost is based on each player's original keeper round.
+</div>
+
+<main>
+  <section class="card">
+    <h2>Add Player</h2>
+    <form id="add-form">
+      <input name="name" placeholder="Player name (e.g. Bijan Robinson)" required>
+      <select name="position" required>
+        <option value="">Position</option>
+        <option>QB</option><option>RB</option><option>WR</option>
+        <option>TE</option><option>K</option><option>DEF</option>
+      </select>
+      <select name="round" required>
+        <option value="">Keeper Round</option>
+      </select>
+      <input name="ktc" type="number" min="0" max="10000" placeholder="KTC value (Superflex)">
+      <button type="submit">+ Add to Player Pool</button>
+    </form>
+    <div class="form-hint">Use KTC <strong>Superflex</strong> values from keeptradecut.com. KTC field doubles as a tiebreaker — the higher-KTC player keeps the contested round.</div>
+
+    <h2 style="margin-top:8px;">Player Pool</h2>
+    <div class="pool-controls">
+      <label>Sort by:</label>
+      <select id="sort-by">
+        <option value="round">Keeper Round</option>
+        <option value="ktc">KTC Value (high → low)</option>
+        <option value="name">Name (A → Z)</option>
+        <option value="cost">$ Cost (high → low)</option>
+        <option value="position">Position</option>
+      </select>
+    </div>
+    <div id="player-pool"></div>
+    <div class="actions">
+      <button id="btn-export">Export JSON</button>
+      <button id="btn-import">Import JSON</button>
+      <button id="btn-clear">Clear All</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="roster-header">
+      <h2>Roster</h2>
+      <div class="roster-totals">
+        <div class="roster-total-badge count">
+          <span class="label">Players</span>
+          <span id="roster-count">0</span>
+        </div>
+        <div class="roster-total-badge cost">
+          <span class="label">Sum</span>
+          <span id="roster-sum">$0</span>
+        </div>
+        <div class="roster-total-badge ktc">
+          <span class="label">KTC</span>
+          <span id="roster-ktc">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="roster-group">
+      <h3>
+        <span>Starters</span>
+        <span class="group-total" id="starters-total">$0</span>
+      </h3>
+      <div class="slots" id="starters"></div>
+    </div>
+    <div class="roster-group">
+      <h3>
+        <span>Bench (6)</span>
+        <span class="group-total" id="bench-total">$0</span>
+      </h3>
+      <div class="slots" id="bench"></div>
+    </div>
+    <div class="roster-group">
+      <h3>
+        <span>Injured Reserve (2)</span>
+        <span class="group-total" id="ir-total">$0</span>
+      </h3>
+      <div class="slots" id="ir"></div>
+    </div>
+  </section>
+</main>
+
+<section class="card" id="round-section">
+  <h2>Draft Round Availability (1–17)</h2>
+  <div class="round-grid" id="round-grid"></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:#d1fae5;border-color:#10b981;"></span>Open Pick</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#e5e7eb;border-color:#9ca3af;"></span>Kept (original round)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#fef3c7;border-color:#f59e0b;"></span>Slid back ↓ (R1–R10 zone)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#ffedd5;border-color:#f97316;"></span>Slid up ↑ (R11–R17 zone)</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#fef2f2;border-color:#dc2626;"></span>Overflow (cannot fit)</div>
+  </div>
+  <div id="overflow-section" style="display:none;"></div>
+  <div class="footer-note">
+    <strong>Cascade direction by zone.</strong> R1–R10 keepers slide backward into the next open higher round (R1 → R2 → R3 ...). R11–R17 keepers slide upward into the next open lower round (R16 → R15 → R14 ...). Within the same round, highest KTC wins; ties fall back to insertion order. If you trade for a player, manually shift their round badge back one (R3 → R4) to reflect the trade penalty.
+  </div>
+</section>
+
+<script>
+(() => {
+  const ROUND_COSTS = {1:200,2:100,3:80,4:60,5:50,6:30,7:30,8:30,9:30,10:10,11:10,12:10,13:10,14:10,15:10,16:10,17:10};
+  const MAX_ROUND = 17;
+  const UP_ZONE_START = 11;
+
+  const SLOTS = [
+    {id:'s-qb',  label:'QB',   positions:['QB'],                   group:'starters'},
+    {id:'s-rb1', label:'RB',   positions:['RB'],                   group:'starters'},
+    {id:'s-rb2', label:'RB',   positions:['RB'],                   group:'starters'},
+    {id:'s-wr1', label:'WR',   positions:['WR'],                   group:'starters'},
+    {id:'s-wr2', label:'WR',   positions:['WR'],                   group:'starters'},
+    {id:'s-wr3', label:'WR',   positions:['WR'],                   group:'starters'},
+    {id:'s-te',  label:'TE',   positions:['TE'],                   group:'starters'},
+    {id:'s-flx', label:'W/R/T',positions:['WR','RB','TE'],         group:'starters'},
+    {id:'s-sfx', label:'Q/W/R/T',positions:['QB','WR','RB','TE'], group:'starters'},
+    {id:'s-k',   label:'K',    positions:['K'],                    group:'starters'},
+    {id:'s-def', label:'DEF',  positions:['DEF'],                  group:'starters'},
+    {id:'b-1',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'b-2',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'b-3',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'b-4',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'b-5',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'b-6',   label:'BN',   positions:['QB','RB','WR','TE','K','DEF'], group:'bench'},
+    {id:'ir-1',  label:'IR',   positions:['QB','RB','WR','TE','K','DEF'], group:'ir'},
+    {id:'ir-2',  label:'IR',   positions:['QB','RB','WR','TE','K','DEF'], group:'ir'}
+  ];
+
+  // KTC values reflect dynasty superflex valuations as of April 2026 (post-FA, pre-2026 NFL season).
+  // Reflect 2026 offseason moves: Willis→MIA starter, Tua→ATL bench, Hill released, Pickens→DAL,
+  // Maye All-Pro / Super Bowl run, JSN OPOY, McBride TE record, Cook NFL rushing leader.
+  const SEED = [
+    {name: "Joe Burrow",          position: "QB", round: 1,  slotId: "s-qb",  ktc: 7600},
+    {name: "Jonathan Taylor",     position: "RB", round: 1,  slotId: "s-rb1", ktc: 6200},
+    {name: "De'Von Achane",       position: "RB", round: 8,  slotId: "s-rb2", ktc: 7900},
+    {name: "Ja'Marr Chase",       position: "WR", round: 1,  slotId: "s-wr1", ktc: 9200},
+    {name: "Jaxon Smith-Njigba",  position: "WR", round: 3,  slotId: "s-wr2", ktc: 9400},
+    {name: "Tetairoa McMillan",   position: "WR", round: 3,  slotId: "s-wr3", ktc: 7700},
+    {name: "Trey McBride",        position: "TE", round: 13, slotId: "s-te",  ktc: 8400},
+    {name: "James Cook",          position: "RB", round: 5,  slotId: "s-flx", ktc: 7400},
+    {name: "Drake Maye",          position: "QB", round: 9,  slotId: "s-sfx", ktc: 9600},
+    {name: "George Pickens",      position: "WR", round: 6,  slotId: "b-1",   ktc: 7100},
+    {name: "Tyreek Hill",         position: "WR", round: 16, slotId: "b-2",   ktc: 1800},
+    {name: "Chris Godwin",        position: "WR", round: 15, slotId: "b-3",   ktc: 3200},
+    {name: "Brandon Aiyuk",       position: "WR", round: 16, slotId: "b-4",   ktc: 3800},
+    {name: "Kaleb Johnson",       position: "RB", round: 16, slotId: "b-5",   ktc: 3400},
+    {name: "Woody Marks",         position: "RB", round: 16, slotId: "b-6",   ktc: 4500},
+    {name: "Anthony Richardson",  position: "QB", round: 16, slotId: "ir-1",  ktc: 3000},
+    {name: "Tua Tagovailoa",      position: "QB", round: 17, slotId: "ir-2",  ktc: 2400},
+    {name: "Jayden Higgins",      position: "WR", round: 16, slotId: null,    ktc: 5100},
+    {name: "Malik Willis",        position: "QB", round: 16, slotId: null,    ktc: 5800}
+  ];
+
+  let players = SEED.map((p, i) => ({id: i+1, ...p}));
+  let nextId = players.length + 1;
+  let sortBy = 'round';
+
+  const roundSelect = document.querySelector('select[name="round"]');
+  for (let r = 1; r <= MAX_ROUND; r++) {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.textContent = `Round ${r} ($${ROUND_COSTS[r]})`;
+    roundSelect.appendChild(opt);
+  }
+
+  function buildSlots() {
+    ['starters','bench','ir'].forEach(group => {
+      const container = document.getElementById(group);
+      container.innerHTML = '';
+      SLOTS.filter(s => s.group === group).forEach(slot => {
+        const el = document.createElement('div');
+        el.className = 'slot empty';
+        el.dataset.slotId = slot.id;
+        el.dataset.positions = slot.positions.join(',');
+        el.innerHTML = `<div class="slot-tag">${slot.label}</div><div class="slot-label">Drop player here</div>`;
+        attachDropHandlers(el);
+        container.appendChild(el);
+      });
+    });
+  }
+  buildSlots();
+
+  function computeCascade(rosteredPlayers) {
+    const sorted = [...rosteredPlayers].sort((a, b) => {
+      if (a.round !== b.round) return a.round - b.round;
+      const aKtc = a.ktc || 0;
+      const bKtc = b.ktc || 0;
+      if (aKtc !== bKtc) return bKtc - aKtc;
+      return a.id - b.id;
+    });
+    const occupied = new Map();
+    const result = new Map();
+    for (const p of sorted) {
+      const direction = p.round >= UP_ZONE_START ? -1 : 1;
+      let target = p.round;
+      while (target >= 1 && target <= MAX_ROUND && occupied.has(target)) {
+        target += direction;
+      }
+      if (target < 1 || target > MAX_ROUND) {
+        result.set(p.id, {effectiveRound: null, isCascaded: true, overflow: true, direction});
+      } else {
+        occupied.set(target, p.id);
+        result.set(p.id, {
+          effectiveRound: target,
+          isCascaded: target !== p.round,
+          overflow: false,
+          direction
+        });
+      }
+    }
+    return {result, occupied};
+  }
+
+  function makePlayerChip(p, cascadeInfo) {
+    const cost = ROUND_COSTS[p.round];
+    const div = document.createElement('div');
+    div.className = 'player';
+    if (cascadeInfo) {
+      if (cascadeInfo.overflow) div.classList.add('overflow');
+      else if (cascadeInfo.isCascaded) {
+        div.classList.add(cascadeInfo.direction === -1 ? 'cascaded-up' : 'cascaded-back');
+      }
+    }
+    div.draggable = true;
+    div.dataset.playerId = p.id;
+    const ktcDisplay = (p.ktc != null && p.ktc !== '') ? `KTC ${p.ktc}` : 'KTC —';
+    const ktcClass = (p.ktc != null && p.ktc !== '') ? '' : 'empty';
+
+    let roundBadge = `<span class="badge badge-round" data-action="edit-round" title="Click to change round">R${p.round}</span>`;
+    if (cascadeInfo) {
+      if (cascadeInfo.overflow) {
+        roundBadge = `<span class="badge badge-round overflow" title="No round available — would need to drop">R${p.round} ⚠ NO PICK</span>`;
+      } else if (cascadeInfo.isCascaded) {
+        const arrow = cascadeInfo.direction === -1 ? '↑' : '↓';
+        const cls = cascadeInfo.direction === -1 ? 'cascaded-up' : 'cascaded-back';
+        roundBadge = `<span class="badge badge-round ${cls}" data-action="edit-round" title="Cascaded from R${p.round} to R${cascadeInfo.effectiveRound}">R${p.round} ${arrow} R${cascadeInfo.effectiveRound}</span>`;
+      }
+    }
+
+    div.innerHTML = `
+      <div class="pos pos-${p.position}">${p.position}</div>
+      <div>
+        <div class="name">${escapeHtml(p.name)}</div>
+        <div class="meta">
+          ${roundBadge}
+          <span class="badge badge-cost" title="Cost based on original round">$${cost}</span>
+          <span class="badge badge-ktc ${ktcClass}" data-action="edit-ktc" title="Click to edit KTC">${ktcDisplay}</span>
+        </div>
+      </div>
+      <button class="delete" title="Remove player" data-action="delete">&times;</button>
+    `;
+    div.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', String(p.id));
+      e.dataTransfer.effectAllowed = 'move';
+      div.classList.add('dragging');
+      document.querySelectorAll('.slot').forEach(s => {
+        const positions = s.dataset.positions.split(',');
+        if (positions.includes(p.position)) s.classList.add('drag-valid');
+        else s.classList.add('drag-invalid');
+      });
+      document.getElementById('player-pool').classList.add('drag-over');
+    });
+    div.addEventListener('dragend', () => {
+      div.classList.remove('dragging');
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('drag-valid','drag-invalid'));
+      document.getElementById('player-pool').classList.remove('drag-over');
+    });
+    div.querySelector('.delete').addEventListener('click', (e) => {
+      e.stopPropagation();
+      players = players.filter(x => x.id !== p.id);
+      render();
+    });
+    const roundEdit = div.querySelector('[data-action="edit-round"]');
+    if (roundEdit) {
+      roundEdit.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const newRound = prompt(`New keeper round for ${p.name} (1-${MAX_ROUND}):`, p.round);
+        const r = parseInt(newRound, 10);
+        if (r >= 1 && r <= MAX_ROUND) { p.round = r; render(); }
+      });
+    }
+    div.querySelector('[data-action="edit-ktc"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newKtc = prompt(`KTC Superflex value for ${p.name} (blank to clear):`, p.ktc != null ? p.ktc : '');
+      if (newKtc === null) return;
+      if (newKtc.trim() === '') { p.ktc = null; }
+      else {
+        const v = parseInt(newKtc, 10);
+        if (!isNaN(v) && v >= 0) p.ktc = v;
+      }
+      render();
+    });
+    return div;
+  }
+
+  function sortPlayers(arr) {
+    const sorted = [...arr];
+    sorted.sort((a, b) => {
+      switch (sortBy) {
+        case 'ktc':      return (b.ktc || -1) - (a.ktc || -1);
+        case 'name':     return a.name.localeCompare(b.name);
+        case 'cost':     return ROUND_COSTS[b.round] - ROUND_COSTS[a.round];
+        case 'position': return a.position.localeCompare(b.position) || a.round - b.round;
+        case 'round':
+        default:         return a.round - b.round || a.name.localeCompare(b.name);
+      }
+    });
+    return sorted;
+  }
+
+  function render() {
+    const rostered = players.filter(p => p.slotId);
+    const cascade = computeCascade(rostered);
+    const cascadeMap = cascade.result;
+    const occupiedMap = cascade.occupied;
+
+    const pool = document.getElementById('player-pool');
+    pool.innerHTML = '';
+    const unassigned = sortPlayers(players.filter(p => !p.slotId));
+    if (unassigned.length === 0) {
+      pool.innerHTML = '<div class="empty">No unassigned players. Drag from roster to free up a spot.</div>';
+    } else {
+      unassigned.forEach(p => pool.appendChild(makePlayerChip(p, null)));
+    }
+
+    document.querySelectorAll('.slot').forEach(slotEl => {
+      const slotId = slotEl.dataset.slotId;
+      const slot = SLOTS.find(s => s.id === slotId);
+      const p = players.find(x => x.slotId === slotId);
+      slotEl.innerHTML = `<div class="slot-tag">${slot.label}</div>`;
+      if (p) {
+        slotEl.classList.remove('empty');
+        slotEl.classList.add('filled');
+        slotEl.appendChild(makePlayerChip(p, cascadeMap.get(p.id)));
+      } else {
+        slotEl.classList.add('empty');
+        slotEl.classList.remove('filled');
+        const lbl = document.createElement('div');
+        lbl.className = 'slot-label';
+        lbl.textContent = `Drop ${slot.label}`;
+        slotEl.appendChild(lbl);
+      }
+    });
+
+    const grid = document.getElementById('round-grid');
+    grid.innerHTML = '';
+    let usedRounds = 0;
+    for (let r = 1; r <= MAX_ROUND; r++) {
+      const cell = document.createElement('div');
+      cell.className = 'round-cell';
+      const occupantId = occupiedMap.get(r);
+      const occupant = occupantId ? rostered.find(x => x.id === occupantId) : null;
+      if (!occupant) {
+        cell.classList.add('open');
+        cell.innerHTML = `
+          <div class="rnum">Round ${r}</div>
+          <div class="rcost">$${ROUND_COSTS[r]}</div>
+          <div class="rstatus">Open Pick</div>
+        `;
+      } else {
+        usedRounds++;
+        const info = cascadeMap.get(occupant.id);
+        const isCascaded = info && info.isCascaded;
+        if (isCascaded) {
+          cell.classList.add(info.direction === -1 ? 'cascaded-up' : 'cascaded-back');
+        } else {
+          cell.classList.add('taken');
+        }
+        const ktcStr = (occupant.ktc != null && occupant.ktc !== '') ? ` <span style="opacity:0.7">(${occupant.ktc})</span>` : '';
+        const arrow = info && info.direction === -1 ? '↑' : '↓';
+        const originStr = isCascaded
+          ? `<div class="rorigin">${arrow} from R${occupant.round} ($${ROUND_COSTS[occupant.round]})</div>`
+          : '';
+        const statusLabel = isCascaded
+          ? (info.direction === -1 ? 'Slid Up ↑' : 'Slid Back ↓')
+          : 'Kept';
+        cell.innerHTML = `
+          <div class="rnum">Round ${r}</div>
+          <div class="rcost">$${ROUND_COSTS[r]}</div>
+          <div class="rkeeper">${escapeHtml(occupant.name)} (${occupant.position})${ktcStr}</div>
+          ${originStr}
+          <div class="rstatus">${statusLabel}</div>
+        `;
+      }
+      grid.appendChild(cell);
+    }
+
+    const overflowEl = document.getElementById('overflow-section');
+    const overflows = rostered.filter(p => cascadeMap.get(p.id)?.overflow);
+    if (overflows.length > 0) {
+      overflowEl.style.display = 'block';
+      overflowEl.className = 'overflow-section';
+      overflowEl.innerHTML = `
+        <h3>⚠ Overflow — ${overflows.length} keeper${overflows.length>1?'s':''} cannot fit</h3>
+        <div class="overflow-list">
+          ${overflows.map(p => `<span class="overflow-chip">${escapeHtml(p.name)} (${p.position}) — wanted R${p.round}, $${ROUND_COSTS[p.round]}</span>`).join('')}
+        </div>
+        <div style="font-size:11px;margin-top:8px;color:#7f1d1d;">
+          R11–R17 keepers slide upward (toward R1). If they exhaust open lower rounds before reaching R1, they overflow rather than wrapping back. Drop the player, trade for picks, or boost their KTC to outrank a same-round teammate.
+        </div>
+      `;
+    } else {
+      overflowEl.style.display = 'none';
+    }
+
+    const totalCost = rostered.reduce((sum, p) => sum + ROUND_COSTS[p.round], 0);
+    const totalKtc = rostered.reduce((sum, p) => sum + (p.ktc || 0), 0);
+    const eff = totalCost > 0 ? (totalKtc / totalCost).toFixed(1) : '—';
+
+    document.getElementById('stat-keepers').textContent = rostered.length;
+    document.getElementById('stat-rounds').textContent = `${usedRounds} / ${MAX_ROUND}`;
+    document.getElementById('stat-cost').textContent = `$${totalCost}`;
+    document.getElementById('stat-ktc').textContent = totalKtc.toLocaleString();
+    document.getElementById('stat-eff').textContent = eff;
+    document.getElementById('stat-overflow').textContent = overflows.length;
+
+    document.getElementById('roster-count').textContent = rostered.length;
+    document.getElementById('roster-sum').textContent = `$${totalCost}`;
+    document.getElementById('roster-ktc').textContent = totalKtc.toLocaleString();
+
+    const groupSums = {starters: 0, bench: 0, ir: 0};
+    rostered.forEach(p => {
+      const slot = SLOTS.find(s => s.id === p.slotId);
+      if (slot) groupSums[slot.group] += ROUND_COSTS[p.round];
+    });
+    document.getElementById('starters-total').textContent = `$${groupSums.starters}`;
+    document.getElementById('bench-total').textContent = `$${groupSums.bench}`;
+    document.getElementById('ir-total').textContent = `$${groupSums.ir}`;
+  }
+
+  function attachDropHandlers(el) {
+    el.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+    el.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const playerId = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      const p = players.find(x => x.id === playerId);
+      if (!p) return;
+      const slotId = el.dataset.slotId;
+      const slot = SLOTS.find(s => s.id === slotId);
+      if (!slot.positions.includes(p.position)) return;
+      const occupant = players.find(x => x.slotId === slotId && x.id !== p.id);
+      if (occupant) occupant.slotId = null;
+      p.slotId = slotId;
+      render();
+    });
+  }
+  const pool = document.getElementById('player-pool');
+  pool.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+  pool.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const playerId = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    const p = players.find(x => x.id === playerId);
+    if (!p) return;
+    p.slotId = null;
+    render();
+  });
+
+  document.getElementById('sort-by').addEventListener('change', (e) => { sortBy = e.target.value; render(); });
+
+  document.getElementById('add-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const name = fd.get('name').trim();
+    const position = fd.get('position');
+    const round = parseInt(fd.get('round'), 10);
+    const ktcRaw = fd.get('ktc');
+    const ktc = (ktcRaw && ktcRaw.toString().trim() !== '') ? parseInt(ktcRaw, 10) : null;
+    if (!name || !position || !round) return;
+    players.push({id: nextId++, name, position, round, ktc, slotId: null});
+    e.target.reset();
+    render();
+  });
+
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const data = JSON.stringify({players, nextId}, null, 2);
+    const blob = new Blob([data], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `keeper-roster-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('btn-import').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (Array.isArray(data.players)) {
+            players = data.players.map(p => ({ktc: null, ...p}));
+            nextId = data.nextId || (Math.max(0, ...players.map(p => p.id)) + 1);
+            render();
+          }
+        } catch(err) { alert('Invalid JSON file'); }
+      };
+      reader.readAsText(f);
+    };
+    input.click();
+  });
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    if (confirm('Clear all players?')) {
+      players = [];
+      nextId = 1;
+      render();
+    }
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
