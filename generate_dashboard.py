@@ -21,6 +21,7 @@ import compute_drc as drc  # reuse Phase B walk
 import player_history as hist  # per-year history helper
 import draft_history as drafth  # per-manager draft picks
 import trade_history as tradeh  # per-manager trade events with points outcomes
+import keeper_tool_section  # Brian's keeper tool, ported with our styling
 
 DB_PATH = Path(__file__).parent / "fantasy.db"
 OUT_PATH = Path(__file__).parent / "dashboard.html"
@@ -3220,6 +3221,7 @@ def build_sidebar(by_manager):
       <a class="nav-link" data-target="player-search">Player search</a>
       <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
       <a class="nav-link" data-target="league-rules">League rules</a>
+      <a class="nav-link" data-target="keeper-tool">Keeper roster manager</a>
 
       <h3>Teams</h3>
       {items}
@@ -3232,6 +3234,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
     player_search = render_player_search_section(search_players)
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
+    keeper_tool = keeper_tool_section.render()
     team_sections = "\n".join(
         render_team_section(data, slugify(data["manager_actual"]))
         for name, data in sorted(by_manager.items())
@@ -3255,6 +3258,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 {player_search}
 {desk}
 {rules}
+{keeper_tool}
 {team_sections}
 </main>
 </div>
