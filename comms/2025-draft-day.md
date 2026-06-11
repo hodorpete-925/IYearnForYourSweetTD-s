@@ -52,4 +52,6 @@ Here is the link to the google doc. Please look at the last two tabs on the
 file for a better understanding of what I am discussing here. Important
 concept to understand.
 
-https://docs.g
+https://docs.google.com/spreadsheets/d/18gZZh8VT35g6IublO25JKhkHP77K6igk/edit?usp=sharing&ouid=110944991715246175399&rtpof=true&sd=true
+
+Looking forward to a great draft night!

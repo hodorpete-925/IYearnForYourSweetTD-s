@@ -473,7 +473,7 @@ def render_player_row(p):
     pid = p.get("player_id", id(p))
     main_row = f"""
         <tr>
-          <td class="player-name">{html.escape(p['name'])}</td>
+          <td class="player-name">{html.escape(p['name'])}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
           <td class="meta">{html.escape(p['position'])}</td>
           <td class="meta">{html.escape(p['nfl_team'])}</td>
           <td class="num"><span class="pill {drc_tier_class(p['drc'])}">{p['drc']}</span></td>
@@ -804,7 +804,7 @@ def render_team_section(data, slug):
       </div>
 
       <div class="tab-panel active" id="{slug}-roster">
-        <table class="roster">
+        <table class="roster team-roster">
           <thead>
             <tr>
               <th>Player</th>
@@ -819,9 +819,14 @@ def render_team_section(data, slug):
           </thead>
           <tbody>{rows}</tbody>
           <tr class="total">
-            <td colspan="4">Total committed</td>
+            <td>Total committed</td>
+            <td class="meta"></td>
+            <td class="meta"></td>
+            <td class="num"></td>
             <td class="num cost">${total:,}</td>
-            <td colspan="3"></td>
+            <td class="num"></td>
+            <td class="num"></td>
+            <td class="expand-col"></td>
           </tr>
         </table>
       </div>
@@ -848,7 +853,7 @@ def render_summary_section(by_manager, generated_at):
         rows += f"""
           <tr>
             <td class="rank">{idx}</td>
-            <td class="player-name"><a href="#" data-target="team-{slug}">{html.escape(t['team_name'])}</a></td>
+            <td class="player-name"><a href="#" data-target="team-{slug}">{html.escape(t['team_name'])}</a><span class="sub-line">{html.escape(t['manager'])}</span></td>
             <td class="meta">{html.escape(t['manager'])}</td>
             <td class="num">{t['player_count']}</td>
             <td class="num">{t['expensive_count']}</td>
@@ -881,7 +886,7 @@ def render_summary_section(by_manager, generated_at):
       </div>
 
       <h2>Teams ranked by {TARGET_SEASON} cap commitment</h2>
-      <table class="roster">
+      <table class="roster standings">
         <thead>
           <tr>
             <th>#</th>
@@ -1871,11 +1876,14 @@ tr.history-row > td.history-cell {
   font-variant-numeric: tabular-nums;
 }
 
-/* Position-rank neighbor table under each year's chart */
+/* Position-rank neighbor table under each year's chart.
+   table-layout: fixed lets the name column absorb all leftover width —
+   without it, max-width tricks collapse the name to ~0px on mobile. */
 .ps-nb-table {
   width: 100%;
   margin-top: 12px;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 11.5px;
   font-variant-numeric: tabular-nums;
 }
@@ -1897,7 +1905,6 @@ tr.history-row > td.history-cell {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 0;
 }
 .ps-nb-pts {
   text-align: right;
@@ -2447,6 +2454,149 @@ tr.history-row > td.history-cell {
 .sidebar-team-list { display: flex; flex-direction: column; }
 
 /* ====================================================================== */
+/* Stacked sub-line inside name cells (manager under team, pos/NFL under
+   player). Hidden on desktop where those have their own columns; shown on
+   mobile where the columns are hidden to keep rows to one clean line. */
+.sub-line { display: none; }
+
+/* ====================================================================== */
+/* Feedback widget: floating trigger + modal                              */
+/* ====================================================================== */
+.fb-trigger {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--blue-600);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 36, 121, 0.30);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.fb-trigger:hover { background: var(--blue-800); transform: translateY(-1px); }
+.fb-icon { font-size: 14px; line-height: 1; }
+.fb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 110;
+}
+.fb-overlay[hidden], .fb-modal[hidden] { display: none; }
+.fb-modal {
+  position: fixed;
+  bottom: 74px;
+  right: 18px;
+  z-index: 115;
+  width: min(380px, calc(100vw - 36px));
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  padding: 18px 20px 16px 20px;
+}
+.fb-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+.fb-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue-800);
+  margin: 0;
+}
+.fb-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--gray-500);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.fb-close:hover { color: var(--gray-800); }
+.fb-modal-sub {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  margin: 0 0 14px 0;
+}
+.fb-form label.fb-label {
+  display: block;
+  margin-bottom: 12px;
+}
+.fb-field-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-bottom: 4px;
+}
+.fb-form input[type="text"],
+.fb-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--gray-800);
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+.fb-form input[type="text"]:focus,
+.fb-form textarea:focus {
+  outline: none;
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 2px rgba(0, 56, 255, 0.12);
+}
+.fb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+.fb-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.fb-btn-primary {
+  background: var(--blue-600);
+  color: #fff;
+  border: 1px solid var(--blue-600);
+}
+.fb-btn-primary:hover { background: var(--blue-800); border-color: var(--blue-800); }
+.fb-btn-secondary {
+  background: #fff;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+}
+.fb-btn-secondary:hover { border-color: var(--gray-500); }
+.fb-modal-foot {
+  font-size: 11px;
+  color: var(--gray-500);
+  font-style: italic;
+  margin: 12px 0 0 0;
+}
+
+/* ====================================================================== */
 /* Mobile responsive layer (<= 720px) */
 /* ====================================================================== */
 .menu-toggle, .sidebar-tab { display: none; }
@@ -2562,16 +2712,45 @@ tr.history-row > td.history-cell {
   .ps-input-wrap { max-width: 100%; padding-right: 2px; }
   .ps-input:focus { box-shadow: 0 0 0 2px rgba(0, 56, 255, 0.12); }
 
-  /* Roster/summary table: shrink padding + font and hide the two least-
-     critical columns (Players, Premium) so the most important data —
-     rank, team, manager, total cap — fits the viewport without clipping. */
+  /* Roster/summary tables: shrink padding + font, then hide secondary
+     columns PER TABLE TYPE and surface that data as a stacked sub-line
+     under the name instead — every row stays one clean line. */
   table.roster { font-size: 12px; }
   table.roster th, table.roster td { padding: 7px 6px; }
   table.roster th { font-size: 9.5px; letter-spacing: 0.08em; }
-  table.roster th:nth-child(4),
-  table.roster td:nth-child(4),
-  table.roster th:nth-child(5),
-  table.roster td:nth-child(5) { display: none; }
+  /* Standings: hide Manager, Players, Premium → keep #, Team, Total cap.
+     Manager shows as a sub-line under the team name. */
+  table.standings th:nth-child(3), table.standings td:nth-child(3),
+  table.standings th:nth-child(4), table.standings td:nth-child(4),
+  table.standings th:nth-child(5), table.standings td:nth-child(5) { display: none; }
+  /* Team rosters: hide Pos, NFL, ADP → KEEP DRC, Cost, Value (the data
+     that matters on a keeper dashboard). Pos · NFL shows as a sub-line. */
+  table.team-roster th:nth-child(2), table.team-roster td:nth-child(2),
+  table.team-roster th:nth-child(3), table.team-roster td:nth-child(3),
+  table.team-roster th:nth-child(6), table.team-roster td:nth-child(6) { display: none; }
+  .sub-line {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--gray-600);
+    margin-top: 2px;
+    letter-spacing: 0.01em;
+  }
+  td.player-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
+  /* Small 3-col tables don't need to be horizontal scroll regions. */
+  .content table.ps-nb-table { display: table; }
+  /* Current-owner chip: never wrap mid-name. */
+  .ps-owner { white-space: nowrap; font-size: 10.5px; padding: 3px 6px; }
+  /* Feedback widget: full-width bottom sheet feel on small screens. */
+  .fb-trigger { bottom: 14px; right: 14px; padding: 9px 15px; }
+  .fb-modal {
+    right: 10px;
+    left: auto;
+    bottom: 64px;
+    width: min(380px, calc(100vw - 52px));
+    max-height: 72vh;
+    overflow-y: auto;
+  }
 
   /* KPI cards: stack 2-up, keep consistent visual height. */
   .kpis { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
@@ -2793,6 +2972,40 @@ JS = r"""
     if (backdrop) backdrop.addEventListener('click', closeSidebar);
     sidebar.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', closeSidebar);
+    });
+  }
+
+  // Feedback widget: open/close modal + mailto: submit handler
+  const fbTrigger = document.getElementById('fb-trigger');
+  const fbOverlay = document.getElementById('fb-overlay');
+  const fbModal = document.getElementById('fb-modal');
+  const fbClose = document.getElementById('fb-close');
+  const fbCancel = document.getElementById('fb-cancel');
+  const fbForm = document.getElementById('fb-form');
+  function fbOpen() {
+    if (fbOverlay) fbOverlay.hidden = false;
+    if (fbModal) fbModal.hidden = false;
+    const nameInput = document.getElementById('fb-name');
+    if (nameInput) setTimeout(() => nameInput.focus(), 50);
+  }
+  function fbCloseModal() {
+    if (fbOverlay) fbOverlay.hidden = true;
+    if (fbModal) fbModal.hidden = true;
+  }
+  if (fbTrigger) fbTrigger.addEventListener('click', fbOpen);
+  if (fbClose) fbClose.addEventListener('click', fbCloseModal);
+  if (fbCancel) fbCancel.addEventListener('click', fbCloseModal);
+  if (fbOverlay) fbOverlay.addEventListener('click', fbCloseModal);
+  if (fbForm) {
+    fbForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('fb-name').value || '').trim();
+      const message = (document.getElementById('fb-message').value || '').trim();
+      if (!name || !message) return;
+      const subject = encodeURIComponent('IYearn dashboard feedback from ' + name);
+      const body = encodeURIComponent('From: ' + name + '\n\n' + message + '\n\n---\nSent via the IYearn dashboard feedback widget.');
+      window.location.href = 'mailto:hodorpete@gmail.com?subject=' + subject + '&body=' + body;
+      fbCloseModal();
     });
   }
 })();
@@ -3104,6 +3317,108 @@ def render_commissioners_desk_section(posts):
         <div class="desk-content">{"".join(post_panels)}</div>
       </div>
     </section>"""
+
+
+def render_about_section():
+    """Welcome/about page. Brief tour of what the dashboard is, how it's
+    organized, and how to give feedback. Image placeholders below each
+    section description are for Pete to drop screenshots into later."""
+    return """
+    <section class="team-section" id="about" hidden>
+      <header class="section-header">
+        <h1 class="section-title">About this dashboard</h1>
+        <p class="section-sub">A live ledger of <em>I Yearn For Your Sweet TD's</em> &mdash; keeper costs, draft history, trades, and league communications. Built for the 2026 season and ongoing.</p>
+      </header>
+
+      <div class="about-grid">
+
+        <section class="about-block">
+          <h2 class="about-h2">What is this?</h2>
+          <p>This site replaces the manual Excel sheet Pete has been keeping since 2023 with an automatically-refreshed view of the league. The goal is to surface every manager's keeper cost, draft picks, and trade history in one place &mdash; with the math worked out and the rules linked &mdash; so we can spend less time arguing about numbers and more time arguing about everything else.</p>
+        </section>
+
+        <section class="about-block">
+          <h2 class="about-h2">How to navigate</h2>
+          <p>The sidebar on the left has two groups:</p>
+          <ul class="about-list">
+            <li><strong>League view</strong> &mdash; everything that's leaguewide. Summary, player search, commissioner's writeups, and the rules.</li>
+            <li><strong>Teams</strong> &mdash; click any team to see its 2026 keepers, draft history, and trades. Tap the "+" to expand the team list.</li>
+          </ul>
+          <p>On mobile, the sidebar lives behind a small "MENU" tab on the left edge of the screen &mdash; tap it any time to open the menu, tap outside it to close.</p>
+        </section>
+
+        <section class="about-block">
+          <h2 class="about-h2">Sections you'll find</h2>
+
+          <h3 class="about-h3">Summary &amp; standings</h3>
+          <p>The opening view. Total league cap committed, average keeper spend per team, premium-tier keepers leaguewide, and a ranked table of who's spent what for 2026.</p>
+
+          <h3 class="about-h3">Player search</h3>
+          <p>Type any player's name and a dropdown of matches appears. Click one (or hit Enter) to open that player's full profile: DRC cost over time, season-by-season fantasy production, weekly bar charts, ownership lineage, and where they rank against the players above and below them at their position.</p>
+
+          <h3 class="about-h3">Commissioner's Desk</h3>
+          <p>Pete's writeups &mdash; draft grades, season recaps, weekly previews, draft-day announcements. The left rail is the index; the most recent entry opens by default.</p>
+
+          <h3 class="about-h3">League rules</h3>
+          <p>The DRC cost table, decrement rules, trade-freeze logic, the slide rule (including the new pick chasm constraint), draft order, the FAAB washing rule, and the amended 2026-27 lottery weights.</p>
+
+          <h3 class="about-h3">Per-team pages</h3>
+          <p>Each team has three tabs: <strong>Roster</strong> (every player on the 2025 end-of-season roster with their 2026 keeper cost), <strong>Drafts</strong> (every draft pick this manager has made, year by year, with the trajectory of each keeper), and <strong>Trades</strong> (every trade event with weekly fantasy points on both sides so we can see who really won).</p>
+        </section>
+
+        <section class="about-block">
+          <h2 class="about-h2">If something looks wrong</h2>
+          <p>Click the <strong>Feedback</strong> button in the bottom-right corner. Tell Pete what you saw, what you expected, and which page you were on. Include your name so he can follow up. The DRC math is auditable but the historical transaction record is patchy in places &mdash; managers spotting their own discrepancies is the fastest way to fix them.</p>
+        </section>
+
+        <section class="about-block">
+          <h2 class="about-h2">What's next</h2>
+          <p>Between now and the June 26 Summit, expect to see:</p>
+          <ul class="about-list">
+            <li>2026 draft pick allocations once the 12th manager is confirmed</li>
+            <li>A keeper roster simulator (Brian's tool, integrated)</li>
+            <li>More writeups in the Commissioner's Desk as the season approaches</li>
+            <li>Whatever else managers ask for via the feedback widget</li>
+          </ul>
+        </section>
+
+      </div>
+    </section>"""
+
+
+def render_feedback_widget():
+    """Floating bottom-right button + modal for collecting manager feedback.
+    Submit composes a prefilled mailto: link with Name and Message in the body.
+    Static-friendly (no backend needed). Can be swapped for a form service
+    later by changing FEEDBACK_ACTION below."""
+    return """
+    <button class="fb-trigger" id="fb-trigger" type="button" aria-label="Open feedback form">
+      <span class="fb-icon">&#9993;</span>
+      <span class="fb-label">Feedback</span>
+    </button>
+    <div class="fb-overlay" id="fb-overlay" hidden></div>
+    <div class="fb-modal" id="fb-modal" role="dialog" aria-labelledby="fb-title" hidden>
+      <header class="fb-modal-header">
+        <h2 id="fb-title" class="fb-modal-title">Send feedback to Pete</h2>
+        <button class="fb-close" id="fb-close" type="button" aria-label="Close">&times;</button>
+      </header>
+      <p class="fb-modal-sub">Spotted something wrong? Have a question, suggestion, or rant? Drop it in.</p>
+      <form id="fb-form" class="fb-form">
+        <label class="fb-label">
+          <span class="fb-field-label">Your name</span>
+          <input type="text" name="name" id="fb-name" required placeholder="Who's asking?" autocomplete="name">
+        </label>
+        <label class="fb-label">
+          <span class="fb-field-label">Message</span>
+          <textarea name="message" id="fb-message" rows="6" required placeholder="What's on your mind?"></textarea>
+        </label>
+        <div class="fb-actions">
+          <button type="button" class="fb-btn fb-btn-secondary" id="fb-cancel">Cancel</button>
+          <button type="submit" class="fb-btn fb-btn-primary">Send</button>
+        </div>
+        <p class="fb-modal-foot">Submitting will open your email app with the message pre-filled. Hit send there to deliver it.</p>
+      </form>
+    </div>"""
 
 
 def render_rules_section():
@@ -3496,6 +3811,7 @@ def build_sidebar(by_manager):
       <div class="brand-sub">Keeper ledger - {TARGET_SEASON}</div>
 
       <h3>League view</h3>
+      <a class="nav-link" data-target="about">About this dashboard</a>
       <a class="nav-link" data-target="summary">Summary &amp; standings</a>
       <a class="nav-link" data-target="player-search">Player search</a>
       <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
@@ -3514,6 +3830,8 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
     player_search = render_player_search_section(search_players)
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
+    about = render_about_section()
+    feedback = render_feedback_widget()
     team_sections = "\n".join(
         render_team_section(data, slugify(data["manager_actual"]))
         for name, data in sorted(by_manager.items())
@@ -3536,11 +3854,13 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 <div class="sidebar-backdrop"></div>
 {sidebar}
 <main class="content">
+{about}
 {summary}
 {player_search}
 {desk}
 {rules}
 {team_sections}
+{feedback}
 </main>
 </div>
 <script>{JS}</script>

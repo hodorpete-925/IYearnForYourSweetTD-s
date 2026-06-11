@@ -182,4 +182,7 @@ depleted offense with Diontae Johnson shipping off to Baltimore makes this
 an easy advantage for me. *Advantage Hodor*.
 
 All in, this is going to be really close with Tom narrowing the projections
-b
+between the two of us on Garrett Wilson’s performance. Tom wins if his WR’s
+put it together.
+
+*Favorite: Kurt Cobains Reign*
