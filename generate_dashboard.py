@@ -12,6 +12,7 @@ Run:  python generate_dashboard.py
 Out:  dashboard.html
 """
 
+import json
 import sqlite3
 import html
 from datetime import datetime
@@ -2460,6 +2461,153 @@ tr.history-row > td.history-cell {
 .sub-line { display: none; }
 
 /* ====================================================================== */
+/* Trade analyzer                                                         */
+/* ====================================================================== */
+.ta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 6px 0 20px;
+}
+.ta-side {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 5px;
+  padding: 14px 16px;
+}
+.ta-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+}
+.ta-team {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: 8px 10px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gray-800);
+  margin-bottom: 10px;
+}
+.ta-roster { max-height: 320px; overflow-y: auto; }
+.ta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ta-row:hover { background: #fff; }
+.ta-row input { margin: 0; flex: 0 0 auto; }
+.ta-row .ta-nm {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  color: var(--gray-800);
+}
+.ta-row .ta-meta { color: var(--gray-600); font-size: 11.5px; flex: 0 0 auto; }
+.ta-row .ta-cost {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue-800);
+  width: 86px;
+  text-align: right;
+}
+.ta-picks { margin-top: 12px; border-top: 1px solid var(--gray-200); padding-top: 10px; }
+.ta-picks select, .ta-add-pick {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gray-800);
+}
+.ta-add-pick { cursor: pointer; font-weight: 600; color: var(--blue-800); }
+.ta-add-pick:hover { border-color: var(--blue-600); }
+.ta-pick-chips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.ta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
+  padding: 3px 6px 3px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue-800);
+}
+.ta-chip button {
+  border: none; background: none; cursor: pointer;
+  color: var(--gray-500); font-size: 14px; line-height: 1; padding: 0 3px;
+}
+.ta-chip button:hover { color: var(--gray-800); }
+.ta-results { margin-top: 4px; }
+.ta-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.ta-recv {
+  border: 1px solid var(--gray-200);
+  border-radius: 5px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.ta-recv h3 { font-size: 14px; margin: 0 0 10px; color: var(--blue-800); }
+table.ta-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  table-layout: fixed;
+}
+table.ta-table th {
+  text-align: left;
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+table.ta-table td { padding: 6px; border-bottom: 1px solid var(--gray-100); }
+table.ta-table th.num, table.ta-table td.num { text-align: right; }
+table.ta-table td.ta-pname {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;
+}
+table.ta-table td.ta-frozen { font-weight: 700; color: var(--blue-800); }
+table.ta-table tr.ta-total td {
+  border-top: 1.5px solid #000; border-bottom: none; font-weight: 700;
+}
+.ta-keepnote { font-size: 10.5px; color: var(--gray-500); display: block; }
+.ta-bullets { margin: 14px 0 0; padding: 0 0 0 18px; font-size: 13px; color: var(--gray-800); }
+.ta-bullets li { margin-bottom: 6px; line-height: 1.5; }
+.ta-cap-up { color: var(--red-600, #982B09); font-weight: 600; }
+.ta-cap-down { color: var(--green-600, #6B7D00); font-weight: 600; }
+.ta-empty {
+  font-size: 13px; color: var(--gray-500); font-style: italic;
+  padding: 14px 0;
+}
+.ta-foot {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 22px;
+  line-height: 1.6;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 12px;
+}
+
+/* ====================================================================== */
 /* Feedback widget: floating trigger + modal                              */
 /* ====================================================================== */
 .fb-trigger {
@@ -2741,6 +2889,12 @@ tr.history-row > td.history-cell {
   .content table.ps-nb-table { display: table; }
   /* Current-owner chip: never wrap mid-name. */
   .ps-owner { white-space: nowrap; font-size: 10.5px; padding: 3px 6px; }
+  /* Trade analyzer: stack the two sides; results tables shrink. */
+  .ta-grid, .ta-cols { grid-template-columns: 1fr; gap: 12px; }
+  .ta-roster { max-height: 250px; }
+  .ta-row { padding: 7px 6px; }
+  table.ta-table { font-size: 11px; }
+  table.ta-table td, table.ta-table th { padding: 5px 4px; }
   /* Feedback widget: full-width bottom sheet feel on small screens. */
   .fb-trigger { bottom: 14px; right: 14px; padding: 9px 15px; }
   .fb-modal {
@@ -3008,6 +3162,213 @@ JS = r"""
       fbCloseModal();
     });
   }
+})();
+
+/* ---- Trade analyzer ------------------------------------------------- */
+(function() {
+  const D = window.TRADE_DATA;
+  const root = document.getElementById('trade-analyzer');
+  if (!D || !root) return;
+
+  // Canonical DRC -> dollar table (mirror of drc_dollar_lookup / league rules).
+  const DOLLARS = {1:200, 2:100, 3:80, 4:60, 5:50, 6:30, 7:30, 8:30, 9:30};
+  const $$ = d => DOLLARS[d] || 10;
+  const clampDrc = d => Math.max(1, Math.min(16, d));
+  const Y0 = D.season;                      // freeze year (2026)
+  const YEARS = [Y0, Y0 + 1, Y0 + 2];
+  const esc = s => String(s == null ? '—' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const money = n => '$' + n.toLocaleString();
+  const teamBy = {}; D.teams.forEach(t => teamBy[t.slug] = t);
+  const playersBy = {}; D.players.forEach(p => {
+    (playersBy[p.m] = playersBy[p.m] || []).push(p);
+  });
+
+  // Trade-time DRC anchor: the player's 2025 DRC; acquirer is frozen there
+  // for Y0, then the decrement resumes. Fall back to the keep-path 2026
+  // value for the rare player with no 2025 cost on record.
+  function anchor(p) { return p.d5 != null ? p.d5 : p.d6; }
+  function costRow(p) {
+    const a = clampDrc(anchor(p));
+    return YEARS.map((y, i) => { const d = clampDrc(a - i); return {y, d, c: $$(d)}; });
+  }
+
+  const sides = {};
+  root.querySelectorAll('.ta-side').forEach(el => {
+    const side = el.dataset.side;
+    sides[side] = {el, sel: el.querySelector('.ta-team'),
+                   roster: el.querySelector('.ta-roster'),
+                   chips: el.querySelector('.ta-pick-chips'),
+                   picked: new Set(), picks: []};
+    const sel = sides[side].sel;
+    D.teams.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.slug; o.textContent = t.team + ' — ' + t.mgr;
+      sel.appendChild(o);
+    });
+    const yearSel = el.querySelector('.ta-pick-year');
+    [Y0, Y0 + 1].forEach(y => {
+      const o = document.createElement('option'); o.value = y; o.textContent = y;
+      yearSel.appendChild(o);
+    });
+    const roundSel = el.querySelector('.ta-pick-round');
+    for (let r = 1; r <= 16; r++) {
+      const o = document.createElement('option'); o.value = r; o.textContent = 'Round ' + r;
+      roundSel.appendChild(o);
+    }
+    sel.addEventListener('change', () => {
+      sides[side].picked.clear();
+      sides[side].picks = [];
+      renderRoster(side);
+      renderChips(side);
+      compute();
+    });
+    el.querySelector('.ta-add-pick').addEventListener('click', () => {
+      if (!sel.value) return;
+      sides[side].picks.push({y: +yearSel.value, r: +roundSel.value});
+      renderChips(side);
+      compute();
+    });
+  });
+
+  function renderRoster(side) {
+    const s = sides[side];
+    if (!s.sel.value) { s.roster.innerHTML = ''; return; }
+    const list = (playersBy[s.sel.value] || []);
+    s.roster.innerHTML = list.map(p =>
+      '<label class="ta-row"><input type="checkbox" data-pid="' + p.i + '">' +
+      '<span class="ta-nm">' + esc(p.n) + '</span>' +
+      '<span class="ta-meta">' + esc(p.p) + ' · ' + esc(p.t) + '</span>' +
+      '<span class="ta-cost">DRC ' + esc(p.d6) + ' · ' + money(p.c6) + '</span></label>'
+    ).join('');
+    s.roster.querySelectorAll('input').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const pid = +cb.dataset.pid;
+        cb.checked ? s.picked.add(pid) : s.picked.delete(pid);
+        compute();
+      });
+    });
+  }
+
+  function renderChips(side) {
+    const s = sides[side];
+    s.chips.innerHTML = s.picks.map((pk, idx) =>
+      '<span class="ta-chip">' + pk.y + ' R' + pk.r +
+      '<button type="button" data-idx="' + idx + '" aria-label="Remove">&times;</button></span>'
+    ).join('');
+    s.chips.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        s.picks.splice(+b.dataset.idx, 1);
+        renderChips(side);
+        compute();
+      });
+    });
+  }
+
+  function pl(n, w) { return n + ' ' + (n === 1 ? w : w + 's'); }
+
+  function compute() {
+    const out = document.getElementById('ta-results');
+    const A = sides.a, B = sides.b;
+    if (!A.sel.value || !B.sel.value) { out.hidden = true; return; }
+    if (A.sel.value === B.sel.value) {
+      out.hidden = false;
+      out.innerHTML = '<div class="ta-empty">Pick two different teams.</div>';
+      return;
+    }
+    const get = pid => D.players.find(p => p.i === pid);
+    const aSends = [...A.picked].map(get), bSends = [...B.picked].map(get);
+    if (!aSends.length && !bSends.length && !A.picks.length && !B.picks.length) {
+      out.hidden = false;
+      out.innerHTML = '<div class="ta-empty">Check at least one player (or add a pick) on either side.</div>';
+      return;
+    }
+
+    const tA = teamBy[A.sel.value], tB = teamBy[B.sel.value];
+    // Receiving columns: A receives what B sends, and vice versa.
+    out.hidden = false;
+    out.innerHTML =
+      '<div class="ta-cols">' +
+      recvPanel(tA, bSends, B.picks, tB) +
+      recvPanel(tB, aSends, A.picks, tA) +
+      '</div>' +
+      '<div class="ta-cols" style="margin-top:18px">' +
+      bulletPanel(tA, bSends, aSends, B.picks, A.picks) +
+      bulletPanel(tB, aSends, bSends, A.picks, B.picks) +
+      '</div>';
+  }
+
+  function recvPanel(team, playersIn, picksIn, fromTeam) {
+    let rows = '', totals = [0, 0, 0], pts = 0;
+    playersIn.forEach(p => {
+      const tr = costRow(p);
+      tr.forEach((c, i) => totals[i] += c.c);
+      if (p.pts) pts += p.pts;
+      const keepNote = (p.d5 != null && tr[0].d !== p.d6)
+        ? '<span class="ta-keepnote">keep-path was DRC ' + p.d6 + ' (' + money(p.c6) + ')</span>' : '';
+      rows += '<tr><td class="ta-pname">' + esc(p.n) +
+        '<span class="ta-keepnote">' + esc(p.p) + ' · ' + esc(p.t) +
+        (p.pr ? ' · ' + esc(p.p) + esc(p.pr) + ' in 2025' : '') +
+        (p.adp ? ' · ADP ' + esc(p.adp) : '') + '</span></td>' +
+        '<td class="num">' + (p.pts != null ? p.pts.toFixed(1) : '—') + '</td>' +
+        '<td class="num ta-frozen">DRC ' + tr[0].d + '<br>' + money(tr[0].c) + keepNote + '</td>' +
+        '<td class="num">DRC ' + tr[1].d + '<br>' + money(tr[1].c) + '</td>' +
+        '<td class="num">DRC ' + tr[2].d + '<br>' + money(tr[2].c) + '</td></tr>';
+    });
+    picksIn.forEach(pk => {
+      rows += '<tr><td class="ta-pname">' + pk.y + ' Round ' + pk.r + ' pick' +
+        '<span class="ta-keepnote">from ' + esc(fromTeam.team) + ' · face value only</span></td>' +
+        '<td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>';
+    });
+    if (playersIn.length) {
+      rows += '<tr class="ta-total"><td>Keeper cost if all kept</td><td class="num">' +
+        (pts ? pts.toFixed(1) : '—') + '</td>' +
+        totals.map(t => '<td class="num">' + money(t) + '</td>').join('') + '</tr>';
+    }
+    return '<div class="ta-recv"><h3>' + esc(team.team) + ' receives</h3>' +
+      '<table class="ta-table"><colgroup><col><col style="width:14%"><col style="width:18%"><col style="width:16%"><col style="width:16%"></colgroup>' +
+      '<thead><tr><th>Asset</th><th class="num">2025 pts</th>' +
+      '<th class="num">' + YEARS[0] + ' (frozen)</th><th class="num">' + YEARS[1] + '</th>' +
+      '<th class="num">' + YEARS[2] + '</th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="5" class="ta-empty">Nothing yet</td></tr>') +
+      '</tbody></table></div>';
+  }
+
+  function bulletPanel(team, playersIn, playersOut, picksIn, picksOut) {
+    const inCost = playersIn.reduce((s, p) => s + costRow(p)[0].c, 0);
+    const outCost = playersOut.reduce((s, p) => s + p.c6, 0);
+    const newCap = team.cap - outCost + inCost;
+    const delta = newCap - team.cap;
+    const inPts = playersIn.reduce((s, p) => s + (p.pts || 0), 0);
+    const outPts = playersOut.reduce((s, p) => s + (p.pts || 0), 0);
+    const commit = playersIn.reduce((s, p) => s + costRow(p).reduce((a, c) => a + c.c, 0), 0);
+    const items = [];
+    const sign = delta >= 0 ? '+' : '−';
+    items.push(YEARS[0] + ' cap: ' + money(team.cap) + ' → ' + money(newCap) +
+      ' (<span class="' + (delta > 0 ? 'ta-cap-up' : 'ta-cap-down') + '">' +
+      sign + '$' + Math.abs(delta).toLocaleString() + '</span>)');
+    items.push('Roster count: ' + (playersOut.length || playersIn.length
+      ? pl(playersIn.length, 'player') + ' in, ' + pl(playersOut.length, 'player') + ' out'
+      : 'unchanged') + ' (max 18 slots in ' + YEARS[0] + ')');
+    items.push('2025 production: receives ' + inPts.toFixed(1) + ' pts, sends ' + outPts.toFixed(1) + ' pts');
+    if (playersIn.length) {
+      items.push('Three-year keeper commitment on players received (' + YEARS[0] + '–' +
+        YEARS[2] + ', if all kept): ' + money(commit));
+    }
+    if (picksIn.length || picksOut.length) {
+      const fmt = arr => arr.map(pk => pk.y + ' R' + pk.r).join(', ');
+      if (picksIn.length) items.push('Receives picks: ' + fmt(picksIn) + ' (face value only)');
+      if (picksOut.length) items.push('Sends picks: ' + fmt(picksOut));
+    }
+    return '<div class="ta-recv"><h3>' + esc(team.team) + ' — the facts</h3>' +
+      '<ul class="ta-bullets">' + items.map(i => '<li>' + i + '</li>').join('') + '</ul></div>';
+  }
+
+  // Reset roster lists when navigating to the tab (cheap re-render).
+  const taLink = document.querySelector('.nav-link[data-target="trade-analyzer"]');
+  if (taLink) taLink.addEventListener('click', () => {
+    ['a', 'b'].forEach(s => { if (sides[s].sel.value) renderRoster(s); });
+  });
 })();
 """
 
@@ -3355,6 +3716,9 @@ def render_about_section():
 
           <h3 class="about-h3">Player search</h3>
           <p>Type any player's name and a dropdown of matches appears. Click one (or hit Enter) to open that player's full profile: DRC cost over time, season-by-season fantasy production, weekly bar charts, ownership lineage, and where they rank against the players above and below them at their position.</p>
+
+          <h3 class="about-h3">Trade analyzer</h3>
+          <p>Pick two teams, check the players (and draft picks) going each way, and the tool lays out what's actually exchanged: 2025 production, market value, and &mdash; the part Yahoo can't show you &mdash; what each player costs to keep in 2026 and the out-years under the trade-freeze rule. It states facts and totals only; it will never tell you whether to do the trade.</p>
 
           <h3 class="about-h3">Commissioner's Desk</h3>
           <p>Pete's writeups &mdash; draft grades, season recaps, weekly previews, draft-day announcements. The left rail is the index; the most recent entry opens by default.</p>
@@ -3814,6 +4178,7 @@ def build_sidebar(by_manager):
       <a class="nav-link" data-target="about">About this dashboard</a>
       <a class="nav-link" data-target="summary">Summary &amp; standings</a>
       <a class="nav-link" data-target="player-search">Player search</a>
+      <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
       <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
       <a class="nav-link" data-target="league-rules">League rules</a>
 
@@ -3824,10 +4189,96 @@ def build_sidebar(by_manager):
     </aside>"""
 
 
+def render_trade_analyzer(by_manager):
+    """Trade analyzer tab: pick two teams, check players/picks moving each
+    way, see production exchanged and keeper-cost trajectories under the
+    trade-freeze rule. Facts and totals only — never a verdict.
+
+    Cost model (league rules, confirmed via Lamar/Higgins worked examples):
+      - Acquirer inherits the player's trade-time DRC (their most recent
+        season's DRC, i.e. 2025), FROZEN for the first season after the
+        trade (2026 for an off-season trade now).
+      - Decrement-by-1 resumes the following year; DRC floors at 1.
+      - The current owner's keep path has no freeze: their 2026 DRC is the
+        already-decremented value the dashboard computes.
+    """
+    teams = []
+    players = []
+    for name, data in sorted(by_manager.items()):
+        slug = slugify(data["manager_actual"])
+        teams.append({
+            "slug": slug,
+            "team": data["team_name"],
+            "mgr": data["manager"],
+            "cap": data["total_drc_dollars"],
+        })
+        for p in data["players"]:
+            h25 = (p.get("history") or {}).get(2025) or {}
+            pts = h25.get("pts")
+            pr = h25.get("pos_rank")
+            players.append({
+                "i": p["player_id"],
+                "n": p["name"],
+                "p": p["position"],
+                "t": p["nfl_team"],
+                "m": slug,
+                "d6": p["drc"],                 # 2026 DRC on current owner's keep path
+                "c6": p["drc_dollars"],         # 2026 $ on current owner's keep path
+                "d5": h25.get("drc"),           # trade-time DRC anchor (2025)
+                "pts": round(pts, 1) if isinstance(pts, (int, float)) else None,
+                "pr": pr,
+                "adp": p.get("adp_2026"),
+            })
+
+    data_json = json.dumps({"teams": teams, "players": players,
+                            "season": TARGET_SEASON}, separators=(",", ":"))
+
+    return f"""
+    <section class="team-section" id="trade-analyzer" hidden>
+      <header class="section-header">
+        <h1 class="section-title">Trade analyzer</h1>
+        <p class="section-sub">Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out each player's keeper cost for {TARGET_SEASON} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.</p>
+      </header>
+
+      <div class="ta-grid">
+        <div class="ta-side" data-side="a">
+          <label class="ta-label">Team A</label>
+          <select class="ta-team"><option value="">Select team&hellip;</option></select>
+          <div class="ta-roster"></div>
+          <div class="ta-picks">
+            <span class="ta-label">Add a draft pick</span>
+            <select class="ta-pick-year"></select>
+            <select class="ta-pick-round"></select>
+            <button type="button" class="ta-add-pick">Add</button>
+            <div class="ta-pick-chips"></div>
+          </div>
+        </div>
+        <div class="ta-side" data-side="b">
+          <label class="ta-label">Team B</label>
+          <select class="ta-team"><option value="">Select team&hellip;</option></select>
+          <div class="ta-roster"></div>
+          <div class="ta-picks">
+            <span class="ta-label">Add a draft pick</span>
+            <select class="ta-pick-year"></select>
+            <select class="ta-pick-round"></select>
+            <button type="button" class="ta-add-pick">Add</button>
+            <div class="ta-pick-chips"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ta-results" id="ta-results" hidden></div>
+
+      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. Draft picks are listed at face value only &mdash; slide and pick-chasm effects are not modeled. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
+    </section>
+    <script>window.TRADE_DATA = {data_json};</script>"""
+
+
 def render_html(by_manager, search_players, comms_posts, generated_at):
     sidebar = build_sidebar(by_manager)
     summary = render_summary_section(by_manager, generated_at)
     player_search = render_player_search_section(search_players)
+    trade_analyzer = render_trade_analyzer(by_manager)
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
     about = render_about_section()
@@ -3857,6 +4308,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 {about}
 {summary}
 {player_search}
+{trade_analyzer}
 {desk}
 {rules}
 {team_sections}

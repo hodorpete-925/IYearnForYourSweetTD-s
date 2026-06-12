@@ -40,6 +40,9 @@ from urllib.parse import urlparse
 HERE = Path(__file__).parent
 PORT = 8765
 RUNS_LOG = HERE / "runs.json"
+# Under pythonw (no console), child processes like git would otherwise each
+# flash up their own console window. This flag suppresses that.
+CREATE_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
 LIVE_URL = "https://hodorpete-925.github.io/IYearnForYourSweetTD-s/"
 
 ACTIONS = {
@@ -57,7 +60,8 @@ ACTIONS = {
 def _git(*args, timeout=10):
     try:
         r = subprocess.run(["git", *args], cwd=HERE, capture_output=True,
-                           text=True, timeout=timeout)
+                           text=True, timeout=timeout,
+                           creationflags=CREATE_NO_WINDOW)
         return r.returncode, (r.stdout or "").strip(), (r.stderr or "").strip()
     except Exception as e:
         return 1, "", str(e)
@@ -366,7 +370,8 @@ class Handler(BaseHTTPRequestHandler):
         if ACTIONS[action].get("takes_msg") and req.get("message"):
             cmd.append(str(req["message"])[:120])
         try:
-            r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True, timeout=600)
+            r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True, timeout=600,
+                               creationflags=CREATE_NO_WINDOW)
             output = ((r.stdout or "") + (r.stderr or "")).strip() or "(no output)"
             rc = r.returncode
         except subprocess.TimeoutExpired:

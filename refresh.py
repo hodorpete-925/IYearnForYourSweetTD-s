@@ -47,8 +47,11 @@ def run(cmd, step):
     Git lock collisions (e.g. VS Code's background git running at the same
     moment) are transient — wait and retry once before giving up."""
     import time
+    # No console windows when run from the windowless control panel.
+    flags = 0x08000000 if sys.platform == "win32" else 0
     for attempt in (1, 2):
-        r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
+        r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True,
+                           creationflags=flags)
         out = (r.stdout or "") + (r.stderr or "")
         if r.returncode == 0:
             if out.strip():
@@ -89,7 +92,10 @@ if datetime.now() - built > timedelta(minutes=10):
 print(f"  build timestamp OK: {fm.group(1)}")
 
 print("\nStep 3/6 — staging files ...")
-run(["git", "add", "dashboard.html", "index.html"], "staging files")
+# Stage the generator alongside its output so source and build always
+# travel together — a published dashboard should never outrun its code.
+run(["git", "add", "dashboard.html", "index.html", "generate_dashboard.py"],
+    "staging files")
 
 print("\nStep 4/6 — checking for real changes ...")
 numstat = run(["git", "diff", "--cached", "--numstat"], "checking staged changes")
