@@ -2525,6 +2525,68 @@ tr.history-row > td.history-cell {
   width: 86px;
   text-align: right;
 }
+.ta-board { margin-top: 12px; border-top: 1px solid var(--gray-200); padding-top: 10px; }
+.ta-board summary {
+  cursor: pointer; font-size: 12px; font-weight: 600; color: var(--blue-800);
+  letter-spacing: 0.02em;
+}
+.ta-board summary:hover { color: var(--blue-600); }
+table.ta-slots {
+  width: 100%; border-collapse: collapse; margin-top: 8px;
+  font-size: 11.5px; font-variant-numeric: tabular-nums; table-layout: fixed;
+}
+table.ta-slots td { padding: 4px 6px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+table.ta-slots td.ta-rd { width: 34px; font-weight: 700; color: var(--gray-600); }
+table.ta-slots tr.ta-gone td { background: #faf4f2; }
+table.ta-slots tr.ta-gone td.ta-rd { color: var(--red-600, #982B09); text-decoration: line-through; }
+.ta-slot-player { font-weight: 600; color: var(--gray-800); }
+.ta-slot-note { color: var(--gray-500); font-size: 10.5px; }
+.ta-slot-up { color: #AA5200; font-weight: 600; }
+.ta-orig-chip {
+  display: inline-block; background: #eef3ff; color: var(--blue-800);
+  border-radius: 3px; font-size: 10px; font-weight: 600; padding: 0 5px; margin-left: 4px;
+}
+.ta-legend {
+  font-size: 10.5px; color: var(--gray-500); margin: 8px 0 6px; line-height: 1.5;
+}
+.ta-leg-acq { color: var(--blue-800); background: #eef3ff; border-radius: 3px; padding: 0 4px; }
+.ta-leg-gone { color: var(--red-600, #982B09); }
+.ta-slotrow {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 3px 0; border-bottom: 1px solid var(--gray-100);
+}
+.ta-slotrow.ta-gone { background: #faf4f2; border-radius: 3px; }
+.ta-slotrow.ta-gone .ta-rd { color: var(--red-600, #982B09); text-decoration: line-through; }
+.ta-slotrow .ta-rd {
+  flex: 0 0 30px; font-size: 11px; font-weight: 700; color: var(--gray-600);
+  padding-top: 4px; font-variant-numeric: tabular-nums;
+}
+.ta-pills { display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 auto; }
+.ta-pill {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  border: 1px solid var(--gray-200); border-radius: 4px;
+  background: #fff; padding: 3px 8px; font-size: 11.5px; font-weight: 600;
+  color: var(--gray-800); line-height: 1.4;
+}
+.ta-pill em { font-style: normal; font-weight: 600; font-size: 10px; color: var(--blue-800); }
+.ta-pill i { font-style: normal; font-size: 10px; color: var(--gray-500); }
+.ta-pill.open { border-style: dashed; color: var(--gray-500); font-weight: 500; }
+.ta-pill.acq { background: #eef3ff; border-color: #c9d8ff; }
+.ta-pill .ta-gl { color: var(--gray-500); font-weight: 700; }
+.ta-pill .ta-gl-up { color: #AA5200; }
+.ta-goneto { font-size: 11px; color: var(--red-600, #982B09); padding-top: 4px; }
+.ta-unkeep {
+  margin-top: 8px; font-size: 11.5px; color: var(--red-600, #982B09);
+  background: #fbe9e2; border-radius: 4px; padding: 7px 10px; line-height: 1.5;
+}
+.ta-warnings {
+  margin: 16px 0 0; background: #fff8e8; border: 1px solid var(--gold-400);
+  border-radius: 5px; padding: 12px 16px;
+}
+.ta-warnings h3 { font-size: 13px; margin: 0 0 8px; color: #674F00; }
+.ta-warnings ul { margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--gray-800); }
+.ta-warnings li { margin-bottom: 5px; line-height: 1.5; }
+.ta-warn-bad { color: var(--red-600, #982B09); font-weight: 600; }
 .ta-picks { margin-top: 12px; border-top: 1px solid var(--gray-200); padding-top: 10px; }
 .ta-picks select, .ta-add-pick {
   font-family: inherit;
@@ -3193,6 +3255,112 @@ JS = r"""
     return YEARS.map((y, i) => { const d = clampDrc(a - i); return {y, d, c: $$(d)}; });
   }
 
+  /* ---- Keeper slot simulation (league slide rules) -------------------
+     Each rostered player wants the round slot equal to their 2026 DRC.
+     - Native round owned & free  -> take it.
+     - Native owned but occupied  -> slide DOWN through CONSECUTIVE owned
+       rounds; the first round you don't own is a wall (the chasm).
+     - Native round not owned, or down-slide hit the wall -> may move UP
+       into any free earlier owned pick.
+     - Nowhere to land -> un-keepable under current picks.
+     Same-DRC ties seat the higher 2025 scorer first (sim assumption). */
+  function slotSim(slug, roster, picks) {
+    // own = your original pick (slide rules apply to these).
+    // Acquired picks are PROTECTED: never consumed automatically — the sim
+    // touches them only when a player can't be seated on your own picks,
+    // and labels that use as optional.
+    const slots = picks.map(pk =>
+      ({r: pk.r, o: pk.o, lp: pk.lp, own: pk.o === slug, taken: null}));
+    const owned = {};
+    slots.forEach(s => { (owned[s.r] = owned[s.r] || []).push(s); });
+    const holdAt = r => (owned[r] || []).length > 0;
+    const freeAt = (r, ownOnly) =>
+      (owned[r] || []).find(s => !s.taken && (!ownOnly || s.own));
+    function findSeat(d, ownOnly) {
+      if (holdAt(d)) {
+        let f = freeAt(d, ownOnly);
+        if (f) return {f, how: 'native'};
+        for (let r = d + 1; r <= 16; r++) {  // slide down: consecutive held rounds
+          if (!holdAt(r)) break;             // a round with no pick at all = the wall
+          f = freeAt(r, ownOnly);
+          if (f) return {f, how: 'slid'};
+        }
+      }
+      for (let r = d - 1; r >= 1; r--) {     // up-slot escape
+        const f = freeAt(r, ownOnly);
+        if (f) return {f, how: 'up'};
+      }
+      return null;
+    }
+    const order = roster.slice().sort((x, y) =>
+      (x.eff - y.eff) || ((y.pts || 0) - (x.pts || 0)));
+    const placed = [], unkeepable = [];
+    order.forEach(p => {
+      const d = clampDrc(p.eff);
+      const seat = findSeat(d, true) || findSeat(d, false);
+      if (seat) {
+        seat.f.taken = p;
+        placed.push({p, r: seat.f.r, how: seat.how, viaAcq: !seat.f.own});
+      } else unkeepable.push(p);
+    });
+    return {slots, placed, unkeepable};
+  }
+
+  function effRoster(slug) {
+    return (playersBy[slug] || []).map(p =>
+      ({i: p.i, n: p.n, eff: p.d6, pts: p.pts, c: p.c6}));
+  }
+
+  function pill(slot, seatedBy) {
+    const cls = ['ta-pill', slot.own ? 'own' : 'acq', seatedBy ? 'seated' : 'open'];
+    let inner = '';
+    if (seatedBy) {
+      const glyph = seatedBy.how === 'slid' ? ' <b class="ta-gl">&darr;</b>'
+                  : seatedBy.how === 'up'   ? ' <b class="ta-gl ta-gl-up">&uarr;</b>' : '';
+      inner = esc(seatedBy.p.n) + glyph + '<em>DRC ' + seatedBy.p.eff + '</em>';
+    } else {
+      inner = 'open' + (slot.own ? '' : '<em>protected</em>');
+    }
+    if (!slot.own) {
+      inner += '<i>from ' + esc((teamBy[slot.o] || {}).mgr || slot.o) +
+               (slot.lp ? ' · last pick' : '') + '</i>';
+    }
+    return '<span class="' + cls.join(' ') + '">' + inner + '</span>';
+  }
+
+  function renderBoard(side) {
+    const s = sides[side];
+    const body = s.el.querySelector('.ta-board-body');
+    if (!s.sel.value) { body.innerHTML = ''; return; }
+    const slug = s.sel.value;
+    const sim = slotSim(slug, effRoster(slug), D.picks[slug] || []);
+    const lostBy = {};
+    (D.picks_lost[slug] || []).forEach(l => { (lostBy[l.r] = lostBy[l.r] || []).push(l); });
+    let rows = '';
+    for (let r = 1; r <= 16; r++) {
+      const slotsHere = sim.slots.filter(sl => sl.r === r);
+      const pills = slotsHere.map(sl =>
+        pill(sl, sl.taken ? sim.placed.find(x => x.p === sl.taken) : null));
+      (lostBy[r] || []).forEach(l => {
+        pills.push('<span class="ta-goneto">&rarr; traded to ' +
+          esc((teamBy[l.to] || {}).mgr || l.to || '?') + '</span>');
+      });
+      const gone = !slotsHere.length;
+      rows += '<div class="ta-slotrow' + (gone ? ' ta-gone' : '') + '">' +
+        '<span class="ta-rd">R' + r + '</span><span class="ta-pills">' +
+        (pills.join('') || '<span class="ta-goneto">no pick</span>') +
+        '</span></div>';
+    }
+    let unkeep = '';
+    if (sim.unkeepable.length) {
+      unkeep = '<div class="ta-unkeep"><strong>No slot under current picks</strong> (chasm / overflow): ' +
+        sim.unkeepable.map(p => esc(p.n) + ' (DRC ' + p.eff + ')').join(', ') + '</div>';
+    }
+    body.innerHTML =
+      '<div class="ta-legend">solid = your pick &middot; <span class="ta-leg-acq">tinted</span> = acquired (protected) &middot; <span class="ta-leg-gone">red</span> = traded away &middot; &darr; slid down &middot; &uarr; moved up</div>' +
+      rows + unkeep;
+  }
+
   const sides = {};
   root.querySelectorAll('.ta-side').forEach(el => {
     const side = el.dataset.side;
@@ -3220,6 +3388,7 @@ JS = r"""
       sides[side].picked.clear();
       sides[side].picks = [];
       renderRoster(side);
+      renderBoard(side);
       renderChips(side);
       compute();
     });
@@ -3295,7 +3464,78 @@ JS = r"""
       '<div class="ta-cols" style="margin-top:18px">' +
       bulletPanel(tA, bSends, aSends, B.picks, A.picks) +
       bulletPanel(tB, aSends, bSends, A.picks, B.picks) +
-      '</div>';
+      '</div>' +
+      slotWarnings(tA, aSends, bSends, A.picks, B.picks) +
+      slotWarnings(tB, bSends, aSends, B.picks, A.picks);
+  }
+
+  /* Post-trade slotting impact for one team: rerun the sim with the
+     traded players/picks applied and report what changes. */
+  function slotWarnings(team, playersOut, playersIn, picksOut, picksIn) {
+    const slug = team.slug;
+    const cur26out = picksOut.filter(pk => pk.y === Y0);
+    const cur26in = picksIn.filter(pk => pk.y === Y0);
+    if (!cur26out.length && !cur26in.length && !playersOut.length && !playersIn.length) return '';
+
+    const pre = slotSim(slug, effRoster(slug), D.picks[slug] || []);
+    const preSeat = {};
+    pre.placed.forEach(a => { preSeat[a.p.i] = a.r; });
+
+    // Post-trade roster: remove outgoing, add incoming at their frozen DRC.
+    const outIds = new Set(playersOut.map(p => p.i));
+    const postRoster = effRoster(slug).filter(p => !outIds.has(p.i))
+      .concat(playersIn.map(p => ({i: p.i, n: p.n, eff: clampDrc(anchor(p)), pts: p.pts})));
+    // Post-trade picks: drop one copy per outgoing round (acquired copies
+    // first, own pick last), add incoming rounds.
+    const postPicks = (D.picks[slug] || []).slice();
+    cur26out.forEach(pk => {
+      let idx = postPicks.findIndex(c => c.r === pk.r && c.o !== slug);
+      if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
+      if (idx >= 0) postPicks.splice(idx, 1);
+    });
+    cur26in.forEach(pk => postPicks.push({r: pk.r, o: 'acquired'}));
+
+    const post = slotSim(slug, postRoster, postPicks);
+    const items = [];
+
+    // Outgoing picks that currently seat a keeper.
+    cur26out.forEach(pk => {
+      const seated = pre.placed.filter(a => a.r === pk.r);
+      if (seated.length) {
+        items.push('R' + pk.r + ' currently slots ' +
+          seated.map(a => '<strong>' + esc(a.p.n) + '</strong> (DRC ' + a.p.eff + ')').join(', ') +
+          ' — trading it forces a re-slot.');
+      }
+    });
+    // Newly un-keepable players (the chasm bite).
+    const preUn = new Set(pre.unkeepable.map(p => p.i));
+    post.unkeepable.filter(p => !preUn.has(p.i) && !outIds.has(p.i)).forEach(p => {
+      items.push('<span class="ta-warn-bad">' + esc(p.n) + ' (DRC ' + p.eff +
+        ') becomes UN-KEEPABLE</span> — no pick to slot them into after this trade (chasm rule).');
+    });
+    // Players whose seat moves.
+    post.placed.forEach(a => {
+      const acqNote = a.viaAcq ? ' (uses an acquired pick — optional)' : '';
+      const was = preSeat[a.p.i];
+      if (was && was !== a.r && !outIds.has(a.p.i)) {
+        items.push(esc(a.p.n) + ' re-slots R' + was + ' → R' + a.r +
+          (a.how === 'up' ? ' (moves up — burns an earlier pick)' : '') + acqNote + '.');
+      }
+      if (!was && !preUn.has(a.p.i) && playersIn.some(p => p.i === a.p.i)) {
+        items.push(esc(a.p.n) + ' (acquired) slots at R' + a.r + acqNote + '.');
+      }
+    });
+    // Acquired players who cannot be slotted at all.
+    post.unkeepable.filter(p => playersIn.some(q => q.i === p.i)).forEach(p => {
+      items.push('<span class="ta-warn-bad">' + esc(p.n) + ' (acquired, DRC ' + p.eff +
+        ') has no slot</span> on this roster under current picks.');
+    });
+    if (picksOut.some(pk => pk.y !== Y0) || picksIn.some(pk => pk.y !== Y0)) {
+      items.push((Y0 + 1) + " picks are noted but not simulated (next year's board isn't set yet).");
+    }
+    if (!items.length) return '';
+    return '<div class="ta-warnings"><h3>' + esc(team.team) +
+      ' — pick &amp; slotting impact</h3><ul><li>' + items.join('</li><li>') + '</li></ul></div>';
   }
 
   function recvPanel(team, playersIn, picksIn, fromTeam) {
@@ -3367,7 +3607,9 @@ JS = r"""
   // Reset roster lists when navigating to the tab (cheap re-render).
   const taLink = document.querySelector('.nav-link[data-target="trade-analyzer"]');
   if (taLink) taLink.addEventListener('click', () => {
-    ['a', 'b'].forEach(s => { if (sides[s].sel.value) renderRoster(s); });
+    ['a', 'b'].forEach(s => {
+      if (sides[s].sel.value) { renderRoster(s); renderBoard(s); }
+    });
   });
 })();
 """
@@ -4230,7 +4472,48 @@ def render_trade_analyzer(by_manager):
                 "adp": p.get("adp_2026"),
             })
 
+    # --- 2026 pick inventory per team -----------------------------------
+    # Every team starts with rounds 1-16 of its own draft slot; picks traded
+    # during the 2025 season (= 2026-draft picks under the league's
+    # next-draft convention) move between teams. "Round 17" rows are the
+    # league's last-pick notation — treated as a round-16 pick.
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    slug_by_tsid = {}
+    for r in conn.execute(
+            "SELECT t.team_season_id, m.full_name FROM teams t "
+            "JOIN managers m ON m.manager_id = t.manager_id WHERE t.season = 2025"):
+        slug_by_tsid[r["team_season_id"]] = slugify(r["full_name"])
+    held = {t["slug"]: [{"r": r, "o": t["slug"]} for r in range(1, 17)]
+            for t in teams}
+    lost = {t["slug"]: [] for t in teams}
+    for mv in conn.execute(
+            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
+            " tp.destination_team_season_id d, tp.original_team_season_id o "
+            "FROM transaction_picks tp "
+            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
+            "WHERE t.season = 2025 ORDER BY t.timestamp"):
+        rnd = min(mv["rnd"], 16)
+        last_pick = mv["rnd"] > 16
+        src = slug_by_tsid.get(mv["s"])
+        dst = slug_by_tsid.get(mv["d"])
+        orig = slug_by_tsid.get(mv["o"]) or src
+        if src in held:
+            pool = held[src]
+            hit = next((p for p in pool if p["r"] == rnd and p["o"] == orig),
+                       next((p for p in pool if p["r"] == rnd), None))
+            if hit:
+                pool.remove(hit)
+                if hit["o"] == src:
+                    lost[src].append({"r": rnd, "to": dst})
+        if dst in held:
+            held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
+    conn.close()
+    for slug in held:
+        held[slug].sort(key=lambda p: (p["r"], p["o"]))
+
     data_json = json.dumps({"teams": teams, "players": players,
+                            "picks": held, "picks_lost": lost,
                             "season": TARGET_SEASON}, separators=(",", ":"))
 
     return f"""
@@ -4245,6 +4528,8 @@ def render_trade_analyzer(by_manager):
           <label class="ta-label">Team A</label>
           <select class="ta-team"><option value="">Select team&hellip;</option></select>
           <div class="ta-roster"></div>
+          <details class="ta-board"><summary>2026 pick board &amp; keeper slotting</summary>
+            <div class="ta-board-body"></div></details>
           <div class="ta-picks">
             <span class="ta-label">Add a draft pick</span>
             <select class="ta-pick-year"></select>
@@ -4257,6 +4542,8 @@ def render_trade_analyzer(by_manager):
           <label class="ta-label">Team B</label>
           <select class="ta-team"><option value="">Select team&hellip;</option></select>
           <div class="ta-roster"></div>
+          <details class="ta-board"><summary>2026 pick board &amp; keeper slotting</summary>
+            <div class="ta-board-body"></div></details>
           <div class="ta-picks">
             <span class="ta-label">Add a draft pick</span>
             <select class="ta-pick-year"></select>
@@ -4269,7 +4556,7 @@ def render_trade_analyzer(by_manager):
 
       <div class="ta-results" id="ta-results" hidden></div>
 
-      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. Draft picks are listed at face value only &mdash; slide and pick-chasm effects are not modeled. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
+      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The keeper-slotting boards place every rostered player at their DRC round under the league's slide rules &mdash; collisions slide down only through consecutive rounds you own (a missing round is a wall), and a player whose own round is gone can move UP into a free earlier pick but never down past the gap. Acquired picks are protected from the slide: the sim never spends them while one of your own picks can seat the player, and labels any optional use. Where two keepers share a DRC, the sim seats the higher 2025 scorer first; in real life that ordering is the manager's call, so treat slot assignments as one valid arrangement, not the only one. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
     </section>
     <script>window.TRADE_DATA = {data_json};</script>"""
 
