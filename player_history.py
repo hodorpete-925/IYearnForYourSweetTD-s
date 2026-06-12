@@ -24,26 +24,19 @@ import compute_drc as drc
 def get_owner_at_year_end(conn, player_id, year):
     """Return team_season_id that owned this player at end of `year`, or None.
 
-    Two signals to consider:
-      1. The most recent incoming transaction for this player <= year-end.
-      2. The most recent draft_picks row for this player <= year.
-
-    Pick whichever is more recent. A draft_picks row in season N is treated
-    as occurring on Sept 1 of that season (a stable approximation of when
-    the keeper-selection roster locks in). This lets us correctly identify
-    silent off-season ownership changes — e.g., Scott traded Adams in Nov 2024
-    but didn't keep him, and Vescuso drafted Adams fresh in 2025. The 2025
-    draft is more recent than the Nov 2024 trade, so end-of-2025 owner =
-    Vescuso, not Scott.
-
-    Falls back gracefully if only one signal exists.
+    Signals: the most recent transaction row (EITHER direction) <= Dec 31,
+    and the most recent draft_picks row <= year (counted as Sept 1 of its
+    season, when keeper rosters lock). The more recent signal wins, then:
+      - last event outgoing (a drop) -> free agent, return None
+      - claims from before this year's draft are voided by Yahoo's silent
+        draft-reset release unless the player appears on this year's final
+        roster (Drew Lock case: added 2025-08-14, never kept/drafted)
     """
     txn_row = conn.execute("""
-        SELECT tp.team_season_id, t.timestamp
+        SELECT tp.team_season_id, t.timestamp, tp.direction
         FROM all_transactions t
         JOIN all_transaction_players tp ON tp.transaction_id = t.transaction_id
         WHERE tp.player_id = ?
-          AND tp.direction = 'incoming'
           AND DATE(t.timestamp) <= ?
         ORDER BY t.timestamp DESC
         LIMIT 1
@@ -55,19 +48,33 @@ def get_owner_at_year_end(conn, player_id, year):
         ORDER BY season DESC LIMIT 1
     """, (player_id, year)).fetchone()
 
-    if txn_row and dp_row:
-        txn_team, txn_ts = txn_row
-        dp_team, dp_season = dp_row
-        # Approximate draft timestamp as Sept 1 of the season
-        dp_ts_approx = f"{dp_season}-09-01 00:00:00"
-        if dp_ts_approx > str(txn_ts):
-            return dp_team
-        return txn_team
+    draft_boundary = f"{year}-09-01 00:00:00"
+
+    # Pick the more recent signal
+    winner_team, winner_ts, winner_direction = None, None, None
     if txn_row:
-        return txn_row[0]
+        winner_team, winner_ts, winner_direction = txn_row[0], str(txn_row[1]), txn_row[2]
     if dp_row:
-        return dp_row[0]
-    return None
+        dp_ts = f"{dp_row[1]}-09-01 00:00:00"
+        if winner_ts is None or dp_ts > winner_ts:
+            winner_team, winner_ts, winner_direction = dp_row[0], dp_ts, "incoming"
+    if winner_team is None:
+        return None
+
+    # A drop is a drop.
+    if winner_direction != "incoming":
+        return None
+
+    # Pre-draft claims need confirmation from this year's final roster.
+    if winner_ts < draft_boundary:
+        confirmed = conn.execute(
+            "SELECT 1 FROM final_rosters WHERE player_id = ? AND season = ? LIMIT 1",
+            (player_id, year),
+        ).fetchone()
+        if not confirmed:
+            return None
+
+    return winner_team
 
 
 def get_draft_round_in_year(conn, player_id, year):
