@@ -1,8 +1,10 @@
-"""Map FFC-style defense names ("Denver Defense") to our DEF players ("Broncos").
+"""Map ADP-source defense names to our DEF players ("Broncos").
 
-The FFC 2-QB ADP feed names defenses by city; our players table (from Yahoo)
-names them by nickname. Team codes exist on both sides, so the mapping is
-mechanical: join on UPPER(nfl_team).
+Sources spell defenses differently — FFC says "Denver Defense", FantasyPros
+says "Denver Broncos" — but our players table (from Yahoo) uses nicknames.
+Team codes exist on both sides, so the mapping is mechanical: any unmatched
+adp row whose position_rank starts with DEF joins on UPPER(nfl_team),
+with source-specific code aliases (e.g. FantasyPros JAC -> Yahoo Jax).
 
 Dry run by default (prints proposals). Run with --apply to insert into
 adp_name_mapping. Idempotent — existing mappings are left alone.
@@ -24,12 +26,17 @@ defs = {  # UPPER(team code) -> (player_id, nickname)
 }
 existing = {r[0] for r in conn.execute("SELECT raw_name FROM adp_name_mapping")}
 
+CODE_ALIASES = {"JAC": "JAX", "WSH": "WAS", "LA": "LAR"}
+
 proposals, unresolved = [], []
 rows = conn.execute(
     "SELECT DISTINCT player_name_raw, nfl_team FROM adp "
-    "WHERE player_name_raw LIKE '% Defense'").fetchall()
+    "WHERE player_id IS NULL AND ("
+    "  player_name_raw LIKE '% Defense' OR position_rank LIKE 'DEF%')"
+).fetchall()
 for r in rows:
     raw, code = r["player_name_raw"], (r["nfl_team"] or "").upper()
+    code = CODE_ALIASES.get(code, code)
     if raw in existing:
         continue
     if code in defs:
