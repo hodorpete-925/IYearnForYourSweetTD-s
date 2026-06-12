@@ -42,14 +42,29 @@ def die(step, detail=""):
 
 
 def run(cmd, step):
-    """Run a command, echo its output, die on non-zero exit."""
-    r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
-    out = (r.stdout or "") + (r.stderr or "")
-    if out.strip():
-        print(out.strip())
-    if r.returncode != 0:
-        die(step, f"(command: {' '.join(cmd)})")
-    return out
+    """Run a command, echo its output, die on non-zero exit.
+
+    Git lock collisions (e.g. VS Code's background git running at the same
+    moment) are transient — wait and retry once before giving up."""
+    import time
+    for attempt in (1, 2):
+        r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
+        out = (r.stdout or "") + (r.stderr or "")
+        if r.returncode == 0:
+            if out.strip():
+                print(out.strip())
+            return out
+        if "index.lock" in out and attempt == 1:
+            print("  (git lock collision — waiting 3s and retrying once)")
+            time.sleep(3)
+            continue
+        if out.strip():
+            print(out.strip())
+        hint = ""
+        if "index.lock" in out:
+            hint = ("A stale git lock is blocking this. Close any hung git "
+                    "prompts, then run:  del .git\\index.lock  and rerun.")
+        die(step, hint or f"(command: {' '.join(cmd)})")
 
 
 print("Step 1/6 — regenerating dashboard.html ...")
