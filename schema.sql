@@ -241,3 +241,63 @@ CREATE TABLE IF NOT EXISTS player_weekly_stats (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pws_player_season ON player_weekly_stats(player_id, season);
+
+-- =========================================================================
+-- STANDINGS & MATCHUPS — final standings + weekly head-to-head scores
+-- =========================================================================
+-- Populated by ingest_standings_scoreboard.py. team_standings is one row per
+-- (season, team) with final rank / W-L-T / points. matchups is one row per
+-- (season, week, team) — two rows per head-to-head game — carrying that team's
+-- points, its opponent, opponent points, and playoff/consolation/win flags.
+
+CREATE TABLE IF NOT EXISTS team_standings (
+    season          INTEGER NOT NULL,
+    team_season_id  INTEGER NOT NULL,
+    rank            INTEGER,
+    playoff_seed    INTEGER,
+    wins            INTEGER,
+    losses          INTEGER,
+    ties            INTEGER,
+    points_for      REAL,
+    points_against  REAL,
+    fetched_at      DATETIME NOT NULL,
+    PRIMARY KEY (season, team_season_id),
+    FOREIGN KEY (season)         REFERENCES seasons(season),
+    FOREIGN KEY (team_season_id) REFERENCES teams(team_season_id)
+);
+
+CREATE TABLE IF NOT EXISTS matchups (
+    season                  INTEGER NOT NULL,
+    week                    INTEGER NOT NULL,
+    team_season_id          INTEGER NOT NULL,
+    points                  REAL,
+    opponent_team_season_id INTEGER,
+    opponent_points         REAL,
+    is_playoffs             INTEGER NOT NULL DEFAULT 0,
+    is_consolation          INTEGER NOT NULL DEFAULT 0,
+    is_winner               INTEGER,
+    fetched_at              DATETIME NOT NULL,
+    PRIMARY KEY (season, week, team_season_id),
+    FOREIGN KEY (season)                  REFERENCES seasons(season),
+    FOREIGN KEY (team_season_id)          REFERENCES teams(team_season_id),
+    FOREIGN KEY (opponent_team_season_id) REFERENCES teams(team_season_id)
+);
+
+-- =========================================================================
+-- TEAM SEASON STATS — Yahoo's official per-team season counters
+-- =========================================================================
+-- Populated by ingest_team_season_stats.py. number_of_moves is Yahoo's own
+-- add/drop count (used for the 'most/fewest moves' trivia); faab_balance is
+-- remaining FAAB at season end (spent = $100 budget - balance).
+
+CREATE TABLE IF NOT EXISTS team_season_stats (
+    season           INTEGER NOT NULL,
+    team_season_id   INTEGER NOT NULL,
+    number_of_moves  INTEGER,
+    number_of_trades INTEGER,
+    faab_balance     INTEGER,
+    fetched_at       DATETIME NOT NULL,
+    PRIMARY KEY (season, team_season_id),
+    FOREIGN KEY (season)         REFERENCES seasons(season),
+    FOREIGN KEY (team_season_id) REFERENCES teams(team_season_id)
+);

@@ -53,11 +53,20 @@ def ingest_transaction(conn, t, season):
     """Insert one transaction + its players + its picks (commish events typically
     have neither, but we ingest them as bare rows for the audit trail)."""
     timestamp_iso = datetime.fromtimestamp(int(t.timestamp)).isoformat(sep=' ')
+    # FAAB bid: present on waiver claims (add / add-drop); None on free-agent
+    # adds and trades. yfpy exposes it as t.faab_bid.
+    faab_bid = getattr(t, 'faab_bid', None)
+    faab_bid = int(faab_bid) if faab_bid not in (None, '') else None
+    # Upsert (not INSERT OR IGNORE) so re-running backfills faab_bid onto rows
+    # that were ingested before this column existed.
     conn.execute(
-        """INSERT OR IGNORE INTO transactions
-           (yahoo_transaction_id, season, timestamp, event_type, status)
-           VALUES (?, ?, ?, ?, ?)""",
-        (t.transaction_id, season, timestamp_iso, t.type, t.status),
+        """INSERT INTO transactions
+           (yahoo_transaction_id, season, timestamp, event_type, status, faab_bid)
+           VALUES (?, ?, ?, ?, ?, ?)
+           ON CONFLICT(season, yahoo_transaction_id)
+           DO UPDATE SET faab_bid = excluded.faab_bid,
+                         status   = excluded.status""",
+        (t.transaction_id, season, timestamp_iso, t.type, t.status, faab_bid),
     )
 
     row = conn.execute(
