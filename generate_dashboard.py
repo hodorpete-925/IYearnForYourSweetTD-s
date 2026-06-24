@@ -863,7 +863,7 @@ def render_summary_section(by_manager, generated_at):
 
     return f"""
     <section class="team-section" id="summary">
-      <div class="eyebrow">League 4416 · {TARGET_SEASON} keeper window</div>
+      <div class="eyebrow">{TARGET_SEASON} keeper window</div>
       <h1 class="team-name">League cap commitment</h1>
       <p class="manager-name">Dollars each team will spend to keep their {TARGET_SEASON} keepers.</p>
 
@@ -3673,6 +3673,12 @@ def _md_to_html(text):
             i += 1
             continue
 
+        # Raw HTML block (single line): emit verbatim (tables, KPI cards)
+        if line.lstrip().startswith("<"):
+            out.append(line)
+            i += 1
+            continue
+
         # Standalone image line: ![alt](path)
         img_m = _re.fullmatch(r"!\[([^\]]*)\]\(([^)]+)\)", line.strip())
         if img_m:
@@ -3944,7 +3950,7 @@ def render_about_section():
           <h2 class="about-h2">How to navigate</h2>
           <p>The sidebar on the left has two groups:</p>
           <ul class="about-list">
-            <li><strong>League view</strong> &mdash; everything that's leaguewide. Summary, player search, commissioner's writeups, and the rules.</li>
+            <li><strong>IYFYSTD Resources</strong> &mdash; everything that's leaguewide. Summary, player search, commissioner's writeups, and the rules.</li>
             <li><strong>Teams</strong> &mdash; click any team to see its 2026 keepers, draft history, and trades. Tap the "+" to expand the team list.</li>
           </ul>
           <p>On mobile, the sidebar lives behind a small "MENU" tab on the left edge of the screen &mdash; tap it any time to open the menu, tap outside it to close.</p>
@@ -4412,17 +4418,30 @@ def build_sidebar(by_manager):
     )
     return f"""
     <aside class="sidebar">
-      <div class="brand">League 4416</div>
       <div class="brand-title">{html.escape(LEAGUE_NAME)}</div>
-      <div class="brand-sub">Keeper ledger - {TARGET_SEASON}</div>
 
-      <h3>League view</h3>
-      <a class="nav-link" data-target="about">About this dashboard</a>
-      <a class="nav-link" data-target="summary">Summary &amp; standings</a>
-      <a class="nav-link" data-target="player-search">Player search</a>
-      <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
-      <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
-      <a class="nav-link" data-target="league-rules">League rules</a>
+      <h3>IYFYSTD Resources</h3>
+      <details class="sidebar-teams">
+        <summary>Commentary &amp; League Info</summary>
+        <div class="sidebar-team-list">
+          <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
+          <a class="nav-link" data-target="league-rules">League rules</a>
+          <a class="nav-link" data-target="about">About this dashboard</a>
+        </div>
+      </details>
+      <details class="sidebar-teams">
+        <summary>League Standings and Records</summary>
+        <div class="sidebar-team-list">
+          <a class="nav-link" data-target="summary">Summary &amp; standings</a>
+        </div>
+      </details>
+      <details class="sidebar-teams">
+        <summary>Manager Tools</summary>
+        <div class="sidebar-team-list">
+          <a class="nav-link" data-target="player-search">Player search</a>
+          <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
+        </div>
+      </details>
 
       <details class="sidebar-teams">
         <summary>Teams</summary>
@@ -4578,7 +4597,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>{html.escape(LEAGUE_NAME)} - Keeper ledger - {TARGET_SEASON}</title>
+<title>{html.escape(LEAGUE_NAME)}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
