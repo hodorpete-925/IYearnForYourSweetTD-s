@@ -42,7 +42,12 @@ def die(step, detail=""):
 
 
 def run(cmd, step):
-    """Run a command, echo its output, die on non-zero exit.
+    """Run a command, streaming its output live while also capturing it.
+
+    Live streaming matters because the dashboard build prints nothing until
+    it finishes — with the old buffered capture the terminal looked frozen,
+    which is easy to mistake for a hang and interrupt. We still keep the
+    captured text so later steps can parse it (numstat, commit SHAs).
 
     Git lock collisions (e.g. VS Code's background git running at the same
     moment) are transient — wait and retry once before giving up."""
@@ -50,19 +55,21 @@ def run(cmd, step):
     # No console windows when run from the windowless control panel.
     flags = 0x08000000 if sys.platform == "win32" else 0
     for attempt in (1, 2):
-        r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True,
-                           creationflags=flags)
-        out = (r.stdout or "") + (r.stderr or "")
-        if r.returncode == 0:
-            if out.strip():
-                print(out.strip())
+        proc = subprocess.Popen(cmd, cwd=HERE, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, text=True,
+                                bufsize=1, creationflags=flags)
+        captured = []
+        for line in proc.stdout:        # prints each line the moment it arrives
+            print(line, end="", flush=True)
+            captured.append(line)
+        proc.wait()
+        out = "".join(captured)
+        if proc.returncode == 0:
             return out
         if "index.lock" in out and attempt == 1:
             print("  (git lock collision — waiting 3s and retrying once)")
             time.sleep(3)
             continue
-        if out.strip():
-            print(out.strip())
         hint = ""
         if "index.lock" in out:
             hint = ("A stale git lock is blocking this. Close any hung git "
@@ -70,8 +77,9 @@ def run(cmd, step):
         die(step, hint or f"(command: {' '.join(cmd)})")
 
 
-print("Step 1/6 — regenerating dashboard.html ...")
-out = run([sys.executable, "generate_dashboard.py"], "regenerating the dashboard")
+print("Step 1/6 — building dashboard.html ...")
+print("  (runs quietly for a few seconds — please wait, don't interrupt)")
+out = run([sys.executable, "-u", "generate_dashboard.py"], "regenerating the dashboard")
 if "Wrote" not in out:
     die("regenerating the dashboard", "Generator finished but never said 'Wrote ...'")
 m = re.search(r"(\d+) failures", out)
