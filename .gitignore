@@ -44,3 +44,12 @@ adp_unmatched.csv
 # Private league correspondence — source materials only, public renderings live in comms/
 League Comms and Context/
 External Sources/IMG_*
+
+# PowerPoint lock files (same idea as the ~$*.xlsx rule above)
+~$*.pptx
+
+# Control-panel run log — local only, regenerated on every run
+runs.json
+
+# Deck QA preview renders — regenerable scratch
+qa_dash/
