@@ -2107,6 +2107,7 @@ table.ta-table tr.ta-total td {
         <div class="sidebar-team-list">
           <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
           <a class="nav-link" data-target="league-rules">League rules</a>
+          <a class="nav-link" data-target="rules-history">Rules History</a>
           <a class="nav-link" data-target="about">About this dashboard</a>
         </div>
       </details>
@@ -2330,7 +2331,7 @@ table.ta-table tr.ta-total td {
           </tr></tbody>
       </table>
 
-      <p class="footnote">Generated 2026-06-24 10:42 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
+      <p class="footnote">Generated 2026-06-24 11:51 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
     </section>
 
     <section class="team-section" id="player-search" hidden>
@@ -17893,6 +17894,211 @@ table.ta-table tr.ta-total td {
         </section>
 
       </div>
+    </section>
+
+    <section class="team-section" id="rules-history" hidden>
+      <header class="section-header">
+        <h1 class="section-title">Rules history</h1>
+        <p class="section-sub">Every rule that's ever been floated, traced through the league group chat &mdash; who proposed it, who fought it, and whether it actually passed. The DB and Pete's workbook are canon; this reconciles the debate record against them.</p>
+      </header>
+      <style>
+        #rules-history .rh-canon{background:#f3f6fc;border-left:3px solid #022479;padding:11px 14px;border-radius:0 6px 6px 0;font-size:13.5px;color:#33415c;margin:4px 0 8px;}
+        #rules-history .rh-h2{font-size:17px;font-weight:700;color:#022479;margin:30px 0 3px;padding-bottom:6px;border-bottom:2px solid #022479;}
+        #rules-history .rh-note{color:#606c71;font-size:13px;margin:0 0 12px;}
+        #rules-history .rh-chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+        #rules-history .rh-live{background:#e9f3c9;color:#3f4a00;border:1px solid #cfe0a0;}
+        #rules-history .rh-fail{background:#fbe3da;color:#8a2708;border:1px solid #f0c4b3;}
+        #rules-history .rh-dock{background:#eaf1fb;color:#022479;border:1px solid #cfe0f4;}
+        #rules-history .rh-conf{background:#fdf0cf;color:#6b5200;border:1px solid #ecd79a;}
+        #rules-history table.rh-ov{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13.5px;}
+        #rules-history table.rh-ov th{background:#022479;color:#fff;font-weight:600;text-align:left;padding:8px 11px;}
+        #rules-history table.rh-ov td{padding:8px 11px;border-bottom:1px solid #ebebed;vertical-align:top;}
+        #rules-history table.rh-ov tr:nth-child(even) td{background:#f7f8fa;}
+        #rules-history table.rh-ov td.rh-r{white-space:nowrap;color:#606c71;}
+        #rules-history .rh-rule{padding:14px 0 4px;border-bottom:1px solid #ebebed;}
+        #rules-history .rh-rule:last-child{border-bottom:none;}
+        #rules-history .rh-rhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:3px;}
+        #rules-history .rh-rname{font-size:15px;font-weight:700;color:#022479;}
+        #rules-history .rh-sum{margin:2px 0 8px;font-size:13.5px;}
+        #rules-history ul.rh-rec{margin:0 0 8px;padding:0;list-style:none;border-left:2px solid #e1e6ef;}
+        #rules-history ul.rh-rec li{padding:3px 0 3px 12px;font-size:12.5px;color:#3a3f4a;}
+        #rules-history .rh-date{display:inline-block;min-width:90px;color:#0038ff;font-weight:700;font-variant-numeric:tabular-nums;}
+        #rules-history .rh-who{font-weight:600;color:#222;}
+        #rules-history .rh-verdict{font-size:13px;background:#f7f8fa;border-radius:6px;padding:8px 12px;}
+        #rules-history .rh-verdict strong{color:#022479;}
+        #rules-history .rh-flag{color:#8a2708;font-weight:700;}
+        #rules-history .rh-foot{margin-top:26px;font-size:12px;color:#606c71;border-top:1px solid #ebebed;padding-top:13px;}
+      </style>
+
+      <div class="rh-canon"><strong>What's canon:</strong> the league database and Pete's tracking workbook are the source of truth for what's in effect. The historical rules docs are <em>not</em> &mdash; they mix adopted rules with proposals that never passed. Quotes below are from the league thread, 2023&ndash;2026.</div>
+
+      <h2 class="rh-h2">At a glance</h2>
+      <p class="rh-note">Status of every rule in this ledger.</p>
+      <table class="rh-ov">
+        <thead><tr><th>Rule</th><th>Status</th><th class="rh-r">Last action</th></tr></thead>
+        <tbody>
+          <tr><td>Fill the open 12th seat ("The Lady Boys")</td><td><span class="rh-chip rh-dock">On docket</span></td><td class="rh-r">Open since '25</td></tr>
+          <tr><td>1.01 free-keeper loophole &mdash; ban</td><td><span class="rh-chip rh-fail">Failed twice</span></td><td class="rh-r">Re-vote Fri</td></tr>
+          <tr><td>Keepers to the back of the draft (Tom)</td><td><span class="rh-chip rh-fail">Voted down '24</span></td><td class="rh-r">Re-vote Fri</td></tr>
+          <tr><td>Counter-offer rule (must include an original player)</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Review Fri</td></tr>
+          <tr><td>Last-place +300 parlay</td><td><span class="rh-chip rh-conf">Unconfirmed</span></td><td class="rh-r">Confirm Fri</td></tr>
+          <tr><td>Paul's pick-trading tweak</td><td><span class="rh-chip rh-dock">On docket</span></td><td class="rh-r">Clarify Fri</td></tr>
+          <tr><td>Slide-down + pick chasm ("Cannobie Lake")</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Chasm new '26</td></tr>
+          <tr><td>6th-seed points wildcard</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed '24</td></tr>
+          <tr><td>10% top-points skim</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed '24</td></tr>
+          <tr><td>No drop-and-immediately-re-add</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed '25</td></tr>
+          <tr><td>Salary cap ($500&ndash;600)</td><td><span class="rh-chip rh-fail">Never adopted</span></td><td class="rh-r">Voted down '24</td></tr>
+          <tr><td>Straight-up losers bracket draft order</td><td><span class="rh-chip rh-fail">Never adopted</span></td><td class="rh-r">Voted down</td></tr>
+          <tr><td>"George $200 Rule"</td><td><span class="rh-chip rh-fail">Never a rule</span></td><td class="rh-r">&mdash;</td></tr>
+          <tr><td>Half-cost first year after a trade</td><td><span class="rh-chip rh-fail">Never adopted</span></td><td class="rh-r">'23 proposal</td></tr>
+          <tr><td>Player-for-pick &rarr; DRC one round lower</td><td><span class="rh-chip rh-fail">Never adopted</span></td><td class="rh-r">'23 proposal</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="rh-h2">On the 2026 docket</h2>
+      <p class="rh-note">The six items up for a decision Friday &mdash; with the history behind each.</p>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">1 &middot; Fill the open 12th seat</span> <span class="rh-chip rh-dock">On docket</span></div>
+        <p class="rh-sum">"The Lady Boys" seat is open (Manager TBD). The 12th chair has been contested since day one.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2023-09-04</span><span class="rh-who">Pete:</span> "Who do we want as our 12th and final manager? A. Jon  B. Other Dan."</li>
+          <li><span class="rh-date">2023-09-04</span><span class="rh-who">Paul:</span> "Jon didn't get six votes&hellip; other Dan gets right of first refusal."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> a personnel vote, not a rules mechanic. The seat has churned managers nearly every season; Friday's job is simply to fill it.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">2 &middot; 1.01 free-keeper loophole &mdash; ban</span> <span class="rh-chip rh-fail">Failed twice</span></div>
+        <p class="rh-sum">Stop the manager holding 1.01 from dropping a keeper during selection and re-grabbing him at 1.01 for the cheap original cost instead of paying $200. Paul has flagged this since the founding year.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2023-11-14</span><span class="rh-who">Paul:</span> "The only way to keep the keeper-forfeiture rule and fix the loophole is to preclude keeping of first-round picks."</li>
+          <li><span class="rh-date">2024-07-22</span><span class="rh-who">Proposal:</span> "Manager at 1.1 must either keep their player for $200 or can't redraft him at 1.1." &mdash; Brian, George &amp; Tom for; Scott, Alex &amp; Brad skeptical.</li>
+          <li><span class="rh-date">2024-07-24</span><span class="rh-who">Pete:</span> "A stalemate means no rule is passed." <span class="rh-who">Tom:</span> "6 votes is not a majority."</li>
+          <li><span class="rh-date">2025-06-27</span><span class="rh-who">Paul:</span> "Efforts to pass [a] rule to preclude [the] loophole fail[ed]."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> stalemated in 2024, failed again in 2025. Note the related general rule &mdash; no drop-and-immediately-re-add &mdash; <em>did</em> pass (below); this specific 1.01 ban did not. Re-vote Friday.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">3 &middot; Keepers to the back of the draft (Tom)</span> <span class="rh-chip rh-fail">Voted down '24</span></div>
+        <p class="rh-sum">Tom's simplification: keepers fill the back rounds; a pick's round only sets the dollar cost. Pitched as a replacement for the slide/chasm machinery.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2024-06-29</span><span class="rh-who">Tom:</span> "Your keepers fill in the back of your roster, not the front&hellip; draft round should only matter for the monetary cost."</li>
+          <li><span class="rh-date">2024-07-13</span><span class="rh-who">Paul:</span> "Tom's proposal got voted down at Hodor's in person&hellip; My thing got voted down. Tom's thing got voted down."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> voted down at the 2024 summit. Back on the docket Friday &mdash; and if it passes, it retires the slide/chasm rules below.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">4 &middot; Counter-offer rule</span> <span class="rh-chip rh-live">In effect</span></div>
+        <p class="rh-sum">When a trade is posted, the league has 48 hours to counter &mdash; and a valid counter must include one of the two original players. Already enforced; Friday is keep-or-adjust.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2023-09-05</span><span class="rh-who">Tom:</span> "Once a trade is accepted it is presented to the league and we have 48 hours to offer counteroffers."</li>
+          <li><span class="rh-date">2023-09-12</span><span class="rh-who">Pete:</span> "There should be a [counter] that includes one of the two original players."</li>
+          <li><span class="rh-date">2024-11-06</span><span class="rh-who">Pete:</span> "Denied." &mdash; rejecting an invalid counter under the rule.</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> in effect and enforced. The Friday question is whether to keep the "must include an original player" requirement as-is or loosen it.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">5 &middot; Last-place +300 parlay</span> <span class="rh-chip rh-conf">Unconfirmed</span></div>
+        <p class="rh-sum">The last-place finisher must place a $100 bet at +300 odds or better; if it hits, the winnings fund the summer summit.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2023-09-08</span><span class="rh-who">Alex:</span> "Should there be a punishment for coming in last place?"</li>
+          <li><span class="rh-date">2024-25</span><span class="rh-who">Summit motion:</span> "lowest-points team obligated to place a $100 bet at +300 odds or greater&hellip; if [it] wins, the pot goes to summer summit."</li>
+          <li><span class="rh-date">2025-11-18</span><span class="rh-who">Pete:</span> "Gents. Vote for this to be last-place punishment? Courtesy of Schlosberg."</li>
+        </ul>
+        <p class="rh-verdict"><strong class="rh-flag">Flagged:</strong> the chat shows it was <em>put to a vote</em> in Nov 2025, but no message records a clean pass &mdash; which is why it's on the agenda to confirm. Settle it Friday before treating it as a rule.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">6 &middot; Paul's pick-trading tweak</span> <span class="rh-chip rh-dock">On docket</span></div>
+        <p class="rh-sum">Paul's view: you shouldn't be able to "loophole the slide" by trading away picks &mdash; the slide shouldn't skip a round just because you no longer hold that pick.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2024-07-15</span><span class="rh-who">Paul:</span> "This is why you shouldn't be able to trade picks in this league."</li>
+          <li><span class="rh-date">2024-11-08</span><span class="rh-who">Paul:</span> "I like the slide&hellip; but I think the slide needs to not apply when you're trading picks&hellip; the pick trade is trumping the slide. That's what shouldn't be [allowed]."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> long-debated, never formally resolved. Paul clarifies the exact proposal Friday, then it goes to a vote.</p>
+      </div>
+
+      <h2 class="rh-h2">Already on the books</h2>
+      <p class="rh-note">Confirmed in effect &mdash; not up for a vote (with the receipts that prove they passed).</p>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Slide-down + pick chasm ("Cannobie Lake")</span> <span class="rh-chip rh-live">In effect</span></div>
+        <p class="rh-sum">Same-cost keepers can't share a round, so extras slide <em>down</em> to the next round you still hold. You can't slide across a round whose pick you traded away &mdash; that gap is the "chasm."</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2024-07-24</span><span class="rh-who">Paul:</span> "The agreement was that the draft-capital cost bumps down to the next available [round] that you have not kept."</li>
+          <li><span class="rh-date">2024-07-24</span><span class="rh-who">Pete:</span> "You could have 4 first-round-cost players and they'd slide to 1, 2, 3 and 4."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> slide-<em>down</em> is settled and in effect. The chasm refinement (no sliding across a traded-away pick) is the piece new for the 2026&ndash;27 cycle.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">6th-seed points wildcard</span> <span class="rh-chip rh-live">In effect</span></div>
+        <p class="rh-sum">Seeds 1&ndash;5 are straight standings; the 6th playoff spot goes to the most-points team among places 6&ndash;12, regardless of record.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2024 (summit)</span><span class="rh-who">Minute:</span> "Vote on 6th-place wildcard passes&hellip; 1&ndash;5 is straight standings, 6th is most points of 6&ndash;12. This new rule is in."</li>
+          <li><span class="rh-date">2025-09-30</span><span class="rh-who">Paul:</span> "I am very glad that wildcard rule passed."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> passed in 2024, in effect. (Worth a quick verbal reaffirmation Friday &mdash; a couple of managers needed it re-explained mid-2025.)</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">10% top-points skim</span> <span class="rh-chip rh-live">In effect</span></div>
+        <p class="rh-sum">The regular-season top scorer takes 10% off the top of the pot, separate from placing money.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2024-07-24</span><span class="rh-who">Pete:</span> "The 10% to the top scorer did pass."</li>
+          <li><span class="rh-date">2024-25</span><span class="rh-who">Payout sheet:</span> "Top Scorer: $563.70 @ 10% of total pot." &mdash; already paid out.</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> passed and already applied to a real payout. Settled.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">No drop-and-immediately-re-add</span> <span class="rh-chip rh-live">In effect</span></div>
+        <p class="rh-sum">You can't drop a player and immediately re-add him via FAAB in the next waiver cycle to dodge his keeper cost &mdash; he returns at his original draft value.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2025-08-20</span><span class="rh-who">Brian:</span> "If you drop a guy and pick him back up that same waiver period, he should go back to your original draft value."</li>
+          <li><span class="rh-date">2025-08</span><span class="rh-who">Proposal:</span> "Ban anyone from dropping a player and immediately picking them back up for FAAB in the subsequent waiver cycle."</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> adopted for 2025. This is the general version of the fix; the narrower 1.01-specific ban (docket item 2) is the part still unsettled.</p>
+      </div>
+
+      <h2 class="rh-h2">Proposed but never adopted</h2>
+      <p class="rh-note">The graveyard &mdash; floated, sometimes hotly, but never passed. Don't let these get cited as rules.</p>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">"George $200 Rule"</span> <span class="rh-chip rh-fail">Never a rule</span></div>
+        <p class="rh-sum">The <em>name</em> for the 1.01 loophole maneuver itself (drop a DRC-1 keeper, re-pick him at 1.01 for $0 instead of paying $200). Discussed at summit; never sanctioned.</p>
+        <p class="rh-verdict"><strong>Status:</strong> never adopted. Per canon, it is not in the algorithm or the books.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Salary cap ($500&ndash;600)</span> <span class="rh-chip rh-fail">Voted down</span></div>
+        <ul class="rh-rec"><li><span class="rh-date">2024-06-29</span><span class="rh-who">Paul:</span> "I thought we voted down the cap."</li></ul>
+        <p class="rh-verdict"><strong>Status:</strong> proposed alongside Tom's back-of-draft idea; voted down at the 2024 summit.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Straight-up losers-bracket draft order</span> <span class="rh-chip rh-fail">Voted down</span></div>
+        <p class="rh-sum">Paul's pitch to set the first six picks straight from the losers' bracket finish, so the back half of the season has stakes.</p>
+        <ul class="rh-rec"><li><span class="rh-date">2024 (summit)</span><span class="rh-who">Minute:</span> "Vote on doing straight-up losers bracket, first six picks in order &mdash; fails." <span class="rh-who">Paul:</span> "My losers-bracket proposal was vetoed last year."</li></ul>
+        <p class="rh-verdict"><strong>Status:</strong> never adopted; draft order is set by lottery (Friday's live draw).</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Half-cost first year after a trade</span> <span class="rh-chip rh-fail">Never adopted</span></div>
+        <p class="rh-verdict"><strong>Status:</strong> a 2023-doc proposal. Never passed &mdash; canon keeps the current rule: a traded player's DRC freezes for one season at full dollar value, then decrements normally.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Player-traded-for-a-pick &rarr; DRC one round lower</span> <span class="rh-chip rh-fail">Never adopted</span></div>
+        <p class="rh-verdict"><strong>Status:</strong> a 2023-doc proposal. Never passed &mdash; a player acquired via trade simply inherits his existing DRC chain.</p>
+      </div>
+
+      <p class="rh-foot"><strong>Sources &amp; method.</strong> Outcomes reconciled from ~8,700 league-thread messages (2023&ndash;2026) against the league database and Pete's tracking workbook. Direct quotes are trimmed for length; "summit minute" lines are notes pasted into the thread after in-person votes. One canon correction: the DRC-5 keeper price is <strong>$50</strong> (the old 2023 doc's $40 is superseded). Anything <span class="rh-flag">Flagged</span> is genuinely unsettled in the record &mdash; confirm in person, don't infer.</p>
+
     </section>
 
     <section class="team-section" id="team-alex-schlosberg" hidden>
