@@ -1,0 +1,25 @@
+# Normalize line endings: store text as LF in the repo, check out native per-OS.
+# This stops the recurring "whole file changed" CRLF churn on Windows.
+* text=auto
+
+# Be explicit for the text types in this project (LF in the repo)
+*.py    text
+*.md    text
+*.html  text
+*.css   text
+*.js    text
+*.json  text
+*.csv   text
+*.sql   text
+*.txt   text
+*.bat   text eol=crlf
+
+# Binary files — never touch these
+*.db    binary
+*.xlsx  binary
+*.pptx  binary
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
