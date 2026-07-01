@@ -575,6 +575,21 @@ def render_trade_side_table(label, players_list, subtotal, max_per_year):
     </div>"""
 
 
+def _event_date_display(iso_date, is_trade, display=None):
+    """Date-slot label. Off-season trades (month < Sept) read 'OFF-SEASON
+    TRADE' — their exact date is fuzzy (synthetic / commish-pushed). Hardcoded
+    uppercase because the date slots have no CSS text-transform (only the method
+    label + section headers do), and we want it to match that caps styling.
+    `display` overrides the shown text otherwise (e.g. a pre-formatted date)."""
+    shown = display if display is not None else iso_date
+    try:
+        if is_trade and int(str(iso_date)[5:7]) < 9:
+            return "OFF-SEASON TRADE"
+    except (ValueError, IndexError, TypeError):
+        pass
+    return shown
+
+
 def render_trade_event(trade):
     max_per_year = trade["max_pts_per_year"]
     acquired_table = render_trade_side_table(
@@ -587,7 +602,7 @@ def render_trade_event(trade):
     return f"""
     <div class="trade-event">
       <div class="trade-header">
-        <span class="trade-date">{html.escape(trade['date_display'])}</span>
+        <span class="trade-date">{html.escape(_event_date_display(trade['date'], True, trade['date_display']))}</span>
         <span class="trade-vs">vs {html.escape(trade['counterparty_name'])}</span>
       </div>
       {acquired_table}
@@ -656,7 +671,7 @@ def render_draft_pick_row(pick, show_round_cell=False, rowspan=1):
     if txn_log:
         log_items = "".join(
             f'<div class="tooltip-event">'
-            f'<span class="event-date">{html.escape(e["date"])}</span>'
+            f'<span class="event-date">{html.escape(_event_date_display(e["date"], e.get("kind") == "trade"))}</span>'
             f'<span class="event-desc">{html.escape(e["desc"])}</span>'
             f'</div>'
             for e in txn_log
@@ -4375,10 +4390,10 @@ def render_player_search_section(search_players):
     lineage timeline, and a chronological transaction log."""
     cards = []
     for p in search_players:
-        events_recent = p["events"][-3:] if p["events"] else []
+        events_recent = p["events"][-5:] if p["events"] else []
         events_html = "".join(
             f'<div class="ps-event">'
-            f'<span class="ps-event-date">{html.escape(e["date"])}</span>'
+            f'<span class="ps-event-date">{html.escape(_event_date_display(e["date"], e.get("kind") == "trade"))}</span>'
             f'<span class="ps-event-desc">{html.escape(e["desc"])}</span>'
             f'</div>'
             for e in events_recent
@@ -4550,7 +4565,7 @@ def render_player_search_section(search_players):
             '</div>'
         )
 
-        lineage_recent = p["lineage"][-3:] if p["lineage"] else []
+        lineage_recent = p["lineage"][-5:] if p["lineage"] else []
         lineage_nodes = []
         for i, node in enumerate(lineage_recent):
             if i > 0:
@@ -4558,7 +4573,7 @@ def render_player_search_section(search_players):
             method_class = node["method"].lower().replace(" ", "-")
             lineage_nodes.append(
                 f'<div class="lineage-node lineage-{method_class}">'
-                f'<div class="lineage-date">{html.escape(node["date"])}</div>'
+                f'<div class="lineage-date">{html.escape(_event_date_display(node["date"], node["method"] == "Trade"))}</div>'
                 f'<div class="lineage-manager">{html.escape(node["manager"])}</div>'
                 f'<div class="lineage-method">{html.escape(node["method"])}</div>'
                 f'<div class="lineage-detail">{html.escape(node["detail"])}</div>'
