@@ -590,30 +590,125 @@ def _event_date_display(iso_date, is_trade, display=None):
     return shown
 
 
-def render_trade_event(trade):
-    max_per_year = trade["max_pts_per_year"]
-    acquired_table = render_trade_side_table(
-        "Acquired", trade["acquired"], trade["subtotal_acquired"], max_per_year
-    )
-    given_table = render_trade_side_table(
-        "Gave up", trade["given_up"], trade["subtotal_given_up"], max_per_year
+def _trade_meta(p):
+    meta = html.escape(p.get("position") or "")
+    nfl = p.get("nfl_team")
+    if not p.get("is_pick") and nfl and nfl not in ("—", ""):
+        meta = f'{meta} &middot; {html.escape(nfl)}'
+    return meta
+
+
+def _trade_player_line(p, acquired):
+    sign = "+" if acquired else "&minus;"
+    cls = "since-pos" if acquired else "since-neg"
+    if p.get("since") is None:
+        since_html = '<span class="pl-since-na">&mdash;</span>'
+    else:
+        since_html = f'<span class="trade-pl-since {cls}">{sign}{p["since"]:.1f}</span>'
+    return (
+        f'<div class="trade-pl">'
+        f'<div class="trade-pl-name"><span class="pl-name">{html.escape(p["name"])}</span> '
+        f'<span class="pl-meta">{_trade_meta(p)}</span></div>'
+        f'{since_html}'
+        f'</div>'
     )
 
+
+def _trade_pick_chips(players, acquired):
+    sign = "+" if acquired else "&minus;"
+    cls = "pick-got" if acquired else "pick-gave"
+    chips = [
+        f'<span class="pick-chip {cls}">{sign} '
+        f'{html.escape(p["name"].replace(" draft pick", "").replace("Round ", "R"))}</span>'
+        for p in players if p.get("is_pick")
+    ]
+    return f'<div class="trade-pick-chips">{"".join(chips)}</div>' if chips else ""
+
+
+def _render_trade_history(trade):
+    def yrs(p, y):
+        if p.get("is_pick"):
+            return "&mdash;"
+        v = p["points"][y]["full"]
+        return _fmt_pts(v) if v is not None else "&mdash;"
+
+    def hrow(p, acquired):
+        tag = "Acquired" if acquired else "Traded away"
+        tagcls = "htag-got" if acquired else "htag-gave"
+        if p.get("since") is None:
+            since_html = "&mdash;"
+        else:
+            sign = "+" if acquired else "&minus;"
+            scls = "since-pos" if acquired else "since-neg"
+            since_html = f'<span class="{scls}">{sign}{p["since"]:.1f}</span>'
+        return (
+            f'<tr><td class="h-player"><span class="htag {tagcls}">{tag}</span> '
+            f'<span class="pl-name">{html.escape(p["name"])}</span> '
+            f'<span class="pl-meta">{_trade_meta(p)}</span></td>'
+            f'<td class="num">{yrs(p, 2023)}</td><td class="num">{yrs(p, 2024)}</td>'
+            f'<td class="num">{yrs(p, 2025)}</td>'
+            f'<td class="num h-since">{since_html}</td></tr>'
+        )
+
+    rows = "".join(hrow(p, True) for p in trade["acquired"])
+    rows += "".join(hrow(p, False) for p in trade["given_up"])
     return f"""
-    <div class="trade-event">
-      <div class="trade-header">
-        <span class="trade-date">{html.escape(_event_date_display(trade['date'], True, trade['date_display']))}</span>
-        <span class="trade-vs">vs {html.escape(trade['counterparty_name'])}</span>
+      <details class="trade-history">
+        <summary>Full three-year history</summary>
+        <table class="trade-hist-table">
+          <thead><tr><th>Player</th><th class="num">2023</th><th class="num">2024</th><th class="num">2025</th><th class="num">Since</th></tr></thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </details>"""
+
+
+def render_trade_event(trade):
+    v = trade["verdict"]
+    got_players = [p for p in trade["acquired"] if not p.get("is_pick")]
+    gave_players = [p for p in trade["given_up"] if not p.get("is_pick")]
+    got_lines = "".join(_trade_player_line(p, True) for p in got_players) or '<div class="trade-pl-empty">&mdash;</div>'
+    gave_lines = "".join(_trade_player_line(p, False) for p in gave_players) or '<div class="trade-pl-empty">&mdash;</div>'
+    date_lbl = _event_date_display(trade["date"], True, trade.get("date_display"))
+    return f"""
+    <div class="trade-card">
+      <div class="trade-card-head">
+        <div class="trade-card-when"><span class="trade-date">{html.escape(date_lbl)}</span> <span class="trade-vs">vs {html.escape(trade['counterparty_name'])}</span></div>
+        <span class="verdict-chip verdict-{v['kind']}">{html.escape(v['label'])}</span>
       </div>
-      {acquired_table}
-      {given_table}
+      <div class="trade-cols">
+        <div class="trade-col">
+          <div class="trade-col-label label-got">Acquired</div>
+          {got_lines}
+          {_trade_pick_chips(trade['acquired'], True)}
+        </div>
+        <div class="trade-col trade-col-gave">
+          <div class="trade-col-label label-gave">Traded away</div>
+          {gave_lines}
+          {_trade_pick_chips(trade['given_up'], False)}
+        </div>
+      </div>
+      {_render_trade_history(trade)}
     </div>"""
 
 
 def render_trades_tab(trade_history, slug):
     if not trade_history:
-        return '<p class="empty-note">No trades recorded for this manager.</p>'
-    return "".join(render_trade_event(t) for t in trade_history)
+        return '<p class="empty-note">No trades on record for this manager.</p>'
+    scored = [t for t in trade_history if t["verdict"]["kind"] in ("won", "lost", "neutral")]
+    net_total = round(sum(t["net"] for t in scored), 1)
+    wins = sum(1 for t in trade_history if t["verdict"]["kind"] == "won")
+    losses = sum(1 for t in trade_history if t["verdict"]["kind"] == "lost")
+    evens = sum(1 for t in trade_history if t["verdict"]["kind"] == "neutral")
+    net_cls = "since-pos" if net_total > 0.5 else "since-neg" if net_total < -0.5 else ""
+    net_str = f'{"+" if net_total >= 0 else "&minus;"}{abs(net_total):.1f}'
+    strip = f"""
+    <div class="trade-summary">
+      <div class="ts-cell"><div class="ts-label">Trades made</div><div class="ts-val">{len(trade_history)}</div></div>
+      <div class="ts-cell"><div class="ts-label">Net points since trades</div><div class="ts-val {net_cls}">{net_str}</div></div>
+      <div class="ts-cell"><div class="ts-label">Record (W&ndash;L&ndash;Even)</div><div class="ts-val">{wins}&ndash;{losses}&ndash;{evens}</div></div>
+    </div>
+    <p class="trade-note">&ldquo;Who won&rdquo; is judged on <b>points each player scored after the trade date</b> &mdash; not whole-season totals. Open a trade for the full history.</p>"""
+    return strip + "".join(render_trade_event(t) for t in trade_history)
 
 
 def _value_tag_label(tag):
@@ -625,40 +720,59 @@ def _value_tag_label(tag):
     }.get(tag, "")
 
 
+def _traj_tier(d):
+    if d <= 2:
+        return 1
+    if d <= 5:
+        return 2
+    if d <= 9:
+        return 3
+    return 4
+
+
 def _format_trajectory(trajectory):
-    """Render a trajectory list as 'R15 (2023) → 14 → 13' format."""
+    """Render the DRC trajectory as a chip row: a solid draft-round chip
+    then tier-colored DRC chips, each with a tiny year label (Design handoff)."""
     if not trajectory:
-        return "—"
-    parts = []
+        return '<span class="traj-none">&mdash;</span>'
+    chips = []
     for i, (year, label) in enumerate(trajectory):
+        yr = f"&rsquo;{str(year)[-2:]}"
         if i == 0:
-            parts.append(f"{label} ({year})")
+            digits0 = "".join(ch for ch in str(label) if ch.isdigit())
+            display = "R" + digits0 if digits0 else str(label)
+            chip_cls = "traj-chip traj-draft"
         else:
-            parts.append(label)
-    return " &rarr; ".join(parts)
+            digits = "".join(ch for ch in str(label) if ch.isdigit())
+            d = int(digits) if digits else 10
+            display = str(label)
+            chip_cls = f"traj-chip traj-tier{_traj_tier(d)}"
+        chips.append(
+            f'<span class="traj-col">'
+            f'<span class="{chip_cls}">{html.escape(display)}</span>'
+            f'<span class="traj-yr">{yr}</span>'
+            f'</span>'
+        )
+    return f'<span class="traj-chips">{"".join(chips)}</span>'
 
 
-def render_draft_pick_row(pick, show_round_cell=False, rowspan=1):
-    """Render one pick row. If show_round_cell, prepend the leftmost <td>
-    for the round-banding column with the given rowspan."""
-    pos = pick.get("position") or "—"
+def render_draft_pick_row(pick, year, slug):
+    """One flat pick row (Rd | Pick | Player[chevron+name+pos+type] | DRC
+    trajectory | ADP | Value), plus a tap-to-expand transaction-log row when
+    the pick has history (Design handoff)."""
+    pos = pick.get("position") or ""
+    dround = pick["draft_round"]
     is_keeper = pick.get("is_keeper", False)
     is_traded_for = pick.get("acquired_via_trade", False)
+
     if is_traded_for:
-        type_label = '<span class="pill pill-traded-for">Traded for</span>'
+        type_tag = '<span class="draft-tag tag-traded">Traded for</span>'
     elif is_keeper:
-        type_label = "K"
+        type_tag = '<span class="draft-tag tag-kept">Kept</span>'
     else:
-        type_label = "—"
+        type_tag = ""
 
-    dround = pick["draft_round"]
     trajectory_cell = _format_trajectory(pick.get("trajectory") or [])
-
-    round_cell = (
-        f'<td class="round-cell" rowspan="{rowspan}">{dround}</td>'
-        if show_round_cell else ""
-    )
-
     adp = pick.get("adp")
     adp_display = f"{adp:.1f}" if adp is not None else "—"
 
@@ -666,40 +780,52 @@ def render_draft_pick_row(pick, show_round_cell=False, rowspan=1):
     label = _value_tag_label(tag)
     value_pill = f'<span class="pill value-{tag}">{label}</span>' if tag else ""
 
-    trade_class = " traded-for" if pick.get("acquired_via_trade") else ""
+    pos_html = f'<span class="draft-pos">{html.escape(pos)}</span>' if pos else ""
+    trade_class = " traded-for" if is_traded_for else ""
     txn_log = pick.get("txn_log") or []
+    row_key = f"{slug}-{year}-{pick['overall_pick']}"
+
     if txn_log:
+        chevron = '<span class="draft-log-toggle" aria-hidden="true">&rsaquo;</span>'
+        row_class = f"round-{dround}{trade_class} has-log"
+        row_data = f' data-log-row="dlog-{row_key}"'
         log_items = "".join(
-            f'<div class="tooltip-event">'
+            f'<div class="dlog-event">'
             f'<span class="event-date">{html.escape(_event_date_display(e["date"], e.get("kind") == "trade"))}</span>'
             f'<span class="event-desc">{html.escape(e["desc"])}</span>'
             f'</div>'
             for e in txn_log
         )
-        tooltip_html = (
-            '<div class="player-tooltip">'
-            f'<div class="tooltip-header">{html.escape(pick["player_name"])} '
+        detail_row = (
+            f'<tr class="draft-log-detail" id="dlog-{row_key}" hidden>'
+            f'<td colspan="6"><div class="dlog-wrap">'
+            f'<div class="dlog-header">{html.escape(pick["player_name"])} '
             '&middot; transaction log</div>'
             f'{log_items}'
-            '</div>'
+            '</div></td></tr>'
         )
     else:
-        tooltip_html = ""
+        chevron = '<span class="draft-log-spacer"></span>'
+        row_class = f"round-{dround}{trade_class}"
+        row_data = ""
+        detail_row = ""
 
     return f"""
-        <tr class="round-{dround}{trade_class}">
-          {round_cell}
+        <tr class="{row_class}"{row_data}>
+          <td class="round-cell">R{dround}</td>
           <td class="pick-label num">{pick['overall_pick']}</td>
           <td class="player-name">
-            <span class="player-name-link">{html.escape(pick['player_name'])}</span>
-            {tooltip_html}
+            <div class="draft-player">
+              {chevron}
+              <span class="player-name-link">{html.escape(pick['player_name'])}</span>
+              {pos_html}
+              {type_tag}
+            </div>
           </td>
-          <td class="meta">{html.escape(pos)}</td>
-          <td class="meta type-code">{type_label}</td>
           <td class="trajectory-cell">{trajectory_cell}</td>
           <td class="num">{adp_display}</td>
           <td>{value_pill}</td>
-        </tr>"""
+        </tr>{detail_row}"""
 
 
 def render_year_drafts(year, picks, is_default_open, slug):
@@ -723,31 +849,23 @@ def render_year_drafts(year, picks, is_default_open, slug):
                 # Insert a placeholder row showing "no pick this round"
                 rows_parts.append(f"""
         <tr class="round-empty round-{round_num}">
-          <td class="round-cell" rowspan="1">{round_num}</td>
-          <td colspan="7" class="meta">No pick — traded away or skipped</td>
+          <td class="round-cell">R{round_num}</td>
+          <td colspan="5" class="meta">No pick — traded away or skipped</td>
         </tr>""")
                 continue
-            for i, p in enumerate(group_list):
-                rows_parts.append(
-                    render_draft_pick_row(
-                        p,
-                        show_round_cell=(i == 0),
-                        rowspan=len(group_list),
-                    )
-                )
+            for p in group_list:
+                rows_parts.append(render_draft_pick_row(p, year, slug))
         rows = "".join(rows_parts)
 
         body = f"""
             <table class="draft-table">
               <thead>
                 <tr>
-                  <th>Round</th>
-                  <th class="num">Actual Pick</th>
+                  <th>Rd</th>
+                  <th class="num">Pick</th>
                   <th>Player</th>
-                  <th>Pos</th>
-                  <th>Type</th>
-                  <th>DRC lineage</th>
-                  <th class="num">Average Pick (ADP)</th>
+                  <th>DRC trajectory</th>
+                  <th class="num">ADP</th>
                   <th>Value</th>
                 </tr>
               </thead>
@@ -1023,6 +1141,44 @@ body {
 }
 .nav-link.active .manager { color: rgba(255, 255, 255, 0.75); }
 
+/* --- Navigation chrome (Design handoff) --- */
+.brand-home {
+  display: block; width: 100%; text-align: left; border: none; background: none;
+  color: inherit; cursor: pointer; padding: 8px 10px; border-radius: 8px; font: inherit;
+  margin-bottom: 6px;
+}
+.brand-home:hover { background: rgba(255, 255, 255, 0.06); }
+.brand-home-eyebrow {
+  display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--blue-200); font-weight: 600;
+}
+.brand-home-sub { display: block; font-size: 11px; color: var(--blue-200); margin-top: 3px; }
+.crumb-bar {
+  position: sticky; top: 0; z-index: 30; background: #fff;
+  border-bottom: 1px solid var(--gray-200); padding: 10px 40px;
+  display: flex; align-items: center; gap: 12px; font-size: 12.5px;
+}
+.crumb-back {
+  border: 1px solid #d8e0f5; background: #f4f7ff; color: var(--blue-600); border-radius: 8px;
+  padding: 6px 12px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.crumb-back:hover { background: #e9f0ff; }
+.crumb-sep { color: #c4c4c8; }
+.crumb-current {
+  color: var(--gray-700); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.crumb-bar.at-home .crumb-sep,
+.crumb-bar.at-home .crumb-current { display: none; }
+.back-to-top {
+  position: fixed; right: 22px; bottom: 22px; z-index: 40; width: 46px; height: 46px;
+  border-radius: 50%; border: none; background: var(--blue-800); color: #fff; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(2, 36, 121, 0.34); font-size: 19px; line-height: 1;
+  display: none; align-items: center; justify-content: center;
+}
+.back-to-top.visible { display: flex; }
+
 /* --- Main content ------------------------------------------------------ */
 .content {
   padding: 56px 64px 96px;
@@ -1153,9 +1309,129 @@ table.roster tr.total td {
 .pill.tier-value   { background: #fff8e1; color: #8a6a1a; }
 .pill.tier-cheap   { background: var(--gray-100); color: var(--gray-600); }
 
-.pill.value-steal      { background: #eef7ee; color: #1d6b3a; }
-.pill.value-fair       { background: var(--gray-100); color: var(--gray-600); }
-.pill.value-overpriced { background: #fff0e6; color: #b04a00; }
+.pill.value-major-steal { background: #cdedd9; color: #0e5730; }
+.pill.value-steal       { background: #e6f6ee; color: #1c7a4a; }
+.pill.value-fair        { background: #f0f0f2; color: #606C71; }
+.pill.value-reach       { background: #fdecea; color: #b42318; }
+.pill.value-major-reach { background: #fbd9d3; color: #8f1c11; }
+.pill.value-overpriced  { background: #fff0e6; color: #b04a00; }
+
+/* --- DRC trajectory chips (Design handoff) --- */
+.traj-chips { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.traj-col { display: inline-flex; flex-direction: column; align-items: center; gap: 1px; }
+.traj-chip {
+  min-width: 20px; text-align: center; border-radius: 4px; padding: 1px 6px;
+  font-weight: 700; font-size: 11.5px; font-variant-numeric: tabular-nums;
+}
+.traj-yr { font-size: 8.5px; color: #b8b8bc; font-weight: 600; }
+.traj-draft { background: #022479; color: #fff; }
+.traj-tier1 { background: #e7ecfa; color: #022479; }
+.traj-tier2 { background: #eef4e2; color: #5b6b16; }
+.traj-tier3 { background: #f0f0f2; color: #606C71; }
+.traj-tier4 { background: #fbf3e0; color: #8a6a12; }
+.traj-none { color: #c8c8cc; }
+
+/* --- Draft player cell + tap-to-expand log (Design handoff) --- */
+.draft-player { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.draft-pos { color: #a0a0a6; font-size: 11px; }
+.draft-tag {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+  padding: 1px 6px; border-radius: 4px; white-space: nowrap;
+}
+.draft-tag.tag-kept { background: #e7ecfa; color: #022479; }
+.draft-tag.tag-traded { background: #fbf3e0; color: #8a6a12; }
+.draft-log-toggle {
+  color: #b0b0b4; font-size: 15px; font-weight: 700; line-height: 1;
+  transition: transform 0.15s; display: inline-flex; align-items: center;
+  justify-content: center; width: 13px;
+}
+.draft-log-toggle.open { transform: rotate(90deg); color: var(--blue-600); }
+.draft-log-spacer { display: inline-block; width: 13px; }
+.draft-table tr.has-log { cursor: pointer; }
+.draft-table tr.has-log:hover td { background: #fafbfe; }
+.draft-log-detail > td { padding: 0; background: #fafbfe; }
+.dlog-wrap { padding: 10px 16px 12px 40px; }
+.dlog-header {
+  font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #8e8e93;
+  font-weight: 700; margin-bottom: 6px;
+}
+.dlog-event { display: flex; gap: 12px; padding: 2px 0; font-size: 12px; }
+.dlog-event .event-date {
+  color: #909096; white-space: nowrap; min-width: 118px; font-variant-numeric: tabular-nums;
+}
+.dlog-event .event-desc { color: #2a2a2e; }
+
+/* --- Trades tab: summary strip + verdict cards (Design handoff) --- */
+.trade-summary {
+  display: flex; flex-wrap: wrap; align-items: stretch; margin: 8px 0;
+  border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; background: #fcfcfd;
+}
+.ts-cell { padding: 12px 18px; flex: 1; min-width: 140px; }
+.ts-cell + .ts-cell { border-left: 1px solid var(--gray-200); }
+.ts-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #8e8e93; font-weight: 600; }
+.ts-val { font-size: 22px; font-weight: 700; color: var(--blue-800); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.trade-note { font-size: 11.5px; color: #8e8e93; margin: 0 0 18px; }
+.trade-note b { color: #2a2a2e; }
+.trade-card { border: 1px solid var(--gray-200); border-radius: 11px; overflow: hidden; margin-bottom: 12px; background: #fff; }
+.trade-card-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 11px 15px; border-bottom: 1px solid #f2f2f4;
+}
+.trade-card-when { min-width: 0; }
+.trade-card .trade-date { font-weight: 700; color: var(--blue-800); font-size: 14px; }
+.trade-card .trade-vs { color: #8e8e93; font-size: 13px; }
+.verdict-chip {
+  display: inline-block; white-space: nowrap; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.02em; padding: 4px 11px; border-radius: 20px;
+}
+.verdict-won { background: #e6f6ee; color: #1c7a4a; }
+.verdict-lost { background: #fdecea; color: #b42318; }
+.verdict-neutral, .verdict-picks { background: #f0f0f2; color: #606C71; }
+.verdict-pending { background: #eef2fb; color: #4a5578; }
+.trade-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.trade-col { padding: 12px 15px; }
+.trade-col-gave { border-left: 1px solid #f2f2f4; }
+.trade-col-label { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; font-weight: 700; margin-bottom: 7px; }
+.label-got { color: #1c7a4a; }
+.label-gave { color: #b42318; }
+.trade-pl { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 3px 0; }
+.trade-pl-name { min-width: 0; }
+.pl-name { font-weight: 600; color: #2a2a2e; }
+.pl-meta { color: #8e8e93; font-size: 11.5px; }
+.trade-pl-since { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-since-na { color: #b0b0b4; }
+.since-pos { color: #1c7a4a; }
+.since-neg { color: #b42318; }
+.trade-pl-empty { color: #c0c0c4; font-size: 13px; padding: 3px 0; }
+.trade-pick-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.pick-chip { display: inline-block; border-radius: 5px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+.pick-got { background: #e7ecfa; color: var(--blue-800); }
+.pick-gave { background: #f0f0f2; color: #606C71; }
+.trade-history { border-top: 1px solid #f2f2f4; }
+.trade-history > summary {
+  padding: 8px 15px; font-size: 11.5px; color: #8e8e93; cursor: pointer; font-weight: 600; list-style: none;
+}
+.trade-history > summary::-webkit-details-marker { display: none; }
+.trade-history[open] > summary { color: var(--blue-600); }
+.trade-hist-table { width: calc(100% - 30px); border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; margin: 2px 15px 14px; }
+.trade-hist-table th {
+  text-align: left; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #b0b0b4; font-weight: 600; padding: 5px 8px;
+}
+.trade-hist-table th.num, .trade-hist-table td.num { text-align: right; }
+.trade-hist-table td { padding: 4px 8px; border-top: 1px solid #f5f5f5; color: #606C71; }
+.trade-hist-table td.h-player { color: #2a2a2e; }
+.trade-hist-table td.h-since { font-weight: 600; }
+.htag {
+  display: inline-block; white-space: nowrap; text-transform: uppercase; font-size: 9px;
+  font-weight: 700; letter-spacing: 0.04em; padding: 1px 5px; border-radius: 3px;
+}
+.htag-got { background: #e6f6ee; color: #1c7a4a; }
+.htag-gave { background: #fdecea; color: #b42318; }
+@media (max-width: 560px) {
+  .trade-cols { grid-template-columns: 1fr; }
+  .trade-col-gave { border-left: none; border-top: 1px solid #f2f2f4; }
+}
 
 /* --- Expandable player history ---------------------------------------- */
 .expand-btn {
@@ -3014,9 +3290,21 @@ JS = r"""
   const links = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('.team-section');
 
+  function updateCrumb(targetId) {
+    const bar = document.querySelector('.crumb-bar');
+    if (!bar) return;
+    bar.classList.toggle('at-home', targetId === 'summary');
+    const link = document.querySelector('.nav-link[data-target="' + targetId + '"]');
+    let label = '';
+    if (link) label = ((link.childNodes[0] && link.childNodes[0].textContent) || link.textContent || '').trim();
+    const cur = bar.querySelector('.crumb-current');
+    if (cur) cur.textContent = label;
+  }
+
   function show(targetId) {
     sections.forEach(s => s.hidden = (s.id !== targetId));
     links.forEach(l => l.classList.toggle('active', l.dataset.target === targetId));
+    updateCrumb(targetId);
     window.scrollTo({top: 0, behavior: 'instant'});
   }
 
@@ -3035,6 +3323,27 @@ JS = r"""
   });
 
   show('summary');
+
+  const brandHome = document.querySelector('.brand-home');
+  if (brandHome) brandHome.addEventListener('click', (e) => { e.preventDefault(); show('summary'); });
+  document.querySelectorAll('.crumb-back').forEach(b => b.addEventListener('click', (e) => { e.preventDefault(); show('summary'); }));
+  const backTop = document.querySelector('.back-to-top');
+  if (backTop) {
+    window.addEventListener('scroll', () => { backTop.classList.toggle('visible', (window.scrollY || document.documentElement.scrollTop) > 260); }, {passive: true});
+    backTop.addEventListener('click', () => { window.scrollTo({top: 0, behavior: 'smooth'}); });
+  }
+
+  document.querySelectorAll('.draft-table tr.has-log').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      const id = row.dataset.logRow;
+      const detail = id ? document.getElementById(id) : null;
+      if (!detail) return;
+      const chev = row.querySelector('.draft-log-toggle');
+      if (detail.hasAttribute('hidden')) { detail.removeAttribute('hidden'); if (chev) chev.classList.add('open'); }
+      else { detail.setAttribute('hidden', ''); if (chev) chev.classList.remove('open'); }
+    });
+  });
 
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -3323,309 +3632,235 @@ JS = r"""
 
   function effRoster(slug) {
     return (playersBy[slug] || []).map(p =>
-      ({i: p.i, n: p.n, eff: p.d6, pts: p.pts, c: p.c6}));
+      ({i: p.i, n: p.n, pos: p.p, eff: p.d6, pts: p.pts, c: p.c6}));
+  }
+  const tierOf = d => d <= 2 ? 1 : d <= 5 ? 2 : d <= 9 ? 3 : 4;
+  const first = m => String(m || '').split(' ')[0];
+  const dotColor = t => ({1:'#022479',2:'#5b6b16',3:'#a6a6ac',4:'#c79a2e'})[t] || '#a6a6ac';
+  function drcChipStyle(t) {
+    const m = {1:['#e7ecfa','#022479'],2:['#eef4e2','#5b6b16'],3:['#f0f0f2','#606C71'],4:['#fbf3e0','#8a6a12']};
+    const c = m[t] || m[3];
+    return 'display:inline-block;min-width:22px;text-align:center;border-radius:4px;padding:1px 6px;font-weight:700;font-size:11.5px;flex:none;background:' + c[0] + ';color:' + c[1];
   }
 
-  function pill(slot, seatedBy) {
-    const cls = ['ta-pill', slot.own ? 'own' : 'acq', seatedBy ? 'seated' : 'open'];
-    let inner = '';
-    if (seatedBy) {
-      const glyph = seatedBy.how === 'slid' ? ' <b class="ta-gl">&darr;</b>'
-                  : seatedBy.how === 'up'   ? ' <b class="ta-gl ta-gl-up">&uarr;</b>' : '';
-      inner = esc(seatedBy.p.n) + glyph + '<em>DRC ' + seatedBy.p.eff + '</em>';
-    } else {
-      inner = 'open' + (slot.own ? '' : '<em>protected</em>');
-    }
-    if (!slot.own) {
-      inner += '<i>from ' + esc((teamBy[slot.o] || {}).mgr || slot.o) +
-               (slot.lp ? ' · last pick' : '') + '</i>';
-    }
-    return '<span class="' + cls.join(' ') + '">' + inner + '</span>';
-  }
-
-  function renderBoard(side) {
-    const s = sides[side];
-    const body = s.el.querySelector('.ta-board-body');
-    if (!s.sel.value) { body.innerHTML = ''; return; }
-    const slug = s.sel.value;
-    const sim = slotSim(slug, effRoster(slug), D.picks[slug] || []);
-    const lostBy = {};
-    (D.picks_lost[slug] || []).forEach(l => { (lostBy[l.r] = lostBy[l.r] || []).push(l); });
-    let rows = '';
+  function boardModel(slug, picks, sim, picksLost) {
+    const lostBy = {}; (picksLost || []).forEach(l => (lostBy[l.r] = lostBy[l.r] || []).push(l));
+    const rows = [];
     for (let r = 1; r <= 16; r++) {
-      const slotsHere = sim.slots.filter(sl => sl.r === r);
-      const pills = slotsHere.map(sl =>
-        pill(sl, sl.taken ? sim.placed.find(x => x.p === sl.taken) : null));
-      (lostBy[r] || []).forEach(l => {
-        pills.push('<span class="ta-goneto">&rarr; traded to ' +
-          esc((teamBy[l.to] || {}).mgr || l.to || '?') + '</span>');
+      const here = sim.slots.filter(s => s.r === r);
+      const slots = here.map(sl => {
+        const seat = sl.taken ? sim.placed.find(x => x.p === sl.taken) : null;
+        return {own: sl.own, acqFrom: sl.own ? null : ((teamBy[sl.o] || {}).mgr || sl.o),
+          seat: seat ? {i: seat.p.i, name: seat.p.n, drc: seat.p.eff, how: seat.how, viaAcq: seat.viaAcq, pos: seat.p.pos} : null};
       });
-      const gone = !slotsHere.length;
-      rows += '<div class="ta-slotrow' + (gone ? ' ta-gone' : '') + '">' +
-        '<span class="ta-rd">R' + r + '</span><span class="ta-pills">' +
-        (pills.join('') || '<span class="ta-goneto">no pick</span>') +
-        '</span></div>';
+      rows.push({r, owned: here.length > 0, slots, goneTo: (lostBy[r] || []).map(l => (teamBy[l.to] || {}).mgr || l.to)});
     }
-    let unkeep = '';
-    if (sim.unkeepable.length) {
-      unkeep = '<div class="ta-unkeep"><strong>No slot under current picks</strong> (chasm / overflow): ' +
-        sim.unkeepable.map(p => esc(p.n) + ' (DRC ' + p.eff + ')').join(', ') + '</div>';
-    }
-    body.innerHTML =
-      '<div class="ta-legend">solid = your pick &middot; <span class="ta-leg-acq">tinted</span> = acquired (protected) &middot; <span class="ta-leg-gone">red</span> = traded away &middot; &darr; slid down &middot; &uarr; moved up</div>' +
-      rows + unkeep;
+    return rows;
   }
 
-  const sides = {};
-  root.querySelectorAll('.ta-side').forEach(el => {
-    const side = el.dataset.side;
-    sides[side] = {el, sel: el.querySelector('.ta-team'),
-                   roster: el.querySelector('.ta-roster'),
-                   chips: el.querySelector('.ta-pick-chips'),
-                   picked: new Set(), picks: []};
-    const sel = sides[side].sel;
-    D.teams.forEach(t => {
-      const o = document.createElement('option');
-      o.value = t.slug; o.textContent = t.team + ' — ' + t.mgr;
-      sel.appendChild(o);
-    });
-    const yearSel = el.querySelector('.ta-pick-year');
-    [Y0, Y0 + 1].forEach(y => {
-      const o = document.createElement('option'); o.value = y; o.textContent = y;
-      yearSel.appendChild(o);
-    });
-    const roundSel = el.querySelector('.ta-pick-round');
-    for (let r = 1; r <= 16; r++) {
-      const o = document.createElement('option'); o.value = r; o.textContent = 'Round ' + r;
-      roundSel.appendChild(o);
-    }
-    sel.addEventListener('change', () => {
-      sides[side].picked.clear();
-      sides[side].picks = [];
-      renderRoster(side);
-      renderBoard(side);
-      renderChips(side);
-      compute();
-    });
-    el.querySelector('.ta-add-pick').addEventListener('click', () => {
-      if (!sel.value) return;
-      sides[side].picks.push({y: +yearSel.value, r: +roundSel.value});
-      renderChips(side);
-      compute();
-    });
-  });
-
-  function renderRoster(side) {
-    const s = sides[side];
-    if (!s.sel.value) { s.roster.innerHTML = ''; return; }
-    const list = (playersBy[s.sel.value] || []);
-    s.roster.innerHTML = list.map(p =>
-      '<label class="ta-row"><input type="checkbox" data-pid="' + p.i + '">' +
-      '<span class="ta-nm">' + esc(p.n) + '</span>' +
-      '<span class="ta-meta">' + esc(p.p) + ' · ' + esc(p.t) + '</span>' +
-      '<span class="ta-cost">DRC ' + esc(p.d6) + ' · ' + money(p.c6) + '</span></label>'
-    ).join('');
-    s.roster.querySelectorAll('input').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const pid = +cb.dataset.pid;
-        cb.checked ? s.picked.add(pid) : s.picked.delete(pid);
-        compute();
-      });
-    });
-  }
-
-  function renderChips(side) {
-    const s = sides[side];
-    s.chips.innerHTML = s.picks.map((pk, idx) =>
-      '<span class="ta-chip">' + pk.y + ' R' + pk.r +
-      '<button type="button" data-idx="' + idx + '" aria-label="Remove">&times;</button></span>'
-    ).join('');
-    s.chips.querySelectorAll('button').forEach(b => {
-      b.addEventListener('click', () => {
-        s.picks.splice(+b.dataset.idx, 1);
-        renderChips(side);
-        compute();
-      });
-    });
-  }
-
-  function pl(n, w) { return n + ' ' + (n === 1 ? w : w + 's'); }
-
-  function compute() {
-    const out = document.getElementById('ta-results');
-    const A = sides.a, B = sides.b;
-    if (!A.sel.value || !B.sel.value) { out.hidden = true; return; }
-    if (A.sel.value === B.sel.value) {
-      out.hidden = false;
-      out.innerHTML = '<div class="ta-empty">Pick two different teams.</div>';
-      return;
-    }
-    const get = pid => D.players.find(p => p.i === pid);
-    const aSends = [...A.picked].map(get), bSends = [...B.picked].map(get);
-    if (!aSends.length && !bSends.length && !A.picks.length && !B.picks.length) {
-      out.hidden = false;
-      out.innerHTML = '<div class="ta-empty">Check at least one player (or add a pick) on either side.</div>';
-      return;
-    }
-
-    const tA = teamBy[A.sel.value], tB = teamBy[B.sel.value];
-    // Receiving columns: A receives what B sends, and vice versa.
-    out.hidden = false;
-    out.innerHTML =
-      '<div class="ta-cols">' +
-      recvPanel(tA, bSends, B.picks, tB) +
-      recvPanel(tB, aSends, A.picks, tA) +
-      '</div>' +
-      '<div class="ta-cols" style="margin-top:18px">' +
-      bulletPanel(tA, bSends, aSends, B.picks, A.picks) +
-      bulletPanel(tB, aSends, bSends, A.picks, B.picks) +
-      '</div>' +
-      slotWarnings(tA, aSends, bSends, A.picks, B.picks) +
-      slotWarnings(tB, bSends, aSends, B.picks, A.picks);
-  }
-
-  /* Post-trade slotting impact for one team: rerun the sim with the
-     traded players/picks applied and report what changes. */
-  function slotWarnings(team, playersOut, playersIn, picksOut, picksIn) {
-    const slug = team.slug;
-    const cur26out = picksOut.filter(pk => pk.y === Y0);
-    const cur26in = picksIn.filter(pk => pk.y === Y0);
-    if (!cur26out.length && !cur26in.length && !playersOut.length && !playersIn.length) return '';
-
-    const pre = slotSim(slug, effRoster(slug), D.picks[slug] || []);
-    const preSeat = {};
-    pre.placed.forEach(a => { preSeat[a.p.i] = a.r; });
-
-    // Post-trade roster: remove outgoing, add incoming at their frozen DRC.
-    const outIds = new Set(playersOut.map(p => p.i));
-    const postRoster = effRoster(slug).filter(p => !outIds.has(p.i))
-      .concat(playersIn.map(p => ({i: p.i, n: p.n, eff: clampDrc(anchor(p)), pts: p.pts})));
-    // Post-trade picks: drop one copy per outgoing round (acquired copies
-    // first, own pick last), add incoming rounds.
-    const postPicks = (D.picks[slug] || []).slice();
-    cur26out.forEach(pk => {
-      let idx = postPicks.findIndex(c => c.r === pk.r && c.o !== slug);
-      if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
+  function sideResult(T, O, sendPlayers, recvPlayers, picksSent, picksRecv) {
+    const team = teamBy[T];
+    const sendIds = new Set(sendPlayers.map(p => p.i));
+    const inCost = recvPlayers.reduce((s, p) => s + costRow(p)[0].c, 0);
+    const outCost = sendPlayers.reduce((s, p) => s + p.c6, 0);
+    const capAfter = team.cap - outCost + inCost;
+    const ptsIn = recvPlayers.reduce((s, p) => s + (p.pts || 0), 0);
+    const ptsOut = sendPlayers.reduce((s, p) => s + (p.pts || 0), 0);
+    const commit3yr = recvPlayers.reduce((s, p) => s + costRow(p).reduce((a, c) => a + c.c, 0), 0);
+    const postRosterArr = effRoster(T).filter(p => !sendIds.has(p.i))
+      .concat(recvPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, c: costRow(p)[0].c, incoming: true})));
+    const postPicks = (D.picks[T] || []).slice();
+    picksSent.filter(pk => pk.y === Y0).forEach(pk => {
+      let idx = postPicks.findIndex(c => c.r === pk.r && c.o !== T); if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
       if (idx >= 0) postPicks.splice(idx, 1);
     });
-    cur26in.forEach(pk => postPicks.push({r: pk.r, o: 'acquired'}));
-
-    const post = slotSim(slug, postRoster, postPicks);
-    const items = [];
-
-    // Outgoing picks that currently seat a keeper.
-    cur26out.forEach(pk => {
-      const seated = pre.placed.filter(a => a.r === pk.r);
-      if (seated.length) {
-        items.push('R' + pk.r + ' currently slots ' +
-          seated.map(a => '<strong>' + esc(a.p.n) + '</strong> (DRC ' + a.p.eff + ')').join(', ') +
-          ' — trading it forces a re-slot.');
-      }
+    picksRecv.filter(pk => pk.y === Y0).forEach(pk => postPicks.push({r: pk.r, o: 'acquired'}));
+    const postSim = slotSim(T, postRosterArr, postPicks);
+    const seatBy = {}; postSim.placed.forEach(a => seatBy[a.p.i] = a);
+    const after = postRosterArr.slice().sort((a, b) => (a.eff - b.eff) || ((b.pts || 0) - (a.pts || 0))).map(p => {
+      const seat = seatBy[p.i];
+      return {p, pos: p.pos, eff: p.eff, incoming: !!p.incoming, chasm: !seat};
     });
-    // Newly un-keepable players (the chasm bite).
-    const preUn = new Set(pre.unkeepable.map(p => p.i));
-    post.unkeepable.filter(p => !preUn.has(p.i) && !outIds.has(p.i)).forEach(p => {
-      items.push('<span class="ta-warn-bad">' + esc(p.n) + ' (DRC ' + p.eff +
-        ') becomes UN-KEEPABLE</span> — no pick to slot them into after this trade (chasm rule).');
-    });
-    // Players whose seat moves.
-    post.placed.forEach(a => {
-      const acqNote = a.viaAcq ? ' (uses an acquired pick — optional)' : '';
-      const was = preSeat[a.p.i];
-      if (was && was !== a.r && !outIds.has(a.p.i)) {
-        items.push(esc(a.p.n) + ' re-slots R' + was + ' → R' + a.r +
-          (a.how === 'up' ? ' (moves up — burns an earlier pick)' : '') + acqNote + '.');
-      }
-      if (!was && !preUn.has(a.p.i) && playersIn.some(p => p.i === a.p.i)) {
-        items.push(esc(a.p.n) + ' (acquired) slots at R' + a.r + acqNote + '.');
-      }
-    });
-    // Acquired players who cannot be slotted at all.
-    post.unkeepable.filter(p => playersIn.some(q => q.i === p.i)).forEach(p => {
-      items.push('<span class="ta-warn-bad">' + esc(p.n) + ' (acquired, DRC ' + p.eff +
-        ') has no slot</span> on this roster under current picks.');
-    });
-    if (picksOut.some(pk => pk.y !== Y0) || picksIn.some(pk => pk.y !== Y0)) {
-      items.push((Y0 + 1) + " picks are noted but not simulated (next year's board isn't set yet).");
-    }
-    if (!items.length) return '';
-    return '<div class="ta-warnings"><h3>' + esc(team.team) +
-      ' — pick &amp; slotting impact</h3><ul><li>' + items.join('</li><li>') + '</li></ul></div>';
+    return {
+      team, sends: sendPlayers, receives: recvPlayers, picksSent, picksRecv,
+      capBefore: team.cap, capAfter, delta: capAfter - team.cap,
+      ptsSwing: ptsIn - ptsOut, commit3yr, after,
+      boardPost: boardModel(T, postPicks, postSim, (D.picks_lost[T] || []).concat(picksSent.filter(pk => pk.y === Y0).map(pk => ({r: pk.r, to: O})))),
+    };
   }
 
-  function recvPanel(team, playersIn, picksIn, fromTeam) {
-    let rows = '', totals = [0, 0, 0], pts = 0;
-    playersIn.forEach(p => {
-      const tr = costRow(p);
-      tr.forEach((c, i) => totals[i] += c.c);
-      if (p.pts) pts += p.pts;
-      const keepNote = (p.d5 != null && tr[0].d !== p.d6)
-        ? '<span class="ta-keepnote">keep-path was DRC ' + p.d6 + ' (' + money(p.c6) + ')</span>' : '';
-      rows += '<tr><td class="ta-pname">' + esc(p.n) +
-        '<span class="ta-keepnote">' + esc(p.p) + ' · ' + esc(p.t) +
-        (p.pr ? ' · ' + esc(p.p) + esc(p.pr) + ' in 2025' : '') +
-        (p.adp ? ' · ADP ' + esc(p.adp) : '') + '</span></td>' +
-        '<td class="num">' + (p.pts != null ? p.pts.toFixed(1) : '—') + '</td>' +
-        '<td class="num ta-frozen">DRC ' + tr[0].d + '<br>' + money(tr[0].c) + keepNote + '</td>' +
-        '<td class="num">DRC ' + tr[1].d + '<br>' + money(tr[1].c) + '</td>' +
-        '<td class="num">DRC ' + tr[2].d + '<br>' + money(tr[2].c) + '</td></tr>';
-    });
-    picksIn.forEach(pk => {
-      rows += '<tr><td class="ta-pname">' + pk.y + ' Round ' + pk.r + ' pick' +
-        '<span class="ta-keepnote">from ' + esc(fromTeam.team) + ' · face value only</span></td>' +
-        '<td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>';
-    });
-    if (playersIn.length) {
-      rows += '<tr class="ta-total"><td>Keeper cost if all kept</td><td class="num">' +
-        (pts ? pts.toFixed(1) : '—') + '</td>' +
-        totals.map(t => '<td class="num">' + money(t) + '</td>').join('') + '</tr>';
-    }
-    return '<div class="ta-recv"><h3>' + esc(team.team) + ' receives</h3>' +
-      '<table class="ta-table"><colgroup><col><col style="width:14%"><col style="width:18%"><col style="width:16%"><col style="width:16%"></colgroup>' +
-      '<thead><tr><th>Asset</th><th class="num">2025 pts</th>' +
-      '<th class="num">' + YEARS[0] + ' (frozen)</th><th class="num">' + YEARS[1] + '</th>' +
-      '<th class="num">' + YEARS[2] + '</th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="5" class="ta-empty">Nothing yet</td></tr>') +
-      '</tbody></table></div>';
+  function computeTrade(cfg) {
+    const {L, R, sel, picksL, picksR} = cfg;
+    if (!L || !R || L === R) return {valid: false};
+    const selIds = new Set(Object.keys(sel).filter(k => sel[k]).map(Number));
+    const get = id => D.players.find(p => p.i === id);
+    const lSends = [...selIds].map(get).filter(p => p && p.m === L);
+    const rSends = [...selIds].map(get).filter(p => p && p.m === R);
+    return {valid: true, empty: !(lSends.length || rSends.length || picksL.length || picksR.length),
+      L: sideResult(L, R, lSends, rSends, picksL, picksR),
+      R: sideResult(R, L, rSends, lSends, picksR, picksL)};
   }
 
-  function bulletPanel(team, playersIn, playersOut, picksIn, picksOut) {
-    const inCost = playersIn.reduce((s, p) => s + costRow(p)[0].c, 0);
-    const outCost = playersOut.reduce((s, p) => s + p.c6, 0);
-    const newCap = team.cap - outCost + inCost;
-    const delta = newCap - team.cap;
-    const inPts = playersIn.reduce((s, p) => s + (p.pts || 0), 0);
-    const outPts = playersOut.reduce((s, p) => s + (p.pts || 0), 0);
-    const commit = playersIn.reduce((s, p) => s + costRow(p).reduce((a, c) => a + c.c, 0), 0);
-    const items = [];
-    const sign = delta >= 0 ? '+' : '−';
-    items.push(YEARS[0] + ' cap: ' + money(team.cap) + ' → ' + money(newCap) +
-      ' (<span class="' + (delta > 0 ? 'ta-cap-up' : 'ta-cap-down') + '">' +
-      sign + '$' + Math.abs(delta).toLocaleString() + '</span>)');
-    items.push('Roster count: ' + (playersOut.length || playersIn.length
-      ? pl(playersIn.length, 'player') + ' in, ' + pl(playersOut.length, 'player') + ' out'
-      : 'unchanged') + ' (max 18 slots in ' + YEARS[0] + ')');
-    items.push('2025 production: receives ' + inPts.toFixed(1) + ' pts, sends ' + outPts.toFixed(1) + ' pts');
-    if (playersIn.length) {
-      items.push('Three-year keeper commitment on players received (' + YEARS[0] + '–' +
-        YEARS[2] + ', if all kept): ' + money(commit));
-    }
-    if (picksIn.length || picksOut.length) {
-      const fmt = arr => arr.map(pk => pk.y + ' R' + pk.r).join(', ');
-      if (picksIn.length) items.push('Receives picks: ' + fmt(picksIn) + ' (face value only)');
-      if (picksOut.length) items.push('Sends picks: ' + fmt(picksOut));
-    }
-    return '<div class="ta-recv"><h3>' + esc(team.team) + ' — the facts</h3>' +
-      '<ul class="ta-bullets">' + items.map(i => '<li>' + i + '</li>').join('') + '</ul></div>';
+  function teamOptions(cur) {
+    return '<option value=""' + (cur ? '' : ' selected') + '>Select team…</option>' +
+      D.teams.map(t => '<option value="' + t.slug + '"' + (t.slug === cur ? ' selected' : '') + '>' +
+        esc(t.team) + ' — ' + esc(t.mgr) + '</option>').join('');
   }
 
-  // Reset roster lists when navigating to the tab (cheap re-render).
-  const taLink = document.querySelector('.nav-link[data-target="trade-analyzer"]');
-  if (taLink) taLink.addEventListener('click', () => {
-    ['a', 'b'].forEach(s => {
-      if (sides[s].sel.value) { renderRoster(s); renderBoard(s); }
+  function boardChipHTML(sl, recvIds) {
+    if (!sl.seat) {
+      const acq = !sl.own;
+      const st2 = 'display:flex;align-items:center;padding:5px 10px;border:1px dashed ' + (acq ? '#bfe3cf' : '#e0e0e3') +
+        ';border-radius:7px;font-size:11.5px;color:' + (acq ? '#1c7a4a' : '#b8b8bc') + ';background:' + (acq ? '#f2fbf5' : '#fff') + ';';
+      return '<div style="' + st2 + '">' + (acq ? ('acquired pick' + (sl.acqFrom ? ' · from ' + esc(sl.acqFrom) : '')) : 'open') + '</div>';
+    }
+    const s = sl.seat, incoming = recvIds.has(s.i), tier = tierOf(s.drc);
+    const mark = s.how === 'slid' ? '↓' : s.how === 'up' ? '↑' : '';
+    const chip = 'display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;border:1px solid ' +
+      (incoming ? '#bfe3cf' : '#e5e5e8') + ';background:' + (incoming ? '#e6f6ee' : '#fff') + ';';
+    const tag = incoming ? '<span style="color:#1c7a4a;font-weight:700;font-size:9.5px;letter-spacing:.04em;flex:none;">IN</span>'
+      : (s.viaAcq ? '<span style="color:#8e8e93;font-weight:600;font-size:9.5px;flex:none;">via acq</span>' : '');
+    return '<div data-toggle="' + s.i + '" style="' + chip + '">' +
+      '<span style="width:7px;height:7px;border-radius:50%;flex:none;background:' + dotColor(tier) + ';"></span>' +
+      '<span style="font-weight:600;color:#2a2a2e;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.name) + '</span>' +
+      '<span style="color:#a0a0a6;font-size:11px;flex:none;">' + esc(s.pos) + '</span>' +
+      '<span style="color:#0038FF;font-weight:700;flex:none;">' + mark + '</span>' +
+      '<span style="flex:1;"></span>' + tag +
+      '<span style="' + drcChipStyle(tier) + '">' + s.drc + '</span>' +
+      '<span style="font-weight:700;color:#022479;font-size:12px;flex:none;font-variant-numeric:tabular-nums;">' + money($$(s.drc)) + '</span>' +
+      '</div>';
+  }
+
+  function boardHTML(sideVM, side, active) {
+    const recvIds = new Set(sideVM.receives.map(p => p.i));
+    const chasmN = sideVM.after.filter(a => a.chasm).length;
+    const d = sideVM.delta;
+    const capStr = active ? ('cap ' + money(sideVM.capBefore) + ' → ' + money(sideVM.capAfter)) : ('cap ' + money(sideVM.capBefore));
+    const deltaStr = active ? (d > 0 ? '▲ +$' + Math.abs(d).toLocaleString() : d < 0 ? '▼ −$' + Math.abs(d).toLocaleString() : '±0') : '';
+    const deltaStyle = d > 0 ? 'color:#b42318;font-weight:700;' : d < 0 ? 'color:#1c7a4a;font-weight:700;' : 'color:#606C71;';
+    let rows = '';
+    sideVM.boardPost.forEach(row => {
+      let slots = row.slots.map(sl => boardChipHTML(sl, recvIds)).join('');
+      row.goneTo.forEach(m => { slots += '<div style="display:flex;align-items:center;padding:5px 10px;border:1px dashed #e3c4be;border-radius:7px;font-size:11.5px;color:#b06a60;background:#fdf4f2;">— traded to ' + esc(m) + '</div>'; });
+      if (!row.owned && row.goneTo.length === 0 && row.slots.length === 0)
+        slots += '<div style="display:flex;align-items:center;padding:5px 10px;border:1px dashed #e0e0e3;border-radius:7px;font-size:11.5px;color:#b8b8bc;">no pick</div>';
+      rows += '<div style="display:flex;align-items:flex-start;gap:8px;padding:2px 0;">' +
+        '<div style="width:30px;flex:none;text-align:center;font-size:11px;font-weight:700;color:#909096;font-variant-numeric:tabular-nums;padding-top:6px;">R' + row.r + '</div>' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;">' + slots + '</div></div>';
     });
+    let chasm = '';
+    const chItems = sideVM.after.filter(a => a.chasm);
+    if (chItems.length) {
+      chasm = '<div style="margin-top:10px;border-top:1px dashed #f0cfc9;padding-top:10px;">' +
+        '<div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:#b42318;font-weight:700;margin-bottom:6px;">Can&#39;t keep — no round to slot into</div>' +
+        '<div style="display:flex;flex-direction:column;gap:4px;">' +
+        chItems.map(a => '<div data-toggle="' + a.p.i + '" style="display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid #f3c7c0;background:#fdecea;border-radius:7px;cursor:pointer;font-size:12.5px;">' +
+          '<span style="color:#b42318;font-weight:800;flex:none;">⚠</span>' +
+          '<span style="font-weight:600;color:#7a1a12;">' + esc(a.p.n) + '</span>' +
+          '<span style="color:#b06a60;font-size:11px;">' + esc(a.pos) + '</span><span style="flex:1;"></span>' +
+          (recvIds.has(a.p.i) ? '<span style="color:#b42318;font-weight:700;font-size:9.5px;letter-spacing:.04em;">JUST ACQUIRED</span>' : '') +
+          '<span style="' + drcChipStyle(tierOf(a.eff)) + '">' + a.eff + '</span></div>').join('') +
+        '</div></div>';
+    }
+    const picksArr = side === 'L' ? st.picksL : st.picksR;
+    const dyv = side === 'L' ? st.dyL : st.dyR, drv = side === 'L' ? st.drL : st.drR;
+    const yearOpts = [Y0, Y0 + 1].map(y => '<option value="' + y + '"' + (y === dyv ? ' selected' : '') + '>' + y + '</option>').join('');
+    const roundOpts = Array.from({length: 16}, (_, i) => '<option value="' + (i + 1) + '"' + ((i + 1) === drv ? ' selected' : '') + '>R' + (i + 1) + '</option>').join('');
+    const pickChips = picksArr.map((pk, i) => '<span style="display:inline-flex;align-items:center;gap:4px;background:#e6f6ee;color:#1c7a4a;border-radius:5px;padding:3px 6px;font-size:11.5px;font-weight:600;">' +
+      pk.y + ' R' + pk.r + '<button type="button" data-act="rm' + side + '" data-idx="' + i + '" style="border:none;background:none;color:#1c7a4a;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button></span>').join('');
+    const footer = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:9px 14px;border-top:1px solid #ebebed;background:#fcfcfd;">' +
+      '<span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:#8e8e93;font-weight:600;">Add pick</span>' +
+      '<select data-role="dy' + side + '" style="border:1px solid #d8d8dc;border-radius:6px;padding:4px 6px;font:inherit;font-size:12px;">' + yearOpts + '</select>' +
+      '<select data-role="dr' + side + '" style="border:1px solid #d8d8dc;border-radius:6px;padding:4px 6px;font:inherit;font-size:12px;">' + roundOpts + '</select>' +
+      '<button type="button" data-act="add' + side + '" style="border:1px solid #022479;background:#fff;color:#022479;border-radius:6px;padding:4px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;">Add</button>' + pickChips + '</div>';
+    const chasmBadge = chasmN > 0 ? '<div style="margin-top:6px;"><span style="display:inline-block;background:#fdecea;color:#b42318;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">' +
+      chasmN + (chasmN === 1 ? ' keeper can&#39;t slot' : ' keepers can&#39;t slot') + '</span></div>' : '';
+    return '<div style="border:1px solid #ebebed;border-radius:12px;overflow:hidden;background:#fff;">' +
+      '<div style="padding:12px 15px;background:#fcfcfd;border-bottom:1px solid #ebebed;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">' +
+      '<span style="font-weight:700;font-size:15px;color:#022479;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(sideVM.team.mgr) + '</span>' +
+      '<span style="font-size:12px;color:#606C71;font-variant-numeric:tabular-nums;white-space:nowrap;">' + capStr + ' <span style="' + deltaStyle + '">' + deltaStr + '</span></span></div>' +
+      chasmBadge + '</div>' +
+      '<div style="padding:10px 12px;">' + rows + chasm + '</div>' + footer + '</div>';
+  }
+
+  function trayHTML(vm) {
+    if (!vm.valid || vm.empty) return '';
+    const L = vm.L, R = vm.R;
+    const items = (sideVM) => {
+      let a = sideVM.sends.map(p => '<button type="button" data-toggle="' + p.i + '" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 8px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">' + esc(p.n) + ' <span style="color:#77CEFF;font-size:13px;">×</span></button>');
+      sideVM.picksSent.forEach(pk => a.push('<span style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;white-space:nowrap;">' + pk.y + ' R' + pk.r + '</span>'));
+      return a.length ? a.join('') : '<span style="color:#9fbdff;font-size:12.5px;">nothing yet</span>';
+    };
+    const sw = n => (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(1) + ' pts';
+    const swSt = n => n >= 0 ? 'color:#a7f3c4' : 'color:#ffc4bb';
+    return '<div style="background:#022479;border-radius:12px;padding:14px 16px;color:#fff;">' +
+      '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;">' +
+      '<div><div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9fbdff;font-weight:600;margin-bottom:6px;">' + esc(first(L.team.mgr)) + ' sends</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + items(L) + '</div></div>' +
+      '<div style="display:flex;align-items:center;justify-content:center;color:#77CEFF;font-size:20px;font-weight:700;">⇄</div>' +
+      '<div><div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#9fbdff;font-weight:600;margin-bottom:6px;">' + esc(first(R.team.mgr)) + ' sends</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + items(R) + '</div></div></div>' +
+      '<div style="margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.15);font-size:12.5px;color:#cfe0ff;">2025 production swing: <b style="' + swSt(L.ptsSwing) + '">' + esc(first(L.team.mgr)) + ' ' + sw(L.ptsSwing) + '</b> &middot; <b style="' + swSt(R.ptsSwing) + '">' + esc(first(R.team.mgr)) + ' ' + sw(R.ptsSwing) + '</b></div></div>';
+  }
+
+  function render() {
+    let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">' +
+      '<div><label style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e93;font-weight:600;display:block;margin-bottom:4px;">Team A</label>' +
+      '<select data-role="teamL" style="width:100%;border:1px solid #d8d8dc;border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;font-weight:600;color:#022479;">' + teamOptions(st.teamL) + '</select></div>' +
+      '<div><label style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e93;font-weight:600;display:block;margin-bottom:4px;">Team B</label>' +
+      '<select data-role="teamR" style="width:100%;border:1px solid #d8d8dc;border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;font-weight:600;color:#022479;">' + teamOptions(st.teamR) + '</select></div></div>';
+    if (!st.teamL || !st.teamR) {
+      app.innerHTML = html + '<div style="border:1px dashed #d8d8dc;border-radius:10px;padding:28px;text-align:center;color:#8e8e93;font-size:13px;">Pick a team on each side to compare their keeper boards and build a trade.</div>';
+      return;
+    }
+    if (st.teamL === st.teamR) {
+      app.innerHTML = html + '<div style="border:1px dashed #d8d8dc;border-radius:10px;padding:28px;text-align:center;color:#8e8e93;font-size:13px;">Pick two different teams.</div>';
+      return;
+    }
+    const vm = computeTrade({L: st.teamL, R: st.teamR, sel: st.sel, picksL: st.picksL, picksR: st.picksR});
+    const active = !vm.empty;
+    html += trayHTML(vm);
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start;margin-top:14px;">' +
+      boardHTML(vm.L, 'L', active) + boardHTML(vm.R, 'R', active) + '</div>';
+    html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a keeper on either board to move them across. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#0038FF;font-weight:600;">↓/↑</span> = slid to a nearby round · <span style="color:#1c7a4a;font-weight:600;">green</span> = just acquired · a round you don&#39;t own is a wall, and anyone who can&#39;t reach a round drops to <span style="color:#b42318;font-weight:600;">can&#39;t keep</span>.</p>';
+    app.innerHTML = html;
+  }
+
+  const st = {
+    teamL: '', teamR: '',
+    sel: {}, picksL: [], picksR: [],
+    dyL: Y0, drL: 1, dyR: Y0, drR: 1,
+  };
+  const app = root.querySelector('.ta-app');
+
+  app.addEventListener('click', (e) => {
+    const tog = e.target.closest('[data-toggle]');
+    if (tog) { const pid = +tog.dataset.toggle; if (st.sel[pid]) delete st.sel[pid]; else st.sel[pid] = true; render(); return; }
+    const act = e.target.closest('[data-act]');
+    if (!act) return;
+    const a = act.dataset.act;
+    if (a === 'addL') st.picksL.push({y: st.dyL, r: st.drL});
+    else if (a === 'addR') st.picksR.push({y: st.dyR, r: st.drR});
+    else if (a === 'rmL') st.picksL.splice(+act.dataset.idx, 1);
+    else if (a === 'rmR') st.picksR.splice(+act.dataset.idx, 1);
+    render();
   });
+
+  app.addEventListener('change', (e) => {
+    const role = e.target.dataset.role;
+    if (!role) return;
+    if (role === 'teamL' || role === 'teamR') {
+      const old = role === 'teamL' ? st.teamL : st.teamR;
+      Object.keys(st.sel).forEach(id => { const p = D.players.find(x => x.i === +id); if (p && p.m === old) delete st.sel[id]; });
+      if (role === 'teamL') { st.teamL = e.target.value; st.picksL = []; }
+      else { st.teamR = e.target.value; st.picksR = []; }
+      render();
+    } else if (role === 'dyL') st.dyL = +e.target.value;
+    else if (role === 'drL') st.drL = +e.target.value;
+    else if (role === 'dyR') st.dyR = +e.target.value;
+    else if (role === 'drR') st.drR = +e.target.value;
+  });
+
+  render();
 })();
 """
 
@@ -4405,7 +4640,7 @@ def render_player_search_section(search_players):
             '<span class="ps-owner ps-owner-none">No current owner</span>'
         )
 
-        SPARK_YEARS = (2023, 2024, 2025)
+        SPARK_YEARS = (2025, 2024, 2023)  # Design: newest-first (weekly columns + neighbors)
         WEEKS_PER_YEAR = 17
         all_weekly = []
         for yr in SPARK_YEARS:
@@ -4504,7 +4739,7 @@ def render_player_search_section(search_players):
             drc_hero_big = "—"
             drc_hero_sub = "Not owned in 2026"
         drc_tiles = []
-        for yr in (2023, 2024, 2025):
+        for yr in (2025, 2024, 2023):  # Design: newest-first
             y = next((py for py in p["per_year"] if py["year"] == yr), None)
             if y and y["drc"] is not None:
                 val = f"${y['dollars']}"
@@ -4538,7 +4773,7 @@ def render_player_search_section(search_players):
             perf_hero_big = "—"
             perf_hero_sub = "No 2026 ADP data"
         perf_tiles = []
-        for yr in (2023, 2024, 2025):
+        for yr in (2025, 2024, 2023):  # Design: newest-first
             y = next((py for py in p["per_year"] if py["year"] == yr), None)
             rank = y.get("pos_rank") if y else None
             if rank is not None and p["position"] != "—":
@@ -4646,7 +4881,11 @@ def build_sidebar(by_manager):
     )
     return f"""
     <aside class="sidebar">
-      <div class="brand-title">{html.escape(LEAGUE_NAME)}</div>
+      <button class="brand-home" data-target="summary" type="button">
+        <span class="brand-home-eyebrow">&#8962; League home</span>
+        <span class="brand-title">{html.escape(LEAGUE_NAME)}</span>
+        <span class="brand-home-sub">12-team keeper league &middot; 2026</span>
+      </button>
 
       <h3>IYFYSTD Resources</h3>
       <details class="sidebar-teams">
@@ -4771,38 +5010,7 @@ def render_trade_analyzer(by_manager):
         <p class="section-sub">Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out each player's keeper cost for {TARGET_SEASON} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.</p>
       </header>
 
-      <div class="ta-grid">
-        <div class="ta-side" data-side="a">
-          <label class="ta-label">Team A</label>
-          <select class="ta-team"><option value="">Select team&hellip;</option></select>
-          <div class="ta-roster"></div>
-          <details class="ta-board"><summary>2026 pick board &amp; keeper slotting</summary>
-            <div class="ta-board-body"></div></details>
-          <div class="ta-picks">
-            <span class="ta-label">Add a draft pick</span>
-            <select class="ta-pick-year"></select>
-            <select class="ta-pick-round"></select>
-            <button type="button" class="ta-add-pick">Add</button>
-            <div class="ta-pick-chips"></div>
-          </div>
-        </div>
-        <div class="ta-side" data-side="b">
-          <label class="ta-label">Team B</label>
-          <select class="ta-team"><option value="">Select team&hellip;</option></select>
-          <div class="ta-roster"></div>
-          <details class="ta-board"><summary>2026 pick board &amp; keeper slotting</summary>
-            <div class="ta-board-body"></div></details>
-          <div class="ta-picks">
-            <span class="ta-label">Add a draft pick</span>
-            <select class="ta-pick-year"></select>
-            <select class="ta-pick-round"></select>
-            <button type="button" class="ta-add-pick">Add</button>
-            <div class="ta-pick-chips"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="ta-results" id="ta-results" hidden></div>
+      <div class="ta-app"></div>
 
       <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The keeper-slotting boards place every rostered player at their DRC round under the league's slide rules &mdash; collisions slide down only through consecutive rounds you own (a missing round is a wall), and a player whose own round is gone can move UP into a free earlier pick but never down past the gap. Acquired picks are protected from the slide: the sim never spends them while one of your own picks can seat the player, and labels any optional use. Where two keepers share a DRC, the sim seats the higher 2025 scorer first; in real life that ordering is the manager's call, so treat slot assignments as one valid arrangement, not the only one. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
     </section>
@@ -4841,6 +5049,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 <div class="sidebar-backdrop"></div>
 {sidebar}
 <main class="content">
+<div class="crumb-bar"><button class="crumb-back" data-target="summary" type="button">&larr; League home</button><span class="crumb-sep">&rsaquo;</span><span class="crumb-current"></span></div>
 {about}
 {summary}
 {player_search}
@@ -4851,6 +5060,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 {team_sections}
 {feedback}
 </main>
+<button class="back-to-top" aria-label="Back to top" type="button">&uarr;</button>
 </div>
 <script>{JS}</script>
 </body>

@@ -200,7 +200,7 @@ def build_transaction_log_for_player(conn, player_id, before_date):
     # original draft event; subsequent rows are keeper allocations (the manager
     # paying the DRC cost to keep them, slotted into a round via the slide rule).
     draft_rows = list(conn.execute(
-        "SELECT dp.season, dp.draft_round, m.full_name "
+        "SELECT dp.season, dp.draft_round, m.full_name, dp.team_season_id "
         "FROM draft_picks dp "
         "LEFT JOIN teams t ON t.team_season_id = dp.team_season_id "
         "LEFT JOIN managers m ON m.manager_id = t.manager_id "
@@ -208,13 +208,28 @@ def build_transaction_log_for_player(conn, player_id, before_date):
         "ORDER BY dp.season",
         (player_id, int(before_date[:4])),
     ))
+    import compute_drc as drc
     for i, r in enumerate(draft_rows):
-        season, dround, mgr = r
+        season, dround, mgr, team_sid = r
         if i == 0:
             desc = f"Drafted R{dround} by {mgr or '?'}"
             kind = "draft"
         else:
-            desc = f"Kept by {mgr or '?'} (slot R{dround})"
+            # Show the DRC the manager pays to keep this player, NOT the draft
+            # slot. The slot is a slide-rule artifact (a DRC-1 keeper can be
+            # recorded in R3), which misleads managers into thinking a keeper is
+            # cheaper than it is. Compute DRC as of season end so pre-draft
+            # off-season trades are included — matches the per-year DRC shown
+            # elsewhere on the player card.
+            kept_drc = drc.compute_drc_at_time(
+                conn, player_id, team_sid,
+                before_timestamp=f"{season + 1}-01-01 00:00:00",
+                query_year=season, depth=0,
+            )
+            if kept_drc is not None:
+                desc = f"Kept by {mgr or '?'} (DRC {kept_drc[0]})"
+            else:
+                desc = f"Kept by {mgr or '?'} (slot R{dround})"
             kind = "kept"
         events.append({
             "date": f"{season}-08-25",
@@ -222,34 +237,51 @@ def build_transaction_log_for_player(conn, player_id, before_date):
             "desc": desc,
         })
 
-    # Transactions (real + synthetic via union views)
+    # Transactions (real + synthetic via union views). We LEFT JOIN
+    # transaction_overrides so a commish-pushed trade that Yahoo recorded as a
+    # drop+add (source_type waivers/freeagents) is labeled as a TRADE, not a
+    # free-agent add. The override's source_team_season_id names the team that
+    # gave the player up. Without this, every override-based trade shows in the
+    # lineage as "Free agent add by X".
     for r in conn.execute(
         "SELECT t.timestamp, t.event_type, tp.source_type, tp.destination_type, "
-        "       md.full_name AS dest_mgr, ms.full_name AS src_mgr "
+        "       md.full_name AS dest_mgr, ms.full_name AS src_mgr, "
+        "       o.override_type, om.full_name AS ovr_src_mgr "
         "FROM all_transactions t "
         "JOIN all_transaction_players tp ON tp.transaction_id = t.transaction_id "
         "LEFT JOIN teams td ON td.team_season_id = tp.team_season_id "
         "LEFT JOIN managers md ON md.manager_id = td.manager_id "
         "LEFT JOIN teams ts ON ts.team_season_id = tp.counterparty_team_season_id "
         "LEFT JOIN managers ms ON ms.manager_id = ts.manager_id "
+        "LEFT JOIN transaction_overrides o ON o.transaction_id = tp.transaction_id "
+        "LEFT JOIN teams ots ON ots.team_season_id = o.source_team_season_id "
+        "LEFT JOIN managers om ON om.manager_id = ots.manager_id "
         "WHERE tp.player_id = ? "
         "  AND tp.direction = 'incoming' "
         "  AND DATE(t.timestamp) <= ? "
         "ORDER BY t.timestamp",
         (player_id, before_date),
     ):
-        ts, evt, src_type, dst_type, dest_mgr, src_mgr = r
-        if evt == "trade" or src_type == "team":
+        ts, evt, src_type, dst_type, dest_mgr, src_mgr, ovr_type, ovr_src_mgr = r
+        if ovr_type == "trade_from":
+            # Commish-pushed trade that Yahoo logged as a drop+add.
+            desc = f"Traded {ovr_src_mgr or '?'} → {dest_mgr or '?'}"
+            kind = "trade"
+        elif evt == "trade" or src_type == "team":
             desc = f"Traded {src_mgr or '?'} → {dest_mgr or '?'}"
+            kind = "trade"
         elif src_type == "waivers":
             desc = f"Waiver claim by {dest_mgr or '?'}"
+            kind = evt
         elif src_type == "freeagents":
             desc = f"Free agent add by {dest_mgr or '?'}"
+            kind = evt
         else:
             desc = f"{evt} by {dest_mgr or '?'}"
+            kind = evt
         events.append({
             "date": str(ts)[:10],
-            "kind": evt,
+            "kind": kind,
             "desc": desc,
         })
 

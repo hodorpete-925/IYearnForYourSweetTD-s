@@ -78,8 +78,18 @@ def _build_player_points(conn, player_id, trade_year, pts_by_year, manager_team_
     return out
 
 
-def _enrich_player(conn, player_id, trade_year, pts_by_year, manager_team_ids):
-    """Look up player metadata and per-year points."""
+def _enrich_player(conn, player_id, trade_year, pts_by_year, manager_team_ids, side):
+    """Look up player metadata + per-year points, and compute 'points since
+    the trade' from THIS manager's perspective.
+
+    side='acquired': production the player scored FOR this manager after the
+        trade = sum over years >= trade_year of points while on the manager's
+        teams. player_weekly_stats is weekly-owner stamped, so the trade-year
+        value is automatically the post-trade portion.
+    side='gaveup': production the manager GAVE UP = the player's output after
+        the trade = (full trade-year minus what they scored for us before
+        leaving) + full points in every later year.
+    """
     row = conn.execute(
         "SELECT player_name, position, nfl_team FROM players WHERE player_id = ?",
         (player_id,),
@@ -90,6 +100,21 @@ def _enrich_player(conn, player_id, trade_year, pts_by_year, manager_team_ids):
         name, pos, team = row
     pts = _build_player_points(conn, player_id, trade_year, pts_by_year, manager_team_ids)
     total_full = sum(v["full"] for v in pts.values() if v["full"] is not None)
+
+    if side == "acquired":
+        since = sum(
+            (_sum_points_while_on_team(conn, player_id, y, manager_team_ids) or 0.0)
+            for y in YEARS if y >= trade_year
+        )
+    else:  # gaveup
+        full_ty = for_us_ty = 0.0
+        if trade_year in YEARS:
+            full_ty = pts[trade_year]["full"] or 0.0
+            for_us_ty = _sum_points_while_on_team(conn, player_id, trade_year, manager_team_ids) or 0.0
+        since = (full_ty - for_us_ty) + sum(
+            (pts[y]["full"] or 0.0) for y in YEARS if y > trade_year
+        )
+
     return {
         "player_id": player_id,
         "name": name,
@@ -97,6 +122,8 @@ def _enrich_player(conn, player_id, trade_year, pts_by_year, manager_team_ids):
         "nfl_team": team or "—",
         "points": pts,
         "total_full": round(total_full, 1),
+        "since": round(since, 1),
+        "is_pick": False,
     }
 
 
@@ -290,7 +317,30 @@ def _pick_as_player_row(draft_round):
         "points": {y: {"full": None, "post_trade": None} for y in YEARS},
         "total_full": 0.0,
         "is_pick": True,
+        "since": None,
     }
+
+
+def _compute_trade_verdict(acquired, given_up, date_iso):
+    """Net 'points since the trade' + a Won/Lost/Even verdict from this
+    manager's perspective. Picks carry no points. A trade whose season has
+    not been played yet reads 'Not yet scored' rather than a false 'Even'."""
+    trade_year = int(str(date_iso)[:4])
+    gain = sum(p["since"] for p in acquired if p.get("since") is not None)
+    loss = sum(p["since"] for p in given_up if p.get("since") is not None)
+    net = round(gain - loss, 1)
+    players_involved = any(not p.get("is_pick") for p in acquired + given_up)
+    if trade_year > max(YEARS):
+        verdict = {"label": "Not yet scored", "kind": "pending"}
+    elif not players_involved:
+        verdict = {"label": "Picks only", "kind": "picks"}
+    elif net > 0.5:
+        verdict = {"label": f"Won +{net:.1f}", "kind": "won"}
+    elif net < -0.5:
+        verdict = {"label": f"Lost −{abs(net):.1f}", "kind": "lost"}
+    else:
+        verdict = {"label": "Even", "kind": "neutral"}
+    return {"net": net, "verdict": verdict}
 
 
 def _group_trades_by_day_and_counterparty(trades):
@@ -313,6 +363,7 @@ def _group_trades_by_day_and_counterparty(trades):
         g["subtotal_acquired"] = _compute_subtotals(g["acquired"])
         g["subtotal_given_up"] = _compute_subtotals(g["given_up"])
         g["max_pts_per_year"] = _compute_max_pts_per_year(g["acquired"], g["given_up"])
+        g.update(_compute_trade_verdict(g["acquired"], g["given_up"], g["date"]))
         out.append(g)
     out.sort(key=lambda t: t["date"], reverse=True)
     return out
@@ -342,11 +393,11 @@ def build_trade_history_for_manager(conn, manager_id, manager_team_ids_all, pts_
             counterparty_name = _get_manager_name(conn, tr["given_up_rows"][0][1])
 
         acquired = [
-            _enrich_player(conn, pid, trade_year, pts_by_year, manager_team_ids_all)
+            _enrich_player(conn, pid, trade_year, pts_by_year, manager_team_ids_all, "acquired")
             for pid, _src in tr["acquired_rows"]
         ]
         given_up = [
-            _enrich_player(conn, pid, trade_year, pts_by_year, [])
+            _enrich_player(conn, pid, trade_year, pts_by_year, manager_team_ids_all, "gaveup")
             for pid, _src in tr["given_up_rows"]
         ]
 
