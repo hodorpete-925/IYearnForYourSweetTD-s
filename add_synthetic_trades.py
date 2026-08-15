@@ -28,27 +28,45 @@ DB = Path(__file__).parent / "fantasy.db"
 # ============================================================================
 # DECLARE TRADES HERE
 # ============================================================================
+# FOOT-GUN DEFUSED 2026-08-15: the four HISTORICAL trades that used to sit in
+# this list (Feb-2025 Schlosberg/Watson, Achane/Gibbs, Kincaid+Dowdle/JSN, and
+# the James Conner keeper-slot move) were NEVER inserted through this script.
+# Their effects already live in the DB through the older synthetic rows /
+# override layers, so the idempotence check does NOT catch them and running
+# --commit with them listed would DOUBLE-ENTER 8 player movements and corrupt
+# DRC history (verified via dry-run 2026-08-15). They are preserved below as
+# comments for the record. Only add NEW, not-yet-represented trades here.
+#
+#   {"date": "2025-02-03", "season": 2025,
+#    "side_a": ("Alex Schlosberg", []),
+#    "side_b": ("Tom Watson", ["Bryce Young", "Derrick Henry", "Jordan Addison"]),
+#    "note": "Off-season Schlosberg -> Tom Watson, Feb 2025 (verify counterparty)"},
+#   {"date": "2025-02-14", "season": 2025,
+#    "side_a": ("Brian Malconian", ["De'Von Achane"]),
+#    "side_b": ("Alex Schlosberg", ["Jahmyr Gibbs"]),
+#    "note": "Brian-Schlosberg swap, Feb 2025 (picks also moved; not modeled here)"},
+#   {"date": "2025-02-27", "season": 2025,
+#    "side_a": ("Greg Pearson", ["Dalton Kincaid", "Rico Dowdle"]),
+#    "side_b": ("Brian Malconian", ["Jaxon Smith-Njigba"]),
+#    "note": "Greg-Brian swap, Feb 2025"},
+#   {"date": "2025-08-25", "season": 2025,   # James Conner keeper-slot trade;
+#    "side_a": ("George Mensing", ["James Conner"]),   # already in DB as synth_id 20
+#    "side_b": ("Aric Tao", []),
+#    "note": "Off-season Aric Tao -> George Mensing (George inherits DRC 5 -> 4)"},
 TRADES = [
     {
-        "date": "2025-02-03",
-        "season": 2025,
-        "side_a": ("Alex Schlosberg", []),
-        "side_b": ("Tom Watson", ["Bryce Young", "Derrick Henry", "Jordan Addison"]),
-        "note": "Off-season Schlosberg -> Tom Watson, Feb 2025 (verify counterparty)",
-    },
-    {
-        "date": "2025-02-14",
-        "season": 2025,
-        "side_a": ("Brian Malconian", ["De'Von Achane"]),
-        "side_b": ("Alex Schlosberg", ["Jahmyr Gibbs"]),
-        "note": "Brian-Schlosberg swap, Feb 2025 (picks also moved; not modeled here)",
-    },
-    {
-        "date": "2025-02-27",
-        "season": 2025,
-        "side_a": ("Greg Pearson", ["Dalton Kincaid", "Rico Dowdle"]),
-        "side_b": ("Brian Malconian", ["Jaxon Smith-Njigba"]),
-        "note": "Greg-Brian swap, Feb 2025",
+        # Jeanty <-> Taylor, summer 2026 off-season swap. Reported by Pete
+        # 2026-08-15 (Yahoo API dead, no automated record). Both freeze at
+        # their 2025 DRC 2 ($100) for 2026, decrement resumes 2027.
+        # TODO(Pete): date below is the REPORT date; correct it if you recall
+        #   the actual agreement date (any pre-draft 2026 date gives the same DRC).
+        "date": "2026-08-15",
+        "season": 2026,
+        "side_a": ("Brian Malconian", ["Ashton Jeanty"]),
+        "side_b": ("Aric Tao", ["Jonathan Taylor"]),
+        "note": "Off-season 2026 swap: Malconian gets Jeanty, Tao gets Taylor "
+                "(player-for-player, no picks). Entered manually post-API; "
+                "date approximate (report date).",
     },
 ]
 

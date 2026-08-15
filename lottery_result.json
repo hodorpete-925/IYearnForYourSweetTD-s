@@ -1,0 +1,92 @@
+{
+  "drawn_at_utc": "2026-08-15T19:36:11+00:00",
+  "method": "secrets.SystemRandom, sequential weighted draw, winner removed each round (published amended weights)",
+  "lottery": [
+    {
+      "final_rank": 7,
+      "manager": "Dan Vescuso",
+      "team": "Fear the Peel",
+      "weight": 50.0,
+      "pick": 1,
+      "odds_at_draw": 50.0
+    },
+    {
+      "final_rank": 12,
+      "manager": "Pete Hodor",
+      "team": "Are Bonita Fish Big?",
+      "weight": 5.0,
+      "pick": 2,
+      "odds_at_draw": 10.0
+    },
+    {
+      "final_rank": 9,
+      "manager": "George Mensing",
+      "team": "Dreorge Bledsoe",
+      "weight": 12.5,
+      "pick": 3,
+      "odds_at_draw": 27.78
+    },
+    {
+      "final_rank": 8,
+      "manager": "Bill Keenan",
+      "team": "The Lady Boys",
+      "weight": 15.0,
+      "pick": 4,
+      "odds_at_draw": 46.15
+    },
+    {
+      "final_rank": 10,
+      "manager": "Scott Montgomery",
+      "team": "JUST THE TUA US",
+      "weight": 10.0,
+      "pick": 5,
+      "odds_at_draw": 57.14
+    },
+    {
+      "final_rank": 11,
+      "manager": "Aric Tao",
+      "team": "High Priest Gabagool \ud83e\udd0c\ud83c\udffb",
+      "weight": 7.5,
+      "pick": 6,
+      "odds_at_draw": 100.0
+    }
+  ],
+  "playoff": [
+    {
+      "pick": 7,
+      "final_rank": 6,
+      "manager": "Dan MacNulty",
+      "team": "TheDarkKnight06"
+    },
+    {
+      "pick": 8,
+      "final_rank": 5,
+      "manager": "Alex Schlosberg",
+      "team": "Vesco\u2019s banging bathroom"
+    },
+    {
+      "pick": 9,
+      "final_rank": 4,
+      "manager": "Tom Watson",
+      "team": "The Prince of Darkness"
+    },
+    {
+      "pick": 10,
+      "final_rank": 3,
+      "manager": "Greg Pearson",
+      "team": "Mr. McGibblets"
+    },
+    {
+      "pick": 11,
+      "final_rank": 2,
+      "manager": "Paul Lewis",
+      "team": "Briguy\u2019s Strange Boutte"
+    },
+    {
+      "pick": 12,
+      "final_rank": 1,
+      "manager": "Brian Malconian",
+      "team": "42\u00b019'50.3'N 71\u00b001'52.0'W"
+    }
+  ]
+}

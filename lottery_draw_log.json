@@ -1,0 +1,221 @@
+{
+  "drawn_at_utc": "2026-08-15T19:36:11+00:00",
+  "rounds": [
+    {
+      "pick": 1,
+      "total_weight": 100.0,
+      "drawn_value": 7.721364854569323,
+      "bands": [
+        {
+          "manager": "Dan Vescuso",
+          "weight": 50.0,
+          "band": [
+            0.0,
+            50.0
+          ]
+        },
+        {
+          "manager": "Bill Keenan",
+          "weight": 15.0,
+          "band": [
+            50.0,
+            65.0
+          ]
+        },
+        {
+          "manager": "George Mensing",
+          "weight": 12.5,
+          "band": [
+            65.0,
+            77.5
+          ]
+        },
+        {
+          "manager": "Scott Montgomery",
+          "weight": 10.0,
+          "band": [
+            77.5,
+            87.5
+          ]
+        },
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            87.5,
+            95.0
+          ]
+        },
+        {
+          "manager": "Pete Hodor",
+          "weight": 5.0,
+          "band": [
+            95.0,
+            100.0
+          ]
+        }
+      ],
+      "winner": "Dan Vescuso"
+    },
+    {
+      "pick": 2,
+      "total_weight": 50.0,
+      "drawn_value": 45.51638784499802,
+      "bands": [
+        {
+          "manager": "Bill Keenan",
+          "weight": 15.0,
+          "band": [
+            0.0,
+            15.0
+          ]
+        },
+        {
+          "manager": "George Mensing",
+          "weight": 12.5,
+          "band": [
+            15.0,
+            27.5
+          ]
+        },
+        {
+          "manager": "Scott Montgomery",
+          "weight": 10.0,
+          "band": [
+            27.5,
+            37.5
+          ]
+        },
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            37.5,
+            45.0
+          ]
+        },
+        {
+          "manager": "Pete Hodor",
+          "weight": 5.0,
+          "band": [
+            45.0,
+            50.0
+          ]
+        }
+      ],
+      "winner": "Pete Hodor"
+    },
+    {
+      "pick": 3,
+      "total_weight": 45.0,
+      "drawn_value": 21.819448560961394,
+      "bands": [
+        {
+          "manager": "Bill Keenan",
+          "weight": 15.0,
+          "band": [
+            0.0,
+            15.0
+          ]
+        },
+        {
+          "manager": "George Mensing",
+          "weight": 12.5,
+          "band": [
+            15.0,
+            27.5
+          ]
+        },
+        {
+          "manager": "Scott Montgomery",
+          "weight": 10.0,
+          "band": [
+            27.5,
+            37.5
+          ]
+        },
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            37.5,
+            45.0
+          ]
+        }
+      ],
+      "winner": "George Mensing"
+    },
+    {
+      "pick": 4,
+      "total_weight": 32.5,
+      "drawn_value": 3.8925244589349073,
+      "bands": [
+        {
+          "manager": "Bill Keenan",
+          "weight": 15.0,
+          "band": [
+            0.0,
+            15.0
+          ]
+        },
+        {
+          "manager": "Scott Montgomery",
+          "weight": 10.0,
+          "band": [
+            15.0,
+            25.0
+          ]
+        },
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            25.0,
+            32.5
+          ]
+        }
+      ],
+      "winner": "Bill Keenan"
+    },
+    {
+      "pick": 5,
+      "total_weight": 17.5,
+      "drawn_value": 7.780903633415188,
+      "bands": [
+        {
+          "manager": "Scott Montgomery",
+          "weight": 10.0,
+          "band": [
+            0.0,
+            10.0
+          ]
+        },
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            10.0,
+            17.5
+          ]
+        }
+      ],
+      "winner": "Scott Montgomery"
+    },
+    {
+      "pick": 6,
+      "total_weight": 7.5,
+      "drawn_value": 3.239467204723706,
+      "bands": [
+        {
+          "manager": "Aric Tao",
+          "weight": 7.5,
+          "band": [
+            0.0,
+            7.5
+          ]
+        }
+      ],
+      "winner": "Aric Tao"
+    }
+  ]
+}

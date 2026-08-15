@@ -48,9 +48,11 @@ def build_data():
     dollar = {r["drc"]: r["drc_dollars"] for r in conn.execute(
         "SELECT drc, drc_dollars FROM drc_dollar_lookup")}
 
-    # Manager → team_name (2025)
+    # Manager → team_name (current 2026 name, falling back to 2025)
     team_names = {r["manager_id"]: r["team_name"] for r in conn.execute(
         "SELECT manager_id, team_name FROM teams WHERE season = 2025")}
+    team_names.update({r["manager_id"]: r["team_name"] for r in conn.execute(
+        "SELECT manager_id, team_name FROM teams WHERE season = 2026")})
 
     # 2026 ADP per player_id (where available - some players have no ADP match)
     adp_2026 = {r["player_id"]: r["adp"] for r in conn.execute(
@@ -118,6 +120,40 @@ def build_data():
             "chain": chain,
             "history": history,
         })
+
+    # ---- Apply current-season (2026) off-season trades ------------------
+    # The 2025-final-roster walk above predates any 2026 trades. Move traded
+    # players to their new manager and freeze them at their trade-time DRC
+    # (their 2025 DRC) per the trade-freeze rule. Source: season-2026
+    # synthetic trades (manual entry while the Yahoo API is dead). In-season
+    # 2026 trade handling is designed separately (live-season tracking).
+    moves = conn.execute("""
+        SELECT sp.player_id, m_dst.full_name AS dst, m_src.full_name AS src
+        FROM synthetic_transactions st
+        JOIN synthetic_transaction_players sp ON sp.synth_id = st.synth_id
+        JOIN teams t_dst ON t_dst.team_season_id = sp.team_season_id
+        JOIN managers m_dst ON m_dst.manager_id = t_dst.manager_id
+        JOIN teams t_src ON t_src.team_season_id = sp.counterparty_team_season_id
+        JOIN managers m_src ON m_src.manager_id = t_src.manager_id
+        WHERE st.season = 2026 AND st.event_type = 'trade'
+          AND sp.direction = 'incoming'
+        ORDER BY st.timestamp
+    """).fetchall()
+    for mv in moves:
+        src_d, dst_d = by_manager.get(mv["src"]), by_manager.get(mv["dst"])
+        if not src_d or not dst_d:
+            continue
+        p = next((x for x in src_d["players"]
+                  if x["player_id"] == mv["player_id"]), None)
+        if p is None:
+            continue
+        src_d["players"].remove(p)
+        anchor = ((p.get("history") or {}).get(2025) or {}).get("drc") or p["drc"]
+        frozen = max(1, min(16, int(anchor)))
+        p["drc"] = frozen
+        p["drc_dollars"] = dollar.get(frozen, 10)
+        p["via_trade_2026"] = True
+        dst_d["players"].append(p)
 
     # Sort players within each team by DRC ascending (most expensive first), then name
     for data in by_manager.values():
@@ -3283,6 +3319,70 @@ table.ta-table tr.ta-total td {
   .kpi-strip { grid-template-columns: 1fr 1fr; }
   .section-title { font-size: 20px; }
 }
+
+/* ---- Keeper board ---------------------------------------------------- */
+.kb-top { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:0 0 14px; }
+.kb-top select { font: inherit; padding:7px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; min-width:230px; }
+.kb-cap { margin-left:auto; display:flex; gap:10px; align-items:center; }
+.kb-cap-box { background:#022479; color:#fff; border-radius:10px; padding:8px 16px; text-align:left; }
+.kb-cap-box .kb-cap-num { font-size:20px; font-weight:700; font-variant-numeric: tabular-nums; }
+.kb-cap-box .kb-cap-lbl { font-size:11px; color:#77CEFF; letter-spacing:.04em; text-transform:uppercase; }
+.kb-btn { font:inherit; font-weight:600; border:1px solid #ccc; background:#fff; border-radius:8px; padding:8px 14px; cursor:pointer; }
+.kb-btn:hover { border-color:#0038FF; color:#0038FF; }
+.kb-cols { display:grid; grid-template-columns: 340px 1fr; gap:18px; align-items:start; }
+.kb-panel { background:#fff; border:1px solid #e3e3e6; border-radius:12px; overflow:hidden; }
+.kb-panel-h { padding:10px 14px; background:#f7f8fa; border-bottom:1px solid #e9e9ec; font-weight:700; font-size:13px; }
+.kb-panel-h .kb-sub { font-weight:400; color:#606C71; font-size:12px; }
+.kb-roster { max-height: 640px; overflow-y:auto; }
+.kb-card { display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid #f0f0f2; cursor:pointer; user-select:none; }
+.kb-card:last-child { border-bottom:none; }
+.kb-card .kb-nm { font-weight:600; font-size:13.5px; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kb-card .kb-meta { color:#606C71; font-size:11.5px; flex:none; font-variant-numeric: tabular-nums; }
+.kb-card .kb-check { flex:none; width:18px; height:18px; border:2px solid #c5c9d2; border-radius:5px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; color:#fff; }
+.kb-card.kb-on .kb-check { background:#0038FF; border-color:#0038FF; }
+.kb-card.kb-on { background:#f4f8ff; }
+.kb-card.kb-picked { outline:2px solid #0038FF; outline-offset:-2px; background:#eaf1ff; }
+.kb-card.kb-chasm-card { background:#fdecea; }
+.kb-board .kb-row { display:flex; align-items:center; gap:10px; padding:7px 12px; border-bottom:1px solid #f0f0f2; min-height:38px; }
+.kb-board .kb-rnum { flex:none; width:26px; font-weight:700; color:#606C71; font-size:12.5px; text-align:right; }
+.kb-slot { flex:1 1 0; border:1.5px dashed #d6d9e0; border-radius:8px; min-height:30px; padding:3px 8px; display:flex; align-items:center; gap:8px; font-size:12.5px; background:#fbfbfc; }
+.kb-slot.kb-acq { border-style:solid; border-color:#c9b45e; background:#fdfaf0; }
+.kb-slot .kb-origin { color:#8a6a12; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; flex:none; }
+.kb-slot.kb-legal { border-color:#0038FF; background:#eef4ff; box-shadow:0 0 0 2px rgba(0,56,255,.12); cursor:pointer; }
+.kb-slot.kb-illegal { opacity:.45; }
+.kb-slot .kb-seated { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kb-slot .kb-flag { flex:none; font-size:10.5px; background:#fff6e0; color:#8a6a12; border-radius:10px; padding:1px 7px; }
+.kb-slot .kb-x { flex:none; margin-left:auto; border:none; background:none; color:#98a0ad; cursor:pointer; font-size:13px; padding:0 2px; }
+.kb-slot .kb-x:hover { color:#b42318; }
+.kb-row.kb-gone { background:#fdf3f2; }
+.kb-row.kb-gone .kb-goneto { color:#b42318; font-size:12px; }
+.kb-chasm-strip { margin:10px 12px; border-top:1px dashed #f0cfc9; padding-top:10px; }
+.kb-chasm-chip { display:inline-block; background:#fdecea; color:#b42318; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
+.kb-hint { color:#606C71; font-size:12px; margin:10px 0 0; }
+.kb-print { display:none; }
+@media (max-width: 900px) {
+  .kb-cols { grid-template-columns: 1fr; }
+  .kb-roster { max-height: 320px; }
+}
+@media print {
+  body.kb-printing .sidebar, body.kb-printing .crumb-bar, body.kb-printing .menu-toggle,
+  body.kb-printing .sidebar-tab, body.kb-printing .back-to-top, body.kb-printing .kb-app,
+  body.kb-printing .section-header, body.kb-printing .kb-foot,
+  body.kb-printing .fb-trigger, body.kb-printing .fb-modal { display:none !important; }
+  body.kb-printing .kb-print th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.kb-printing .content { padding:0; }
+  body.kb-printing .kb-print { display:block; }
+  body.kb-printing #keeper-board { display:block !important; }
+}
+.kb-print h2 { font-size:18px; margin:0 0 2px; }
+.kb-print .kb-print-sub { color:#606C71; font-size:12px; margin:0 0 12px; }
+.kb-print-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.kb-print table { width:100%; border-collapse:collapse; font-size:12px; }
+.kb-print th { text-align:left; padding:5px 8px; background:#022479; color:#fff; }
+.kb-print td { padding:4px 8px; border-bottom:1px solid #ebebed; }
+.kb-print .num { text-align:right; font-variant-numeric:tabular-nums; }
+.kb-print .kb-print-flag { color:#8a6a12; font-size:10.5px; }
+.kb-print .kb-print-chasm { color:#b42318; font-weight:700; }
 """
 
 JS = r"""
@@ -3859,6 +3959,275 @@ JS = r"""
     else if (role === 'dyR') st.dyR = +e.target.value;
     else if (role === 'drR') st.drR = +e.target.value;
   });
+
+  render();
+})();
+
+/* ---- Keeper board (designation sandbox) ------------------------------ */
+(function() {
+  const D = window.TRADE_DATA;
+  const root = document.getElementById('keeper-board');
+  if (!D || !root) return;
+
+  const DOLLARS = {1:200, 2:100, 3:80, 4:60, 5:50, 6:30, 7:30, 8:30, 9:30};
+  const $$ = d => DOLLARS[d] || 10;
+  const clampDrc = d => Math.max(1, Math.min(16, d));
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const money = n => '$' + n.toLocaleString();
+  const teamBy = {}; D.teams.forEach(t => teamBy[t.slug] = t);
+  const playersBy = {}; D.players.forEach(p => { (playersBy[p.m] = playersBy[p.m] || []).push(p); });
+
+  const st = { team: '', keep: {}, manual: {}, pick: null };
+
+  function mkSlots() {
+    return (D.picks[st.team] || []).map((pk, i) =>
+      ({ id: i, r: pk.r, o: pk.o, lp: pk.lp, own: pk.o === st.team, taken: null, manual: false }));
+  }
+  function roster() {
+    return (playersBy[st.team] || []).slice().sort((a, b) => (a.d6 - b.d6) || ((b.pts || 0) - (a.pts || 0)));
+  }
+  function keepers() { return roster().filter(p => st.keep[p.i]); }
+
+  /* Rounds this player may legally occupy, per slide rules:
+     native DRC round; slide-down through CONSECUTIVE held rounds below it;
+     any held round above it (moving up is always allowed). */
+  function legalRoundsFor(d, slots) {
+    const held = {}; slots.forEach(s => held[s.r] = 1);
+    const ok = {};
+    for (let r = d - 1; r >= 1; r--) if (held[r]) ok[r] = 1;
+    if (held[d]) {
+      ok[d] = 1;
+      for (let r = d + 1; r <= 16; r++) { if (!held[r]) break; ok[r] = 1; }
+    }
+    return ok;
+  }
+
+  /* Sim honoring manual placements, then auto-seating the rest
+     (own picks first, acquired only as fallback; DRC order, pts tiebreak). */
+  function kbSim(excludePid) {
+    const slots = mkSlots();
+    const placed = {}, unkeepable = [];
+    const ks = keepers().filter(p => p.i !== excludePid);
+    const badManual = [];
+    ks.forEach(p => {
+      const sid = st.manual[p.i];
+      if (sid == null) return;
+      const sl = slots.find(s => s.id === sid);
+      const ok = sl && !sl.taken && legalRoundsFor(clampDrc(p.d6), slots)[sl.r];
+      if (ok) { sl.taken = p; sl.manual = true; placed[p.i] = { slot: sl, manual: true }; }
+      else badManual.push(p.i);
+    });
+    badManual.forEach(pid => delete st.manual[pid]);
+    const auto = ks.filter(p => !placed[p.i])
+      .sort((a, b) => (a.d6 - b.d6) || ((b.pts || 0) - (a.pts || 0)));
+    const held = {}; slots.forEach(s => { (held[s.r] = held[s.r] || []).push(s); });
+    const freeAt = (r, ownOnly) => (held[r] || []).find(s => !s.taken && (!ownOnly || s.own));
+    function findSeat(d, ownOnly) {
+      if ((held[d] || []).length) {
+        let f = freeAt(d, ownOnly);
+        if (f) return f;
+        for (let r = d + 1; r <= 16; r++) {
+          if (!(held[r] || []).length) break;
+          f = freeAt(r, ownOnly);
+          if (f) return f;
+        }
+      }
+      for (let r = d - 1; r >= 1; r--) { const f = freeAt(r, ownOnly); if (f) return f; }
+      return null;
+    }
+    auto.forEach(p => {
+      const d = clampDrc(p.d6);
+      const seat = findSeat(d, true) || findSeat(d, false);
+      if (seat) { seat.taken = p; placed[p.i] = { slot: seat, manual: false }; }
+      else unkeepable.push(p);
+    });
+    return { slots, placed, unkeepable };
+  }
+
+  function capTotal() { return keepers().reduce((s, p) => s + (p.c6 || 0), 0); }
+
+  function lostRows() {
+    const lostBy = {};
+    (D.picks_lost[st.team] || []).forEach(l => (lostBy[l.r] = lostBy[l.r] || []).push(l));
+    return lostBy;
+  }
+
+  function render() {
+    const app = root.querySelector('.kb-app');
+    const opts = ['<option value="">Choose your team&hellip;</option>'].concat(
+      D.teams.slice().sort((a, b) => a.team.toLowerCase() < b.team.toLowerCase() ? -1 : 1)
+        .map(t => '<option value="' + t.slug + '"' + (t.slug === st.team ? ' selected' : '') + '>' +
+                  esc(t.team) + ' (' + esc(t.mgr) + ')</option>'));
+    let top = '<div class="kb-top"><select data-role="kbteam">' + opts.join('') + '</select>';
+    if (st.team) {
+      const ks = keepers();
+      top += '<button class="kb-btn" data-kbact="reset" type="button">Reset board</button>' +
+             '<button class="kb-btn" data-kbact="print" type="button">Print / save PDF</button>' +
+             '<div class="kb-cap"><div class="kb-cap-box"><div class="kb-cap-num">' + money(capTotal()) +
+             '</div><div class="kb-cap-lbl">' + ks.length + (ks.length === 1 ? ' keeper' : ' keepers') +
+             ' committed</div></div></div>';
+    }
+    top += '</div>';
+    if (!st.team) {
+      app.innerHTML = top + '<p class="kb-hint">Pick your team to start building your keeper board. ' +
+        'This is a sandbox: nothing is saved or submitted, fiddle freely.</p>';
+      root.querySelector('.kb-print').innerHTML = '';
+      return;
+    }
+
+    const sim = kbSim(st.pick != null ? st.pick : undefined);
+    let legal = null;
+    if (st.pick != null) {
+      const p = D.players.find(x => x.i === st.pick);
+      if (p) legal = legalRoundsFor(clampDrc(p.d6), sim.slots);
+    }
+
+    const cards = roster().map(p => {
+      const on = !!st.keep[p.i];
+      const isPick = st.pick === p.i;
+      const chasm = sim.unkeepable.some(u => u.i === p.i) && on;
+      const meta = 'DRC ' + p.d6 + ' &middot; ' + money(p.c6) +
+                   (p.pts != null ? ' &middot; ' + p.pts + ' pts' : '');
+      return '<div class="kb-card' + (on ? ' kb-on' : '') + (isPick ? ' kb-picked' : '') +
+        (chasm ? ' kb-chasm-card' : '') + '" data-pid="' + p.i + '"' +
+        (on ? ' draggable="true"' : '') + '>' +
+        '<span class="kb-check" data-role="check">' + (on ? '&#10003;' : '') + '</span>' +
+        '<span class="kb-nm">' + esc(p.n) + ' <span style="color:#606C71;font-weight:400;">' +
+        esc(p.p || '') + '</span></span>' +
+        '<span class="kb-meta">' + meta + '</span></div>';
+    }).join('');
+
+    const lostBy = lostRows();
+    let rows = '';
+    for (let r = 1; r <= 16; r++) {
+      const here = sim.slots.filter(s => s.r === r);
+      const gone = (lostBy[r] || []).map(l => esc((teamBy[l.to] || {}).mgr || l.to));
+      let cells = here.map(sl => {
+        const cls = ['kb-slot'];
+        if (!sl.own) cls.push('kb-acq');
+        if (legal) cls.push(legal[sl.r] && !sl.taken ? 'kb-legal' : 'kb-illegal');
+        let inner = '';
+        if (!sl.own) inner += '<span class="kb-origin">acq &middot; ' +
+          esc(((teamBy[sl.o] || {}).mgr || '').split(' ')[0]) + '</span>';
+        if (sl.taken) {
+          const p = sl.taken;
+          const flags = [];
+          if (sl.r < clampDrc(p.d6)) flags.push('<span class="kb-flag" title="Seated earlier than DRC requires; round ' + clampDrc(p.d6) + ' freed">earlier than needed</span>');
+          if (!sl.own) flags.push('<span class="kb-flag">via acquired pick</span>');
+          if (sl.manual) flags.push('<span class="kb-flag" style="background:#e9f0ff;color:#022479;">placed by you</span>');
+          inner += '<span class="kb-seated">' + esc(p.n) + '</span>' +
+            '<span class="kb-meta">DRC ' + p.d6 + ' &middot; ' + money(p.c6) + '</span>' +
+            flags.join('') +
+            '<button class="kb-x" data-unseat="' + p.i + '" title="Remove from keepers" type="button">&#10005;</button>';
+        } else if (!legal) {
+          inner += '<span style="color:#b6bcc7;">open</span>';
+        }
+        return '<div class="' + cls.join(' ') + '" data-slot="' + sl.id + '">' + inner + '</div>';
+      }).join('');
+      if (!here.length) {
+        cells = '<div class="kb-slot kb-illegal" style="border-style:none;background:none;">' +
+          '<span class="kb-goneto">pick traded away' + (gone.length ? ' to ' + gone.join(', ') : '') + '</span></div>';
+      }
+      rows += '<div class="kb-row' + (!here.length ? ' kb-gone' : '') + '"><span class="kb-rnum">' + r + '</span>' + cells + '</div>';
+    }
+    let chasmStrip = '';
+    if (sim.unkeepable.length) {
+      chasmStrip = '<div class="kb-chasm-strip"><strong style="color:#b42318;font-size:12px;">Can&#39;t slot (chasm):</strong> ' +
+        sim.unkeepable.map(p => '<span class="kb-chasm-chip">' + esc(p.n) + ' (DRC ' + p.d6 + ')</span>').join('') +
+        '<div class="kb-hint">No owned round can seat them under the slide rules with this board. Free a round or trade for a pick.</div></div>';
+    }
+
+    app.innerHTML = top +
+      '<div class="kb-cols">' +
+      '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep &middot; tap a kept player to place them</span></div>' +
+      '<div class="kb-roster">' + cards + '</div></div>' +
+      '<div class="kb-panel"><div class="kb-panel-h">2026 draft board <span class="kb-sub">' +
+      (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'your picks, with keepers seated by the slide rules') +
+      '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
+      '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Moving a player up spends a better pick than needed; the board flags it and shows the freed round, the call is yours. Acquired picks are protected: the auto-seat never uses them while one of your own picks works.</p>';
+
+    renderPrint(sim);
+  }
+
+  function renderPrint(sim) {
+    const t = teamBy[st.team] || {};
+    const seated = [];
+    sim.slots.forEach(sl => { if (sl.taken) seated.push({ r: sl.r, p: sl.taken, own: sl.own, manual: sl.manual }); });
+    seated.sort((a, b) => a.r - b.r);
+    const left = seated.map(s =>
+      '<tr><td class="num">' + s.r + '</td><td>' + esc(s.p.n) + '</td><td class="num">' + s.p.d6 +
+      '</td><td class="num">' + money(s.p.c6) + '</td><td>' +
+      (s.r < clampDrc(s.p.d6) ? '<span class="kb-print-flag">earlier than needed</span> ' : '') +
+      (!s.own ? '<span class="kb-print-flag">acquired pick</span>' : '') + '</td></tr>').join('');
+    const chasm = sim.unkeepable.map(p =>
+      '<tr><td class="num">&mdash;</td><td class="kb-print-chasm">' + esc(p.n) + '</td><td class="num">' + p.d6 +
+      '</td><td class="num">' + money(p.c6) + '</td><td class="kb-print-chasm">cannot slot</td></tr>').join('');
+    const right = seated.map(s =>
+      '<tr><td class="num">' + s.r + '</td><td>' + esc(s.p.n) + '</td></tr>').join('');
+    root.querySelector('.kb-print').innerHTML =
+      '<h2>' + esc(t.team || '') + ' &middot; 2026 keeper board</h2>' +
+      '<p class="kb-print-sub">' + esc(t.mgr || '') + ' &middot; ' + keepers().length +
+      ' keepers &middot; ' + money(capTotal()) + ' committed &middot; generated from the league dashboard</p>' +
+      '<div class="kb-print-grid"><div><table><thead><tr><th>Rd</th><th>Player</th><th>DRC</th><th>$</th><th>Notes</th></tr></thead><tbody>' +
+      left + chasm + '</tbody></table></div>' +
+      '<div><table><thead><tr><th>Rd</th><th>What Yahoo shows</th></tr></thead><tbody>' + right +
+      '</tbody></table></div></div>';
+  }
+
+  const app = root.querySelector('.kb-app');
+
+  app.addEventListener('change', e => {
+    if (e.target.dataset.role === 'kbteam') {
+      st.team = e.target.value; st.keep = {}; st.manual = {}; st.pick = null; render();
+    }
+  });
+
+  app.addEventListener('click', e => {
+    const unseat = e.target.closest('[data-unseat]');
+    if (unseat) { const pid = +unseat.dataset.unseat; delete st.keep[pid]; delete st.manual[pid]; if (st.pick === pid) st.pick = null; render(); return; }
+    const act = e.target.closest('[data-kbact]');
+    if (act) {
+      if (act.dataset.kbact === 'reset') { st.keep = {}; st.manual = {}; st.pick = null; render(); }
+      else if (act.dataset.kbact === 'print') {
+        document.body.classList.add('kb-printing');
+        const done = () => { document.body.classList.remove('kb-printing'); window.removeEventListener('afterprint', done); };
+        window.addEventListener('afterprint', done);
+        window.print();
+      }
+      return;
+    }
+    const slot = e.target.closest('.kb-slot.kb-legal');
+    if (slot && st.pick != null) {
+      st.manual[st.pick] = +slot.dataset.slot; st.pick = null; render(); return;
+    }
+    const card = e.target.closest('.kb-card');
+    if (card) {
+      const pid = +card.dataset.pid;
+      const onCheck = !!e.target.closest('[data-role="check"]');
+      if (!st.keep[pid]) { st.keep[pid] = true; st.pick = null; }
+      else if (onCheck) { delete st.keep[pid]; delete st.manual[pid]; if (st.pick === pid) st.pick = null; }
+      else st.pick = (st.pick === pid ? null : pid);
+      render(); return;
+    }
+    if (st.pick != null) { st.pick = null; render(); }
+  });
+
+  app.addEventListener('dragstart', e => {
+    const card = e.target.closest('.kb-card');
+    if (!card || !st.keep[+card.dataset.pid]) { e.preventDefault(); return; }
+    st.pick = +card.dataset.pid;
+    e.dataTransfer.setData('text/plain', card.dataset.pid);
+    setTimeout(render, 0);
+  });
+  app.addEventListener('dragover', e => {
+    if (e.target.closest('.kb-slot.kb-legal')) e.preventDefault();
+  });
+  app.addEventListener('drop', e => {
+    const slot = e.target.closest('.kb-slot.kb-legal');
+    if (slot && st.pick != null) { e.preventDefault(); st.manual[st.pick] = +slot.dataset.slot; }
+    st.pick = null; render();
+  });
+  app.addEventListener('dragend', () => { if (st.pick != null) { st.pick = null; render(); } });
 
   render();
 })();
@@ -4908,6 +5277,7 @@ def build_sidebar(by_manager):
         <div class="sidebar-team-list">
           <a class="nav-link" data-target="player-search">Player search</a>
           <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
+          <a class="nav-link" data-target="keeper-board">Keeper board</a>
         </div>
       </details>
 
@@ -5017,11 +5387,31 @@ def render_trade_analyzer(by_manager):
     <script>window.TRADE_DATA = {data_json};</script>"""
 
 
+def render_keeper_board():
+    """Keeper designation board: a per-team sandbox for the August keeper
+    deadline. Toggle keepers on, watch the slide/chasm engine seat them on
+    your actual 2026 pick inventory, drag (or tap) to override seating,
+    track the running dollar commitment, and print a side-by-side sheet to
+    check against Yahoo's keeper screen. Reads the same TRADE_DATA embed as
+    the trade analyzer; client-side only, no saved state."""
+    return f"""
+    <section class="team-section" id="keeper-board" hidden>
+      <header class="section-header">
+        <h1 class="section-title">Keeper board</h1>
+        <p class="section-sub">Build your {TARGET_SEASON} keeper slate against your real pick inventory. The board seats every keeper at their DRC round under the slide rules, flags anyone who can&rsquo;t legally slot (the chasm), and keeps a running total of what you&rsquo;re committing in keeper dollars. Legality and cost are the two things Yahoo&rsquo;s keeper screen won&rsquo;t show you. Nothing here saves or submits; it&rsquo;s a scratchpad.</p>
+      </header>
+      <div class="kb-app"></div>
+      <div class="kb-print"></div>
+      <p class="kb-foot">Seating defaults follow the sim&rsquo;s rule of thumb: at the same DRC, the higher 2025 scorer takes the earlier pick. The seating order is still yours to set. Pick up any kept player and move them wherever the rules allow. Print / save PDF gives you a sheet to hold next to Yahoo&rsquo;s keeper page when you enter your real designations.</p>
+    </section>"""
+
+
 def render_html(by_manager, search_players, comms_posts, generated_at):
     sidebar = build_sidebar(by_manager)
     summary = render_summary_section(by_manager, generated_at)
     player_search = render_player_search_section(search_players)
     trade_analyzer = render_trade_analyzer(by_manager)
+    keeper_board = render_keeper_board()
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
     rules_history = render_rules_history_section()
@@ -5054,6 +5444,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 {summary}
 {player_search}
 {trade_analyzer}
+{keeper_board}
 {desk}
 {rules}
 {rules_history}
