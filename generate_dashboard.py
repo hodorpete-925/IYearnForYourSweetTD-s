@@ -2995,6 +2995,99 @@ table.ta-table tr.ta-total td {
   border-top: 1px solid var(--gray-200);
   padding-top: 12px;
 }
+/* ---- Trade summary strip: at-a-glance stats card per team.
+   Facts-only (no verdict). Two-column grid on desktop, still
+   two-column on mobile (cards get denser + smaller type). */
+.ta-sum-strip {
+  margin-top: 12px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 12px 14px 14px;
+}
+.ta-sum-h {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+.ta-sum-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.ta-sum-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.ta-sum-mgr {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--blue-800);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ta-sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12.5px;
+  padding: 4px 0;
+  border-top: 1px solid var(--gray-100);
+}
+.ta-sum-row:first-of-type { border-top: none; }
+.ta-sum-k {
+  color: var(--gray-600);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.ta-sum-v {
+  color: var(--gray-800);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-width: 0;
+}
+/* Position-net-swing block. Compact facts-only line per team. */
+.ta-pos-swing {
+  margin-top: 10px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 10px 14px 12px;
+}
+.ta-pos-h {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 6px;
+}
+.ta-pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.ta-pos-mgr {
+  display: block;
+  font-weight: 600;
+  color: var(--blue-800);
+  font-size: 11.5px;
+  margin-bottom: 3px;
+}
 
 /* ====================================================================== */
 /* Feedback widget: floating trigger + modal                              */
@@ -3284,6 +3377,18 @@ table.ta-table tr.ta-total td {
   .ta-row { padding: 7px 6px; }
   table.ta-table { font-size: 11px; }
   table.ta-table td, table.ta-table th { padding: 5px 4px; }
+  /* Trade summary strip: keep two-column layout even on mobile so both
+     teams stay comparable; tighten padding, shrink type. */
+  .ta-sum-strip { padding: 10px 10px 12px; }
+  .ta-sum-grid { gap: 6px; }
+  .ta-sum-card { padding: 8px 9px; }
+  .ta-sum-mgr { font-size: 12px; margin-bottom: 6px; }
+  .ta-sum-row { font-size: 11.5px; padding: 3px 0; gap: 4px; flex-wrap: wrap; }
+  .ta-sum-k { font-size: 9.5px; }
+  .ta-sum-v { font-size: 11.5px; text-align: right; }
+  .ta-pos-swing { padding: 8px 10px 10px; }
+  .ta-pos-grid { grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11.5px; }
+  .ta-pos-mgr { font-size: 10.5px; }
   /* Feedback widget: full-width bottom sheet feel on small screens. */
   .fb-trigger { bottom: 14px; right: 14px; padding: 9px 15px; }
   .fb-modal {
@@ -3364,25 +3469,126 @@ table.ta-table tr.ta-total td {
   .kb-cols { grid-template-columns: 1fr; }
   .kb-roster { max-height: 320px; }
 }
+/* Mobile keeper-row stacking: at narrow widths, restructure each seated
+   row so the full player name lives on line 1 (no truncation), DRC/$ and
+   any flag chips on line 2, and the ACQ chip (if present) on line 3.
+   The close X is pinned to the top-right so it stays a clean tap target
+   regardless of row height. Desktop layout is untouched. */
+@media (max-width: 480px) {
+  .kb-board .kb-row {
+    align-items: flex-start;
+    gap: 6px;
+    padding: 7px 8px;
+  }
+  .kb-board .kb-rnum {
+    padding-top: 4px;
+  }
+  .kb-slot {
+    position: relative;
+    flex-wrap: wrap;
+    row-gap: 3px;
+    column-gap: 6px;
+    padding: 6px 40px 6px 8px;
+    min-height: 34px;
+  }
+  .kb-slot .kb-seated {
+    order: 1;
+    flex: 1 1 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.25;
+    font-size: 13px;
+  }
+  .kb-slot .kb-meta {
+    order: 2;
+    flex: 0 0 auto;
+    margin-left: 0;
+    font-size: 11px;
+  }
+  .kb-slot .kb-flag {
+    order: 2;
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+  .kb-slot .kb-origin {
+    order: 3;
+    flex: 1 1 100%;
+    font-size: 10px;
+  }
+  .kb-slot .kb-x {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    margin-left: 0;
+    padding: 4px 8px;
+    font-size: 16px;
+    line-height: 1;
+  }
+  /* Feedback pill and back-to-top button both anchor to the bottom-right
+     and collide on narrow viewports. Stack them: fb-trigger on the bottom,
+     back-to-top above with a comfortable gap and 44x44 tap target. */
+  .back-to-top {
+    right: 14px;
+    bottom: 72px;
+    width: 44px;
+    height: 44px;
+  }
+  .fb-trigger {
+    bottom: 14px;
+    right: 14px;
+  }
+}
 @media print {
   body.kb-printing .sidebar, body.kb-printing .crumb-bar, body.kb-printing .menu-toggle,
   body.kb-printing .sidebar-tab, body.kb-printing .back-to-top, body.kb-printing .kb-app,
   body.kb-printing .section-header, body.kb-printing .kb-foot,
   body.kb-printing .fb-trigger, body.kb-printing .fb-modal { display:none !important; }
   body.kb-printing .kb-print th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body.kb-printing .content { padding:0; }
-  body.kb-printing .kb-print { display:block; }
+  /* Force the print layout to page width. The desktop layout uses a
+     280px sidebar + 1fr content grid; hiding the sidebar with display:
+     none leaves .content in a 280px auto-placed slot. Collapse the
+     grid entirely for print so content flows at full page width. */
+  body.kb-printing .layout {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  body.kb-printing { margin: 0; }
+  body.kb-printing .content {
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  body.kb-printing #keeper-board { max-width: 100%; width: 100%; padding: 0; margin: 0; }
+  body.kb-printing .kb-print { display:block; width: 100%; }
   body.kb-printing #keeper-board { display:block !important; }
+  body.kb-printing .kb-print table.kb-print-full { table-layout: fixed; }
 }
 .kb-print h2 { font-size:18px; margin:0 0 2px; }
 .kb-print .kb-print-sub { color:#606C71; font-size:12px; margin:0 0 12px; }
-.kb-print-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 .kb-print table { width:100%; border-collapse:collapse; font-size:12px; }
-.kb-print th { text-align:left; padding:5px 8px; background:#022479; color:#fff; }
-.kb-print td { padding:4px 8px; border-bottom:1px solid #ebebed; }
+.kb-print th { text-align:left; padding:5px 8px; background:#022479; color:#fff; font-weight:700; font-size:10.5px; letter-spacing:0.04em; text-transform:uppercase; }
+.kb-print td { padding:4px 8px; border-bottom:1px solid #ebebed; vertical-align:top; }
 .kb-print .num { text-align:right; font-variant-numeric:tabular-nums; }
-.kb-print .kb-print-flag { color:#8a6a12; font-size:10.5px; }
+.kb-print .kb-print-flag { color:#8a6a12; font-size:10.5px; margin-right:6px; }
 .kb-print .kb-print-chasm { color:#b42318; font-weight:700; }
+/* Full-slot export: one row per pick, whether keeper, open, or traded. */
+.kb-print .kb-print-full td.num:first-child { font-weight:700; color:#606C71; }
+.kb-print .kb-print-name { font-weight:600; }
+.kb-print .kb-print-notes { color:#606C71; font-size:10.5px; }
+.kb-print .kb-print-note { color:#8e8e93; font-style:italic; font-size:11px; }
+.kb-print tr.kb-print-open td { background:#f8faff; }
+.kb-print tr.kb-print-open td.num:first-child { color:#0038FF; }
+.kb-print tr.kb-print-gone td { background:#fdf3f2; }
+.kb-print tr.kb-print-gone td.num:first-child { color:#b42318; text-decoration:line-through; }
+.kb-print .kb-print-gone-note { color:#b42318; }
+.kb-print .kb-print-chasm-h { font-size:13px; margin:16px 0 6px; color:#b42318; }
+.kb-print .kb-print-legend { color:#606C71; font-size:11px; font-weight:400; }
+.kb-print .kb-print-legend-item { white-space:nowrap; }
+.kb-print .kb-print-legend-key { display:inline-block; padding:0 5px; font-weight:700; font-size:10px; border-radius:3px; margin-right:3px; background:#f0f0f2; color:#606C71; }
+.kb-print .kb-print-legend-key.kb-print-legend-open { background:#e6efff; color:#0038FF; }
+.kb-print .kb-print-legend-key.kb-print-legend-gone { background:#fdecea; color:#b42318; }
 """
 
 JS = r"""
@@ -3766,7 +3972,11 @@ JS = r"""
     const capAfter = team.cap - outCost + inCost;
     const ptsIn = recvPlayers.reduce((s, p) => s + (p.pts || 0), 0);
     const ptsOut = sendPlayers.reduce((s, p) => s + (p.pts || 0), 0);
-    const commit3yr = recvPlayers.reduce((s, p) => s + costRow(p).reduce((a, c) => a + c.c, 0), 0);
+    // Per-year future commit from incoming players only (out-year exposure this trade creates).
+    // YEARS = [Y0, Y0+1, Y0+2]; index 0 is "this year", 1 and 2 are the two out-years.
+    const commitByYear = YEARS.map((y, i) =>
+      ({y, c: recvPlayers.reduce((s, p) => s + costRow(p)[i].c, 0)}));
+    const commit3yr = commitByYear.reduce((s, e) => s + e.c, 0);
     const postRosterArr = effRoster(T).filter(p => !sendIds.has(p.i))
       .concat(recvPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, c: costRow(p)[0].c, incoming: true})));
     const postPicks = (D.picks[T] || []).slice();
@@ -3784,7 +3994,7 @@ JS = r"""
     return {
       team, sends: sendPlayers, receives: recvPlayers, picksSent, picksRecv,
       capBefore: team.cap, capAfter, delta: capAfter - team.cap,
-      ptsSwing: ptsIn - ptsOut, commit3yr, after,
+      ptsSwing: ptsIn - ptsOut, commit3yr, commitByYear, after,
       boardPost: boardModel(T, postPicks, postSim, (D.picks_lost[T] || []).concat(picksSent.filter(pk => pk.y === Y0).map(pk => ({r: pk.r, to: O})))),
     };
   }
@@ -3902,6 +4112,84 @@ JS = r"""
       '<div style="margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.15);font-size:12.5px;color:#cfe0ff;">2025 production swing: <b style="' + swSt(L.ptsSwing) + '">' + esc(first(L.team.mgr)) + ' ' + sw(L.ptsSwing) + '</b> &middot; <b style="' + swSt(R.ptsSwing) + '">' + esc(first(R.team.mgr)) + ' ' + sw(R.ptsSwing) + '</b></div></div>';
   }
 
+  /* Compact per-team stat card — a mobile-friendly stats panel that
+     surfaces numbers our engine already computes but scatters across the
+     tray footer and board headers. Facts-only, no verdict.
+     Four rows per side:
+       - 2025 production swing (pts in − pts out)
+       - Cap Y0 (this year): before → after, with delta
+       - Future commit from INCOMING players only, broken out per year
+         (Y0+1 and Y0+2) — surfaces the multi-year exposure this trade
+         creates.
+       - Slot risk (chasm count) */
+  function summaryCardHTML(sideVM, active) {
+    const pts = sideVM.ptsSwing;
+    const ptsStr = active ? ((pts > 0 ? '▲ +' : pts < 0 ? '▼ −' : '±') + Math.abs(pts).toFixed(1)) : '—';
+    const ptsStyle = pts > 0 ? 'color:#1c7a4a;font-weight:700;' : pts < 0 ? 'color:#b42318;font-weight:700;' : 'color:#606C71;';
+    const d = sideVM.delta;
+    const capNowStr = active ? (money(sideVM.capBefore) + ' → ' + money(sideVM.capAfter)) : money(sideVM.capBefore);
+    const capDeltaStr = active ? (d > 0 ? ' (▲ +$' + Math.abs(d).toLocaleString() + ')' : d < 0 ? ' (▼ −$' + Math.abs(d).toLocaleString() + ')' : ' (±0)') : '';
+    const capDeltaStyle = d > 0 ? 'color:#b42318;' : d < 0 ? 'color:#1c7a4a;' : 'color:#606C71;';
+    // Multi-year commit on INCOMING players (index 1 = Y0+1, index 2 = Y0+2).
+    const cbY = sideVM.commitByYear || [];
+    let futureStr;
+    if (!active || (!cbY[1] || !cbY[1].c) && (!cbY[2] || !cbY[2].c)) {
+      futureStr = '—';
+    } else {
+      futureStr = (cbY[1].y) + ' ' + money(cbY[1].c) + ' &middot; ' + (cbY[2].y) + ' ' + money(cbY[2].c);
+    }
+    const chasmN = sideVM.after.filter(a => a.chasm).length;
+    const chasmStr = chasmN > 0 ? (chasmN + (chasmN === 1 ? ' keeper' : ' keepers') + ' can&rsquo;t slot') : 'clean';
+    const chasmStyle = chasmN > 0 ? 'color:#b42318;font-weight:700;' : 'color:#1c7a4a;';
+    return '<div class="ta-sum-card">' +
+      '<div class="ta-sum-mgr">' + esc(sideVM.team.mgr) + '</div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">2025 pts</span><span class="ta-sum-v" style="' + ptsStyle + '">' + ptsStr + '</span></div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">Cap ' + Y0 + '</span><span class="ta-sum-v">' + capNowStr +
+        '<span style="' + capDeltaStyle + 'font-weight:700;">' + capDeltaStr + '</span></span></div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">Future commit</span><span class="ta-sum-v">' + futureStr + '</span></div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">Slot risk</span><span class="ta-sum-v" style="' + chasmStyle + '">' + chasmStr + '</span></div>' +
+      '</div>';
+  }
+  function summaryStripHTML(vm, active) {
+    return '<div class="ta-sum-strip">' +
+      '<div class="ta-sum-h">Trade summary</div>' +
+      '<div class="ta-sum-grid">' +
+      summaryCardHTML(vm.L, active) +
+      summaryCardHTML(vm.R, active) +
+      '</div></div>';
+  }
+
+  /* Position-count net swing. Uses `pos` already on every player; adds
+     one facts-only line per side showing what shape the trade actually
+     is (gains X at RB, loses Y at WR, etc.). Skipped when the trade is
+     picks-only or empty. */
+  function positionSwingHTML(vm, active) {
+    if (!active) return '';
+    const line = sideVM => {
+      const net = {};
+      sideVM.receives.forEach(p => { net[p.p] = (net[p.p] || 0) + 1; });
+      sideVM.sends.forEach(p => { net[p.p] = (net[p.p] || 0) - 1; });
+      const gains = Object.keys(net).filter(k => net[k] > 0)
+        .map(k => k + ' +' + net[k]);
+      const losses = Object.keys(net).filter(k => net[k] < 0)
+        .map(k => k + ' ' + net[k]);
+      const parts = [];
+      if (gains.length) parts.push('<span style="color:#1c7a4a;font-weight:600;">' + gains.join('  ') + '</span>');
+      if (losses.length) parts.push('<span style="color:#b42318;font-weight:600;">' + losses.join('  ') + '</span>');
+      if (!parts.length) return '<span style="color:#8e8e93;">picks only</span>';
+      return parts.join('  &middot;  ');
+    };
+    const noPlayers = !vm.L.receives.length && !vm.L.sends.length &&
+                       !vm.R.receives.length && !vm.R.sends.length;
+    if (noPlayers) return '';
+    return '<div class="ta-pos-swing">' +
+      '<div class="ta-pos-h">Position swing</div>' +
+      '<div class="ta-pos-grid">' +
+      '<div><span class="ta-pos-mgr">' + esc(first(vm.L.team.mgr)) + '</span>' + line(vm.L) + '</div>' +
+      '<div><span class="ta-pos-mgr">' + esc(first(vm.R.team.mgr)) + '</span>' + line(vm.R) + '</div>' +
+      '</div></div>';
+  }
+
   function render() {
     let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">' +
       '<div><label style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e93;font-weight:600;display:block;margin-bottom:4px;">Team A</label>' +
@@ -3919,6 +4207,11 @@ JS = r"""
     const vm = computeTrade({L: st.teamL, R: st.teamR, sel: st.sel, picksL: st.picksL, picksR: st.picksR});
     const active = !vm.empty;
     html += trayHTML(vm);
+    // Trade-summary strip + position swing (both facts-only, no verdict).
+    // The summary strip carries the scan-both-teams-at-a-glance work; no
+    // mobile tab toggle needed.
+    html += summaryStripHTML(vm, active);
+    html += positionSwingHTML(vm, active);
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start;margin-top:14px;">' +
       boardHTML(vm.L, 'L', active) + boardHTML(vm.R, 'R', active) + '</div>';
     html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a keeper on either board to move them across. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#0038FF;font-weight:600;">↓/↑</span> = slid to a nearby round · <span style="color:#1c7a4a;font-weight:600;">green</span> = just acquired · a round you don&#39;t own is a wall, and anyone who can&#39;t reach a round drops to <span style="color:#b42318;font-weight:600;">can&#39;t keep</span>.</p>';
@@ -4137,6 +4430,12 @@ JS = r"""
         '<div class="kb-hint">No owned round can seat them under the slide rules with this board. Free a round or trade for a pick.</div></div>';
     }
 
+    // Preserve the roster list's scroll position across the innerHTML
+    // rebuild — otherwise clicking a player at the bottom of the list
+    // jumps the user back to the top on every render.
+    const prevRoster = app.querySelector('.kb-roster');
+    const prevScroll = prevRoster ? prevRoster.scrollTop : 0;
+
     app.innerHTML = top +
       '<div class="kb-cols">' +
       '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep &middot; tap a kept player to place them</span></div>' +
@@ -4146,32 +4445,97 @@ JS = r"""
       '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
       '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Moving a player up spends a better pick than needed; the board flags it and shows the freed round, the call is yours. Acquired picks are protected: the auto-seat never uses them while one of your own picks works.</p>';
 
+    if (prevScroll) {
+      const newRoster = app.querySelector('.kb-roster');
+      if (newRoster) {
+        newRoster.scrollTop = prevScroll;
+        requestAnimationFrame(() => { newRoster.scrollTop = prevScroll; });
+      }
+    }
+
     renderPrint(sim);
   }
 
   function renderPrint(sim) {
+    /* Full 16-round board for printing / PDF export. One row per slot:
+       - Keeper seated  -> player, DRC, $, notes (slid/acquired/manual)
+       - Owned open     -> "(open — you draft here)"
+       - Traded away    -> "(traded to <mgr>)"
+       Chasm players (kept but no seat) get their own follow-up block.
+       Replaces the old two-table layout that mirrored the same data
+       twice; the right column ("What Yahoo shows") was intended to
+       diverge from the tool's slide/up-slide seating but never did. */
     const t = teamBy[st.team] || {};
-    const seated = [];
-    sim.slots.forEach(sl => { if (sl.taken) seated.push({ r: sl.r, p: sl.taken, own: sl.own, manual: sl.manual }); });
-    seated.sort((a, b) => a.r - b.r);
-    const left = seated.map(s =>
-      '<tr><td class="num">' + s.r + '</td><td>' + esc(s.p.n) + '</td><td class="num">' + s.p.d6 +
-      '</td><td class="num">' + money(s.p.c6) + '</td><td>' +
-      (s.r < clampDrc(s.p.d6) ? '<span class="kb-print-flag">earlier than needed</span> ' : '') +
-      (!s.own ? '<span class="kb-print-flag">acquired pick</span>' : '') + '</td></tr>').join('');
-    const chasm = sim.unkeepable.map(p =>
-      '<tr><td class="num">&mdash;</td><td class="kb-print-chasm">' + esc(p.n) + '</td><td class="num">' + p.d6 +
-      '</td><td class="num">' + money(p.c6) + '</td><td class="kb-print-chasm">cannot slot</td></tr>').join('');
-    const right = seated.map(s =>
-      '<tr><td class="num">' + s.r + '</td><td>' + esc(s.p.n) + '</td></tr>').join('');
+    const lostBy = {};
+    (D.picks_lost[st.team] || []).forEach(l => (lostBy[l.r] = lostBy[l.r] || []).push(l));
+
+    const rowsHtml = [];
+    for (let r = 1; r <= 16; r++) {
+      const here = sim.slots.filter(sl => sl.r === r);
+      const gone = lostBy[r] || [];
+      if (here.length === 0 && gone.length === 0) {
+        // Round Pete owns nothing at (traded pre-history or never held)
+        rowsHtml.push(
+          '<tr class="kb-print-gone"><td class="num">' + r + '</td>' +
+          '<td colspan="4" class="kb-print-note">no pick this round</td></tr>');
+        continue;
+      }
+      here.forEach(sl => {
+        if (sl.taken) {
+          const p = sl.taken;
+          const notes = [];
+          if (sl.r < clampDrc(p.d6)) notes.push('<span class="kb-print-flag">slid up from R' + clampDrc(p.d6) + '</span>');
+          if (!sl.own) notes.push('<span class="kb-print-flag">via acquired pick' +
+            ((teamBy[sl.o] || {}).mgr ? ' (' + esc((teamBy[sl.o] || {}).mgr.split(' ')[0]) + ')' : '') + '</span>');
+          if (sl.manual) notes.push('<span class="kb-print-flag" style="color:#022479;">placed by you</span>');
+          rowsHtml.push(
+            '<tr><td class="num">' + r + '</td>' +
+            '<td class="kb-print-name">' + esc(p.n) + '</td>' +
+            '<td class="num">' + p.d6 + '</td>' +
+            '<td class="num">' + money(p.c6) + '</td>' +
+            '<td class="kb-print-notes">' + notes.join(' ') + '</td></tr>');
+        } else if (sl.own) {
+          rowsHtml.push(
+            '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
+            '<td colspan="4" class="kb-print-note">open &mdash; you draft here</td></tr>');
+        } else {
+          rowsHtml.push(
+            '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
+            '<td colspan="4" class="kb-print-note">open &mdash; acquired pick, you draft here' +
+            ((teamBy[sl.o] || {}).mgr ? ' (from ' + esc((teamBy[sl.o] || {}).mgr.split(' ')[0]) + ')' : '') + '</td></tr>');
+        }
+      });
+      gone.forEach(l => {
+        const to = (teamBy[l.to] || {}).mgr || l.to;
+        rowsHtml.push(
+          '<tr class="kb-print-gone"><td class="num">' + r + '</td>' +
+          '<td colspan="4" class="kb-print-note kb-print-gone-note">traded to ' + esc(to) + '</td></tr>');
+      });
+    }
+
+    let chasmBlock = '';
+    if (sim.unkeepable.length) {
+      chasmBlock = '<h3 class="kb-print-chasm-h">Can&rsquo;t slot (chasm) &mdash; keeper designation blocked</h3>' +
+        '<table><thead><tr><th>Player</th><th>Pos</th><th>DRC</th><th>$</th><th>Reason</th></tr></thead><tbody>' +
+        sim.unkeepable.map(p =>
+          '<tr><td class="kb-print-chasm">' + esc(p.n) + '</td>' +
+          '<td>' + esc(p.p || '') + '</td>' +
+          '<td class="num">' + p.d6 + '</td>' +
+          '<td class="num">' + money(p.c6) + '</td>' +
+          '<td class="kb-print-chasm">no round available under the slide rules</td></tr>').join('') +
+        '</tbody></table>';
+    }
+
     root.querySelector('.kb-print').innerHTML =
       '<h2>' + esc(t.team || '') + ' &middot; 2026 keeper board</h2>' +
       '<p class="kb-print-sub">' + esc(t.mgr || '') + ' &middot; ' + keepers().length +
-      ' keepers &middot; ' + money(capTotal()) + ' committed &middot; generated from the league dashboard</p>' +
-      '<div class="kb-print-grid"><div><table><thead><tr><th>Rd</th><th>Player</th><th>DRC</th><th>$</th><th>Notes</th></tr></thead><tbody>' +
-      left + chasm + '</tbody></table></div>' +
-      '<div><table><thead><tr><th>Rd</th><th>What Yahoo shows</th></tr></thead><tbody>' + right +
-      '</tbody></table></div></div>';
+      ' keepers &middot; ' + money(capTotal()) + ' committed &middot; ' +
+      '<span class="kb-print-legend"><span class="kb-print-legend-item"><span class="kb-print-legend-key">R#</span> keeper slot</span> &middot; ' +
+      '<span class="kb-print-legend-item"><span class="kb-print-legend-key kb-print-legend-open">R#</span> open draft slot</span> &middot; ' +
+      '<span class="kb-print-legend-item"><span class="kb-print-legend-key kb-print-legend-gone">R#</span> traded away</span></span></p>' +
+      '<table class="kb-print-full"><thead><tr><th style="width:44px;">Rd</th><th>Slot</th><th style="width:56px;">DRC</th><th style="width:60px;">$</th><th style="width:38%;">Notes</th></tr></thead><tbody>' +
+      rowsHtml.join('') + '</tbody></table>' +
+      chasmBlock;
   }
 
   const app = root.querySelector('.kb-app');
