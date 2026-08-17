@@ -50,6 +50,24 @@ body {
   align-self: start;
   height: 100vh;
   overflow-y: auto;
+  /* Keep touch scrolling contained to the sidebar — without this, when the
+     sidebar hits its top/bottom, the scroll gesture "chains" to the
+     underlying page and the sidebar feels stuck. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+/* Subtle draft-slot indicator prepended to each team name in the sidebar
+   Teams list. Small, muted, tabular; a hint, not a competing element. */
+.sidebar .draft-slot {
+  display: inline-block;
+  min-width: 18px;
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-align: right;
 }
 .sidebar .brand {
   font-size: 11px;
@@ -1645,6 +1663,72 @@ tr.history-row > td.history-cell {
   color: #8C6E10;
 }
 
+/* --- Last-updated widget: click-to-expand footer stamp -----------------
+   CSS-only accordion driven by a hidden checkbox; no JS. Trigger sits
+   inline with the source footnote as a subtle right-aligned text link. */
+.updated-widget { margin: 4px 0 0; text-align: right; }
+.updated-toggle {
+  position: absolute; opacity: 0; pointer-events: none;
+  width: 0; height: 0; margin: 0;
+}
+.updated-trigger {
+  display: inline-flex; align-items: center; gap: 5px;
+  cursor: pointer; user-select: none;
+  font-size: 11.5px; color: var(--gray-500);
+  padding: 4px 8px; border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.updated-trigger:hover { background: rgba(0, 0, 0, 0.04); color: var(--gray-700); }
+.updated-trigger::after { content: "\25B8"; font-size: 9px; opacity: 0.6; }
+.updated-toggle:checked + .updated-trigger::after { content: "\25BE"; }
+.updated-toggle:focus-visible + .updated-trigger {
+  outline: 2px solid var(--blue-600); outline-offset: 2px;
+}
+.updated-details {
+  display: none;
+  text-align: left;
+  margin-top: 6px;
+  background: #fbfbfd; border: 1px solid var(--gray-200); border-radius: 8px;
+  padding: 10px 14px 12px; font-size: 12px; color: var(--gray-700);
+  overscroll-behavior: contain;
+}
+.updated-toggle:checked ~ .updated-details { display: block; }
+.updated-details .updated-row {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 3px 0;
+}
+.updated-details .updated-k {
+  flex: 0 0 130px;
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600; color: var(--gray-500);
+}
+.updated-details .updated-v {
+  flex: 1 1 auto; min-width: 0; word-break: break-word;
+  font-variant-numeric: tabular-nums;
+}
+.updated-details .updated-log {
+  margin-top: 10px;
+  border-top: 1px solid var(--gray-100);
+  padding-top: 8px;
+}
+.updated-details .updated-log-h {
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600; color: var(--gray-500); margin-bottom: 4px;
+}
+.updated-details .updated-log-body {
+  margin: 0;
+  font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px; color: var(--gray-600);
+  white-space: pre-wrap; word-break: break-word; line-height: 1.5;
+}
+/* Mobile tightening — narrower key column, smaller monospace. */
+@media (max-width: 480px) {
+  .updated-details .updated-row { flex-wrap: wrap; gap: 2px; }
+  .updated-details .updated-k { flex-basis: 100%; font-size: 9.5px; }
+  .updated-details .updated-v { font-size: 11.5px; }
+  .updated-details .updated-log-body { font-size: 10px; }
+}
+
 /* --- Footnote ---------------------------------------------------------- */
 .footnote {
   margin-top: 48px;
@@ -2200,7 +2284,17 @@ table.ta-table tr.ta-total td {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    /* Explicit dvh height (dynamic viewport height) instead of
+       top:0 + bottom:0. Mobile Chrome's URL bar & tabs bar collapse and
+       re-expand as the user scrolls; vh + bottom:0 both compute against
+       the LARGEST viewport, so the sidebar's bottom is hidden under the
+       chrome when the bar is expanded. dvh tracks the visible viewport,
+       so the sidebar's floor sits above the chrome and the last team
+       stays tappable. Fallback for browsers that don't support dvh:
+       start with 100vh, then override with 100dvh. */
+    height: 100vh;
+    height: 100dvh;
+    bottom: auto;
     right: auto;
     width: min(280px, 82vw);
     z-index: 100;
@@ -2208,6 +2302,12 @@ table.ta-table tr.ta-total td {
     transition: transform 0.22s ease;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    /* Clear the iOS home-indicator gesture area + Chrome's bottom chrome
+       so the last team in the Teams list isn't visually pinned to the
+       edge (or worse, hidden under the chrome). */
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
   body.sidebar-open .sidebar { transform: translateX(0); }
@@ -2560,7 +2660,7 @@ table.ta-table tr.ta-total td {
 
       <details class="sidebar-teams">
         <summary>Teams</summary>
-        <div class="sidebar-team-list"><a class="nav-link" data-target="team-brian-malconian">42°19&#x27;50.3&#x27;N 71°01&#x27;52.0&#x27;W<span class="manager">Brian Malconian</span></a><a class="nav-link" data-target="team-pete-hodor">Are Bonita Fish Big?<span class="manager">Pete Hodor</span></a><a class="nav-link" data-target="team-paul-lewis">Briguy’s Strange Boutte<span class="manager">Paul Lewis</span></a><a class="nav-link" data-target="team-george-mensing">Dreorge Bledsoe<span class="manager">George Mensing</span></a><a class="nav-link" data-target="team-dan-vescuso">Fear the Peel<span class="manager">Dan Vescuso</span></a><a class="nav-link" data-target="team-aric-tao">High Priest Gabagool 🤌🏻<span class="manager">Aric Tao</span></a><a class="nav-link" data-target="team-scott-montgomery">JUST THE TUA US<span class="manager">Scott Montgomery</span></a><a class="nav-link" data-target="team-greg-pearson">Mr. McGibblets<span class="manager">Greg Pearson</span></a><a class="nav-link" data-target="team-jon-lewitus">The Lady Boys<span class="manager">TBD</span></a><a class="nav-link" data-target="team-tom-watson">The Prince of Darkness<span class="manager">Tom Watson</span></a><a class="nav-link" data-target="team-dan-macnulty">TheDarkKnight06<span class="manager">Dan MacNulty</span></a><a class="nav-link" data-target="team-alex-schlosberg">Vesco’s banging bathroom<span class="manager">Alex Schlosberg</span></a></div>
+        <div class="sidebar-team-list"><a class="nav-link" data-target="team-dan-vescuso"><span class="draft-slot" aria-label="2026 draft pick 1">1</span>Fear the Peel<span class="manager">Dan Vescuso</span></a><a class="nav-link" data-target="team-pete-hodor"><span class="draft-slot" aria-label="2026 draft pick 2">2</span>Are Bonita Fish Big?<span class="manager">Pete Hodor</span></a><a class="nav-link" data-target="team-george-mensing"><span class="draft-slot" aria-label="2026 draft pick 3">3</span>Dreorge Bledsoe<span class="manager">George Mensing</span></a><a class="nav-link" data-target="team-jon-lewitus"><span class="draft-slot" aria-label="2026 draft pick 4">4</span>The Lady Boys<span class="manager">TBD</span></a><a class="nav-link" data-target="team-scott-montgomery"><span class="draft-slot" aria-label="2026 draft pick 5">5</span>JUST THE TUA US<span class="manager">Scott Montgomery</span></a><a class="nav-link" data-target="team-aric-tao"><span class="draft-slot" aria-label="2026 draft pick 6">6</span>High Priest Gabagool 🤌🏻<span class="manager">Aric Tao</span></a><a class="nav-link" data-target="team-dan-macnulty"><span class="draft-slot" aria-label="2026 draft pick 7">7</span>TheDarkKnight06<span class="manager">Dan MacNulty</span></a><a class="nav-link" data-target="team-alex-schlosberg"><span class="draft-slot" aria-label="2026 draft pick 8">8</span>Vesco’s banging bathroom<span class="manager">Alex Schlosberg</span></a><a class="nav-link" data-target="team-tom-watson"><span class="draft-slot" aria-label="2026 draft pick 9">9</span>The Prince of Darkness<span class="manager">Tom Watson</span></a><a class="nav-link" data-target="team-greg-pearson"><span class="draft-slot" aria-label="2026 draft pick 10">10</span>Mr. McGibblets<span class="manager">Greg Pearson</span></a><a class="nav-link" data-target="team-paul-lewis"><span class="draft-slot" aria-label="2026 draft pick 11">11</span>Briguy’s Strange Boutte<span class="manager">Paul Lewis</span></a><a class="nav-link" data-target="team-brian-malconian"><span class="draft-slot" aria-label="2026 draft pick 12">12</span>42°19&#x27;50.3&#x27;N 71°01&#x27;52.0&#x27;W<span class="manager">Brian Malconian</span></a></div>
       </details>
     </aside>
 <main class="content">
@@ -2765,7 +2865,27 @@ table.ta-table tr.ta-total td {
           </tr></tbody>
       </table>
 
-      <p class="footnote">Generated 2026-08-16 16:02 · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
+      <p class="footnote">Source: fantasy.db &middot; DRC algorithm: compute_drc.py</p>
+      
+      <div class="updated-widget">
+        <input type="checkbox" id="updated-toggle" class="updated-toggle">
+        <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
+          Updated 2026-08-17 07:15 EDT
+        </label>
+        <div class="updated-details" role="region" aria-labelledby="updated-toggle">
+          <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-08-15 15:38 EDT</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-08-16 16:02 EDT &mdash; Mobile UX fixes + Trade Analyzer + PDF export overhaul</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-08-17 07:15 EDT (this page)</span></div>
+          <div class="updated-log">
+            <div class="updated-log-h">Recent activity</div>
+            <pre class="updated-log-body">  2026-08-16 16:02  Mobile UX fixes + Trade Analyzer + PDF export overhaul
+  2026-08-15 15:40  2026 draft lottery results + keeper board + fresh 2QB ADP + Jeanty/Taylor trade + current team names
+  2026-07-02 12:06  Ship Design redesign: nav, draft chips + tap-log, Won/Lost trades, two-board analyzer
+  2026-07-01 00:33  Dashboard refresh
+  2026-07-01 00:16  Dashboard refresh</pre>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="team-section" id="player-search" hidden>

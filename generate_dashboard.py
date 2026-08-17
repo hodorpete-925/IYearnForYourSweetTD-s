@@ -1011,7 +1011,39 @@ def render_team_section(data, slug):
     </section>"""
 
 
-def render_summary_section(by_manager, generated_at):
+def _render_updated_widget(generated_at, meta):
+    """CSS-only click-to-expand "last updated" widget in the footer.
+    Uses the hidden-checkbox + label pattern so it works with zero JS —
+    good for print, good for any file previewer, good on any browser."""
+    meta = meta or {}
+    data_refreshed = meta.get("data_refreshed_at") or "unknown"
+    deploy_time = meta.get("deploy_time") or "unknown"
+    deploy_msg = meta.get("deploy_msg") or ""
+    recent = meta.get("recent_commits") or []
+    log_lines = "\n".join(
+        f"  {ts}  {html.escape(msg)}" for ts, msg in recent
+    ) or "  (no git history available)"
+    deploy_line = (f'{deploy_time} EDT &mdash; {html.escape(deploy_msg)}'
+                   if deploy_msg else f'{deploy_time} EDT')
+    return f"""
+      <div class="updated-widget">
+        <input type="checkbox" id="updated-toggle" class="updated-toggle">
+        <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
+          Updated {generated_at} EDT
+        </label>
+        <div class="updated-details" role="region" aria-labelledby="updated-toggle">
+          <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">{data_refreshed} EDT</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">{deploy_line}</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">{generated_at} EDT (this page)</span></div>
+          <div class="updated-log">
+            <div class="updated-log-h">Recent activity</div>
+            <pre class="updated-log-body">{log_lines}</pre>
+          </div>
+        </div>
+      </div>"""
+
+
+def render_summary_section(by_manager, generated_at, meta=None):
     teams = sorted(by_manager.values(), key=lambda d: -d["total_drc_dollars"])
     league_total = sum(d["total_drc_dollars"] for d in teams)
     avg = league_total // max(len(teams), 1)
@@ -1070,7 +1102,8 @@ def render_summary_section(by_manager, generated_at):
         <tbody>{rows}</tbody>
       </table>
 
-      <p class="footnote">Generated {generated_at} · Source: fantasy.db · DRC algorithm: compute_drc.py</p>
+      <p class="footnote">Source: fantasy.db &middot; DRC algorithm: compute_drc.py</p>
+      {_render_updated_widget(generated_at, meta)}
     </section>"""
 
 
@@ -1121,6 +1154,24 @@ body {
   align-self: start;
   height: 100vh;
   overflow-y: auto;
+  /* Keep touch scrolling contained to the sidebar — without this, when the
+     sidebar hits its top/bottom, the scroll gesture "chains" to the
+     underlying page and the sidebar feels stuck. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+/* Subtle draft-slot indicator prepended to each team name in the sidebar
+   Teams list. Small, muted, tabular; a hint, not a competing element. */
+.sidebar .draft-slot {
+  display: inline-block;
+  min-width: 18px;
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-align: right;
 }
 .sidebar .brand {
   font-size: 11px;
@@ -2716,6 +2767,72 @@ tr.history-row > td.history-cell {
   color: #8C6E10;
 }
 
+/* --- Last-updated widget: click-to-expand footer stamp -----------------
+   CSS-only accordion driven by a hidden checkbox; no JS. Trigger sits
+   inline with the source footnote as a subtle right-aligned text link. */
+.updated-widget { margin: 4px 0 0; text-align: right; }
+.updated-toggle {
+  position: absolute; opacity: 0; pointer-events: none;
+  width: 0; height: 0; margin: 0;
+}
+.updated-trigger {
+  display: inline-flex; align-items: center; gap: 5px;
+  cursor: pointer; user-select: none;
+  font-size: 11.5px; color: var(--gray-500);
+  padding: 4px 8px; border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.updated-trigger:hover { background: rgba(0, 0, 0, 0.04); color: var(--gray-700); }
+.updated-trigger::after { content: "\25B8"; font-size: 9px; opacity: 0.6; }
+.updated-toggle:checked + .updated-trigger::after { content: "\25BE"; }
+.updated-toggle:focus-visible + .updated-trigger {
+  outline: 2px solid var(--blue-600); outline-offset: 2px;
+}
+.updated-details {
+  display: none;
+  text-align: left;
+  margin-top: 6px;
+  background: #fbfbfd; border: 1px solid var(--gray-200); border-radius: 8px;
+  padding: 10px 14px 12px; font-size: 12px; color: var(--gray-700);
+  overscroll-behavior: contain;
+}
+.updated-toggle:checked ~ .updated-details { display: block; }
+.updated-details .updated-row {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 3px 0;
+}
+.updated-details .updated-k {
+  flex: 0 0 130px;
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600; color: var(--gray-500);
+}
+.updated-details .updated-v {
+  flex: 1 1 auto; min-width: 0; word-break: break-word;
+  font-variant-numeric: tabular-nums;
+}
+.updated-details .updated-log {
+  margin-top: 10px;
+  border-top: 1px solid var(--gray-100);
+  padding-top: 8px;
+}
+.updated-details .updated-log-h {
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600; color: var(--gray-500); margin-bottom: 4px;
+}
+.updated-details .updated-log-body {
+  margin: 0;
+  font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px; color: var(--gray-600);
+  white-space: pre-wrap; word-break: break-word; line-height: 1.5;
+}
+/* Mobile tightening — narrower key column, smaller monospace. */
+@media (max-width: 480px) {
+  .updated-details .updated-row { flex-wrap: wrap; gap: 2px; }
+  .updated-details .updated-k { flex-basis: 100%; font-size: 9.5px; }
+  .updated-details .updated-v { font-size: 11.5px; }
+  .updated-details .updated-log-body { font-size: 10px; }
+}
+
 /* --- Footnote ---------------------------------------------------------- */
 .footnote {
   margin-top: 48px;
@@ -3271,7 +3388,17 @@ table.ta-table tr.ta-total td {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    /* Explicit dvh height (dynamic viewport height) instead of
+       top:0 + bottom:0. Mobile Chrome's URL bar & tabs bar collapse and
+       re-expand as the user scrolls; vh + bottom:0 both compute against
+       the LARGEST viewport, so the sidebar's bottom is hidden under the
+       chrome when the bar is expanded. dvh tracks the visible viewport,
+       so the sidebar's floor sits above the chrome and the last team
+       stays tappable. Fallback for browsers that don't support dvh:
+       start with 100vh, then override with 100dvh. */
+    height: 100vh;
+    height: 100dvh;
+    bottom: auto;
     right: auto;
     width: min(280px, 82vw);
     z-index: 100;
@@ -3279,6 +3406,12 @@ table.ta-table tr.ta-total td {
     transition: transform 0.22s ease;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    /* Clear the iOS home-indicator gesture area + Chrome's bottom chrome
+       so the last team in the Teams list isn't visually pinned to the
+       edge (or worse, hidden under the chrome). */
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
   body.sidebar-open .sidebar { transform: translateX(0); }
@@ -5603,13 +5736,53 @@ def render_player_search_section(search_players):
     </section>"""
 
 
+def _load_2026_draft_order():
+    """Return two lookups from lottery_result.json — by manager name and
+    by team name — so the sidebar can find each team's pick regardless of
+    which identifier matches (a manager whose DB name differs from the
+    lottery-file name still resolves via team). Falls back to empty dicts
+    if the file is missing or malformed — team list then sorts by team
+    name (prior behavior)."""
+    path = Path(__file__).parent / "lottery_result.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}, {}
+    by_mgr, by_team = {}, {}
+    for entry in (data.get("lottery") or []) + (data.get("playoff") or []):
+        pick = entry.get("pick")
+        if not isinstance(pick, int):
+            continue
+        mgr = entry.get("manager")
+        team = entry.get("team")
+        if mgr:
+            by_mgr[mgr] = pick
+        if team:
+            by_team[team] = pick
+    return by_mgr, by_team
+
+
 def build_sidebar(by_manager):
-    teams = sorted(by_manager.values(), key=lambda d: d["team_name"].lower())
+    # Sort by 2026 R1 draft pick (per lottery_result.json); anyone missing
+    # from the lottery file falls to the end alphabetically. Team-name
+    # match is the fallback so a manager whose DB name doesn't match the
+    # lottery file (e.g. a mid-season seat handoff) still gets a pick.
+    pick_by_mgr, pick_by_team = _load_2026_draft_order()
+    def pick_for(t):
+        return pick_by_mgr.get(t["manager_actual"]) or pick_by_team.get(t["team_name"])
+    def sort_key(d):
+        pick = pick_for(d)
+        return (pick if pick is not None else 99, d["team_name"].lower())
+    teams = sorted(by_manager.values(), key=sort_key)
     items = ''.join(
-        f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
-        f'{html.escape(t["team_name"])}'
-        f'<span class="manager">{html.escape(t["manager"])}</span>'
-        f'</a>'
+        (lambda pick: (
+            f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
+            + (f'<span class="draft-slot" aria-label="2026 draft pick {pick}">{pick}</span>'
+               if pick is not None else '<span class="draft-slot" aria-hidden="true"></span>')
+            + html.escape(t["team_name"])
+            + f'<span class="manager">{html.escape(t["manager"])}</span>'
+            + '</a>'
+        ))(pick_for(t))
         for t in teams
     )
     return f"""
@@ -5770,9 +5943,9 @@ def render_keeper_board():
     </section>"""
 
 
-def render_html(by_manager, search_players, comms_posts, generated_at):
+def render_html(by_manager, search_players, comms_posts, generated_at, meta=None):
     sidebar = build_sidebar(by_manager)
-    summary = render_summary_section(by_manager, generated_at)
+    summary = render_summary_section(by_manager, generated_at, meta)
     player_search = render_player_search_section(search_players)
     trade_analyzer = render_trade_analyzer(by_manager)
     keeper_board = render_keeper_board()
@@ -5822,11 +5995,84 @@ def render_html(by_manager, search_players, comms_posts, generated_at):
 </html>"""
 
 
+def _collect_update_meta():
+    """Gather the three timestamps + recent-commit list surfaced in the
+    footer's click-to-expand "last updated" widget. Every value is either
+    a real datum or None; the widget template renders "unknown" for None.
+
+    - generated_at: dashboard build time (this run), EDT
+    - data_refreshed_at: fantasy.db mtime, EDT (last ingest wrote to it)
+    - deploy_time / deploy_msg: HEAD commit's author date + subject
+    - recent_commits: list of (date_str, subject) for the last 5 commits
+    """
+    import subprocess
+    from datetime import datetime as _dt, timezone as _tz
+    try:
+        from zoneinfo import ZoneInfo
+        edt = ZoneInfo("America/New_York")
+    except Exception:
+        edt = None  # very old python; fall back to naive local time
+
+    def fmt(dt):
+        if edt is not None and dt.tzinfo is not None:
+            dt = dt.astimezone(edt)
+        return dt.strftime("%Y-%m-%d %H:%M")
+
+    meta = {"generated_at": fmt(_dt.now(_tz.utc) if edt else _dt.now()),
+            "data_refreshed_at": None,
+            "deploy_time": None, "deploy_msg": None,
+            "recent_commits": []}
+
+    # Data refresh: mtime of fantasy.db (updated by any ingest_*.py run).
+    try:
+        db_path = Path(__file__).parent / "fantasy.db"
+        if db_path.exists():
+            mtime = _dt.fromtimestamp(db_path.stat().st_mtime, tz=_tz.utc)
+            meta["data_refreshed_at"] = fmt(mtime)
+    except Exception:
+        pass
+
+    # Deploy info + recent activity from git — no-op if git unavailable
+    # or repo missing (e.g. running from a zip export).
+    def git(args):
+        try:
+            return subprocess.check_output(["git"] + args, cwd=Path(__file__).parent,
+                                           stderr=subprocess.DEVNULL, text=True).strip()
+        except Exception:
+            return ""
+
+    head = git(["log", "-1", "--format=%ci|%s"])
+    if "|" in head:
+        raw_time, msg = head.split("|", 1)
+        try:
+            # git %ci format: 2026-08-16 16:02:38 -0400
+            dt = _dt.strptime(raw_time.strip(), "%Y-%m-%d %H:%M:%S %z")
+            meta["deploy_time"] = fmt(dt)
+            meta["deploy_msg"] = msg.strip()
+        except ValueError:
+            pass
+
+    log = git(["log", "-5", "--format=%ai|%s"])
+    for line in log.splitlines():
+        if "|" not in line:
+            continue
+        raw_time, msg = line.split("|", 1)
+        try:
+            dt = _dt.strptime(raw_time.strip(), "%Y-%m-%d %H:%M:%S %z")
+            meta["recent_commits"].append((fmt(dt), msg.strip()))
+        except ValueError:
+            continue
+
+    return meta
+
+
 def main():
     by_manager, failures, search_players = build_data()
     comms_posts = load_comms_posts()
-    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
-    html_out = render_html(by_manager, search_players, comms_posts, generated_at)
+    meta = _collect_update_meta()
+    generated_at = meta["generated_at"]
+    html_out = render_html(by_manager, search_players, comms_posts,
+                           generated_at, meta)
     OUT_PATH.write_text(html_out, encoding="utf-8")
 
     print(f"Wrote {OUT_PATH}")
