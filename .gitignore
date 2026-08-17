@@ -3,6 +3,7 @@ venv/
 
 # Secrets and credentials
 .env
+.env.bak
 private.json
 
 # Python bytecode
