@@ -3639,6 +3639,22 @@ table.ta-table tr.ta-total td {
 .kb-dragging .kb-roster { opacity:.75; }
 .kb-card.kb-unplaced { background:#fff8e6; }
 .kb-card.kb-unplaced .kb-check { background:#c9971c; border-color:#c9971c; }
+/* Slot-first placement: open picks are tappable */
+.kb-slot.kb-open { cursor:pointer; }
+.kb-slot.kb-open:hover { border-color:#9aa1ad; background:#f4f6fa; }
+.kb-open-hint { color:#b6bcc7; font-size:11.5px; }
+.kb-pf-overlay { position:fixed; inset:0; background:rgba(15,18,25,.45); z-index:120; display:flex; align-items:center; justify-content:center; padding:16px; }
+.kb-pf { background:#fff; border-radius:14px; max-width:440px; width:100%; padding:16px 18px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+.kb-pf h3 { margin:0 0 10px; font-size:15px; }
+.kb-pf-list { max-height:60vh; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
+.kb-pf-item { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; width:100%; text-align:left; font:inherit; border:1.5px solid #d6d9e0; background:#fbfbfc; border-radius:10px; padding:9px 12px; cursor:pointer; }
+.kb-pf-item:hover { border-color:#0038FF; background:#eef4ff; }
+.kb-pf-nm { font-weight:700; font-size:13.5px; flex:1 1 auto; min-width:0; }
+.kb-pf-pos { color:#606C71; font-weight:400; font-size:12px; }
+.kb-pf-meta { flex:none; color:#2a2a2e; font-size:12px; font-variant-numeric:tabular-nums; }
+.kb-pf-tag { flex:1 1 100%; color:#8a919c; font-size:10.5px; }
+.kb-pf-none { color:#606C71; font-size:12.5px; margin:4px 0 8px; }
+.kb-pf-cancel { margin-top:10px; width:100%; }
 .kb-wait-chip { display:inline-block; background:#fff6e0; color:#8a6a12; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
 .kb-print { display:none; }
 @media (max-width: 900px) {
@@ -4596,7 +4612,7 @@ JS = r"""
      boolean: auto-seating is FIRST-COME, so whoever was kept earlier holds
      his native pick and a later same-DRC keep goes to Awaiting placement
      instead of stealing the chair (Pete's ruling, 2026-08-19). */
-  const st = { team: '', keep: {}, manual: {}, pick: null, seq: 0 };
+  const st = { team: '', keep: {}, manual: {}, pick: null, seq: 0, pickFor: null };
 
   function mkSlots() {
     return (D.picks[st.team] || []).map((pk, i) =>
@@ -4703,6 +4719,30 @@ JS = r"""
     return lostBy;
   }
 
+  /* Slot-first placement (Pete's mobile flow, 2026-08-19): tap an empty
+     pick to list every player who may legally take it right now — natives
+     first, then up-movers, slide-landers only when the chain is active.
+     Selecting an unkept player keeps AND places; a seated player moves. */
+  function eligibleFor(slotId) {
+    const out = [];
+    const cur = kbSim();
+    roster().forEach(p => {
+      const sim0 = kbSim(p.i);
+      const target = sim0.slots.find(s => s.id === slotId);
+      if (!target) return;
+      const ok = legalSlotIds(clampDrc(p.d6), sim0.slots);
+      if (!ok[slotId]) return;
+      let status = 'not kept yet';
+      if (st.keep[p.i]) {
+        const seat = cur.placed[p.i];
+        status = seat ? ('moves from ' + (pickNumOf(seat.slot) || 'R' + seat.slot.r)) : 'awaiting placement';
+      }
+      out.push({ p, d: clampDrc(p.d6), native: clampDrc(p.d6) === target.r, status });
+    });
+    out.sort((a, b) => (b.native - a.native) || (a.d - b.d) || ((b.p.pts || 0) - (a.p.pts || 0)));
+    return out;
+  }
+
   function render() {
     const app = root.querySelector('.kb-app');
     const opts = ['<option value="">Choose your team&hellip;</option>'].concat(
@@ -4779,7 +4819,7 @@ JS = r"""
         cls.push('kb-open');
         if (!sl.own) inner += '<span class="kb-origin">acq &middot; ' +
           esc(((teamBy[sl.o] || {}).mgr || '').split(' ')[0]) + '</span>';
-        if (!legal) inner += '<span style="color:#b6bcc7;">open</span>';
+        if (!legal) inner += '<span class="kb-open-hint">open &middot; tap to fill</span>';
       }
       return '<div class="' + cls.join(' ') + '" data-slot="' + sl.id + '">' + inner + '</div>';
     }
@@ -4825,14 +4865,37 @@ JS = r"""
     const prevRoster = app.querySelector('.kb-roster');
     const prevScroll = prevRoster ? prevRoster.scrollTop : 0;
 
+    let pfHtml = '';
+    if (st.pickFor != null) {
+      const sl = sim.slots.find(s => s.id === st.pickFor);
+      if (sl && !sl.taken) {
+        const elig = eligibleFor(st.pickFor);
+        const slotLabel = (pickNumOf(sl) || 'R' + sl.r) +
+          (!sl.own ? ' (acquired from ' + esc(((teamBy[sl.o] || {}).mgr || '').split(' ')[0]) + ')' : '');
+        const items = elig.length ? elig.map(e =>
+          '<button class="kb-pf-item" data-pfpick="' + e.p.i + '" type="button">' +
+          '<span class="kb-pf-nm">' + esc(e.p.n) + ' <span class="kb-pf-pos">' + esc(e.p.p || '') + '</span></span>' +
+          '<span class="kb-pf-meta">DRC ' + e.p.d6 + ' &middot; ' + money(e.p.c6) + '</span>' +
+          '<span class="kb-pf-tag">' + (e.native ? 'native round &middot; ' : '') + e.status + '</span>' +
+          '</button>').join('')
+          : '<p class="kb-pf-none">No one can legally take this pick right now. Below-native landings need the slide chain: the native round and every round between must be full.</p>';
+        pfHtml = '<div class="kb-pf-overlay"><div class="kb-pf">' +
+          '<h3>Who takes ' + slotLabel + '?</h3>' +
+          '<div class="kb-pf-list">' + items + '</div>' +
+          '<button class="kb-btn kb-pf-cancel" data-pfclose="1" type="button">Cancel</button>' +
+          '</div></div>';
+      } else { st.pickFor = null; }
+    }
+
     app.innerHTML = top +
       '<div class="kb-cols">' +
       '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep (seats at your open native pick) &middot; drag anywhere lit to place by hand</span></div>' +
       '<div class="kb-roster">' + cards + '</div></div>' +
       '<div class="kb-panel"><div class="kb-panel-h">2026 draft board <span class="kb-sub">' +
-      (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'one row per pick, numbered by the lottery order') +
+      (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'one row per pick &middot; tap an open pick to fill it') +
       '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
-      '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Checkbox keeps auto-seat only on your own open native pick; anything else is your conscious call. Legal by hand: the native round or any earlier held pick, plus the slide landing below a native round that&#39;s full (every round between must be full too). Acquired picks are never consumed automatically. Pick numbers (10.02 = round 10, 2nd overall slot) come from the published lottery order.</p>';
+      '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Checkbox keeps auto-seat only on your own open native pick; anything else is your conscious call. Tap any open pick to see who can legally take it, or drag players to lit slots. Legal by hand: the native round or any earlier held pick, plus the slide landing below a native round that&#39;s full (every round between must be full too). Acquired picks are never consumed automatically. Pick numbers (10.02 = round 10, 2nd overall slot) come from the published lottery order.</p>' +
+      pfHtml;
 
     if (prevScroll) {
       const newRoster = app.querySelector('.kb-roster');
@@ -4946,16 +5009,27 @@ JS = r"""
 
   app.addEventListener('change', e => {
     if (e.target.dataset.role === 'kbteam') {
-      st.team = e.target.value; st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; render();
+      st.team = e.target.value; st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; st.pickFor = null; render();
     }
   });
 
   app.addEventListener('click', e => {
+    if (st.pickFor != null) {
+      const opt = e.target.closest('[data-pfpick]');
+      if (opt) {
+        const pid = +opt.dataset.pfpick;
+        if (!st.keep[pid]) st.keep[pid] = ++st.seq;
+        st.manual[pid] = st.pickFor;
+        st.pickFor = null; render(); return;
+      }
+      if (e.target.closest('[data-pfclose]') || !e.target.closest('.kb-pf')) { st.pickFor = null; render(); }
+      return;
+    }
     const unseat = e.target.closest('[data-unseat]');
     if (unseat) { const pid = +unseat.dataset.unseat; delete st.keep[pid]; delete st.manual[pid]; if (st.pick === pid) st.pick = null; render(); return; }
     const act = e.target.closest('[data-kbact]');
     if (act) {
-      if (act.dataset.kbact === 'reset') { st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; render(); }
+      if (act.dataset.kbact === 'reset') { st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; st.pickFor = null; render(); }
       else if (act.dataset.kbact === 'print') {
         document.body.classList.add('kb-printing');
         const done = () => { document.body.classList.remove('kb-printing'); window.removeEventListener('afterprint', done); };
@@ -4977,6 +5051,8 @@ JS = r"""
       else st.pick = (st.pick === pid ? null : pid);
       render(); return;
     }
+    const openSlot = e.target.closest('.kb-slot.kb-open[data-slot]');
+    if (openSlot && st.pick == null) { st.pickFor = +openSlot.dataset.slot; render(); return; }
     if (st.pick != null) { st.pick = null; render(); }
   });
 
