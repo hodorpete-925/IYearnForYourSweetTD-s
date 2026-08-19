@@ -342,6 +342,31 @@ def build_data():
             "neighbors_by_year": neighbors_by_year,
         })
 
+    # ---- Overlay 2026 rosters onto the search corpus --------------------
+    # search_players' owner comes from get_owner_at_year_end(2025), which by
+    # construction predates 2026 off-season (synthetic) trades, and its 2026
+    # keep cost comes from build_history_for_player, which doesn't know the
+    # synthetic trade freeze. by_manager above already applied both (the
+    # moves loop), so it is the source of truth heading into 2026. Overlay
+    # it here so Player search ("Currently:") and Player comparison (o / k)
+    # agree with the keeper boards for every rostered player.
+    board_truth = {}
+    for data in by_manager.values():
+        for bp in data["players"]:
+            board_truth[bp["player_id"]] = (
+                data["manager"], bp["drc"], bp["drc_dollars"])
+    for sp in search_players:
+        hit = board_truth.get(sp["player_id"])
+        if not hit:
+            continue
+        owner_disp, drc_now, dollars_now = hit
+        sp["current_owner"] = owner_disp
+        for y in sp["per_year"]:
+            if y["year"] == TARGET_SEASON:
+                y["drc"] = drc_now
+                y["dollars"] = dollars_now
+                y["owner"] = owner_disp
+
     conn.close()
     return by_manager, failures, search_players
 
@@ -5700,15 +5725,29 @@ def render_rules_history_section():
 
       <div class="rh-canon"><strong>What's canon:</strong> the league database and Pete's tracking workbook are the source of truth for what's in effect. The historical rules docs are <em>not</em> &mdash; they mix adopted rules with proposals that never passed. Quotes below are from the league thread, 2023&ndash;2026.</div>
 
+      <div class="rh-canon" style="background:#fff8e8;border-left-color:#c79a2e;color:#674f00;">
+        <strong>Summit update &mdash; 2026-06-27:</strong> four votes settled at the Beach Summit. <strong>Passed:</strong> 1.01 free-keeper loophole ban, asset-for-asset trade counters (FAAB now countable), proxy voting banned (mail-in ballots allowed). <strong>Failed again:</strong> keepers-to-the-back-of-the-draft. <strong>Still pending:</strong> whether the annual lottery should happen <em>after</em> the keeper deadline. 12 votes present (proxies noted in each rule below).
+      </div>
+
+      <h2 class="rh-h2">Pending votes</h2>
+      <p class="rh-note">Unsettled as of the 2026-06-27 summit &mdash; queued for the next league decision.</p>
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">Lottery timing &mdash; before or after the keeper deadline?</span> <span class="rh-chip rh-dock">Pending</span></div>
+        <p class="rh-sum">Should the annual draft lottery happen <em>after</em> the keeper deadline instead of before? Consequential for keeper strategy: knowing your draft slot changes which players are worth keeping at their DRC cost.</p>
+        <p class="rh-verdict"><strong>Where it stands:</strong> raised at the 2026-06-27 summit, no verdict reached. Carried over.</p>
+      </div>
+
       <h2 class="rh-h2">At a glance</h2>
       <p class="rh-note">Status of every rule in this ledger.</p>
       <table class="rh-ov">
         <thead><tr><th>Rule</th><th>Status</th><th class="rh-r">Last action</th></tr></thead>
         <tbody>
           <tr><td>Fill the open 12th seat ("The Lady Boys")</td><td><span class="rh-chip rh-dock">On docket</span></td><td class="rh-r">Open since '25</td></tr>
-          <tr><td>1.01 free-keeper loophole &mdash; ban</td><td><span class="rh-chip rh-fail">Failed twice</span></td><td class="rh-r">Re-vote Fri</td></tr>
-          <tr><td>Keepers to the back of the draft (Tom)</td><td><span class="rh-chip rh-fail">Voted down '24</span></td><td class="rh-r">Re-vote Fri</td></tr>
-          <tr><td>Counter-offer rule (must include an original player)</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Review Fri</td></tr>
+          <tr><td>Proxy voting banned; mail-in ballots allowed</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed 6/27/26</td></tr>
+          <tr><td>1.01 free-keeper loophole &mdash; ban</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed 6/27/26</td></tr>
+          <tr><td>Keepers to the back of the draft (Tom)</td><td><span class="rh-chip rh-fail">Failed again</span></td><td class="rh-r">Voted down 6/27/26</td></tr>
+          <tr><td>Counter-offer rule &mdash; now asset-for-asset (players, picks, or FAAB)</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Updated 6/27/26</td></tr>
+          <tr><td>Lottery after the keeper deadline?</td><td><span class="rh-chip rh-dock">Pending</span></td><td class="rh-r">Raised 6/27/26</td></tr>
           <tr><td>Last-place +300 parlay</td><td><span class="rh-chip rh-conf">Unconfirmed</span></td><td class="rh-r">Confirm Fri</td></tr>
           <tr><td>Paul's pick-trading tweak</td><td><span class="rh-chip rh-dock">On docket</span></td><td class="rh-r">Clarify Fri</td></tr>
           <tr><td>Slide-down + pick chasm ("Cannobie Lake")</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Chasm new '26</td></tr>
@@ -5737,36 +5776,48 @@ def render_rules_history_section():
       </div>
 
       <div class="rh-rule">
-        <div class="rh-rhead"><span class="rh-rname">2 &middot; 1.01 free-keeper loophole &mdash; ban</span> <span class="rh-chip rh-fail">Failed twice</span></div>
+        <div class="rh-rhead"><span class="rh-rname">2 &middot; 1.01 free-keeper loophole &mdash; ban</span> <span class="rh-chip rh-live">Passed 6/27/26</span></div>
         <p class="rh-sum">Stop the manager holding 1.01 from dropping a keeper during selection and re-grabbing him at 1.01 for the cheap original cost instead of paying $200. Paul has flagged this since the founding year.</p>
         <ul class="rh-rec">
           <li><span class="rh-date">2023-11-14</span><span class="rh-who">Paul:</span> "The only way to keep the keeper-forfeiture rule and fix the loophole is to preclude keeping of first-round picks."</li>
           <li><span class="rh-date">2024-07-22</span><span class="rh-who">Proposal:</span> "Manager at 1.1 must either keep their player for $200 or can't redraft him at 1.1." &mdash; Brian, George &amp; Tom for; Scott, Alex &amp; Brad skeptical.</li>
           <li><span class="rh-date">2024-07-24</span><span class="rh-who">Pete:</span> "A stalemate means no rule is passed." <span class="rh-who">Tom:</span> "6 votes is not a majority."</li>
           <li><span class="rh-date">2025-06-27</span><span class="rh-who">Paul:</span> "Efforts to pass [a] rule to preclude [the] loophole fail[ed]."</li>
+          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Passes.</strong> The 1.01 free-keeper maneuver (drop a DRC-1 keeper mid-draft and re-select him at the 1.01 for the cheap original cost) is banned. Whoever holds the 1.01 must either keep the player at full $200 or cannot redraft him at 1.01.</li>
         </ul>
-        <p class="rh-verdict"><strong>Where it stands:</strong> stalemated in 2024, failed again in 2025. Note the related general rule &mdash; no drop-and-immediately-re-add &mdash; <em>did</em> pass (below); this specific 1.01 ban did not. Re-vote Friday.</p>
+        <p class="rh-verdict"><strong>Where it stands:</strong> <strong>in effect as of 2026-06-27.</strong> Third attempt cleared. Along with the general no-drop-and-re-add rule (below), the 1.01 lane is now specifically closed. See the League Rules doc for the enforcement text.</p>
       </div>
 
       <div class="rh-rule">
-        <div class="rh-rhead"><span class="rh-rname">3 &middot; Keepers to the back of the draft (Tom)</span> <span class="rh-chip rh-fail">Voted down '24</span></div>
+        <div class="rh-rhead"><span class="rh-rname">3 &middot; Keepers to the back of the draft (Tom)</span> <span class="rh-chip rh-fail">Failed again 6/27/26</span></div>
         <p class="rh-sum">Tom's simplification: keepers fill the back rounds; a pick's round only sets the dollar cost. Pitched as a replacement for the slide/chasm machinery.</p>
         <ul class="rh-rec">
           <li><span class="rh-date">2024-06-29</span><span class="rh-who">Tom:</span> "Your keepers fill in the back of your roster, not the front&hellip; draft round should only matter for the monetary cost."</li>
           <li><span class="rh-date">2024-07-13</span><span class="rh-who">Paul:</span> "Tom's proposal got voted down at Hodor's in person&hellip; My thing got voted down. Tom's thing got voted down."</li>
+          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Does not pass.</strong> Slide + chasm rules stay as the mechanism.</li>
         </ul>
-        <p class="rh-verdict"><strong>Where it stands:</strong> voted down at the 2024 summit. Back on the docket Friday &mdash; and if it passes, it retires the slide/chasm rules below.</p>
+        <p class="rh-verdict"><strong>Where it stands:</strong> voted down again at the 2026-06-27 summit. The slide/chasm machinery remains the mechanism for keeper placement.</p>
       </div>
 
       <div class="rh-rule">
-        <div class="rh-rhead"><span class="rh-rname">4 &middot; Counter-offer rule</span> <span class="rh-chip rh-live">In effect</span></div>
-        <p class="rh-sum">When a trade is posted, the league has 48 hours to counter &mdash; and a valid counter must include one of the two original players. Already enforced; Friday is keep-or-adjust.</p>
+        <div class="rh-rhead"><span class="rh-rname">4 &middot; Counter-offer rule &mdash; asset-for-asset</span> <span class="rh-chip rh-live">Updated 6/27/26</span></div>
+        <p class="rh-sum">When a trade is posted, the league has 48 hours to counter. As of 6/27/26 a valid counter is <strong>asset-for-asset</strong> &mdash; assets include players, draft picks, <em>and</em> FAAB (new). The counter must include at least one of the original trade's assets, and if that shared asset is FAAB, the counter's FAAB must be at least the original amount.</p>
         <ul class="rh-rec">
           <li><span class="rh-date">2023-09-05</span><span class="rh-who">Tom:</span> "Once a trade is accepted it is presented to the league and we have 48 hours to offer counteroffers."</li>
           <li><span class="rh-date">2023-09-12</span><span class="rh-who">Pete:</span> "There should be a [counter] that includes one of the two original players."</li>
-          <li><span class="rh-date">2024-11-06</span><span class="rh-who">Pete:</span> "Denied." &mdash; rejecting an invalid counter under the rule.</li>
+          <li><span class="rh-date">2024-11-06</span><span class="rh-who">Pete:</span> "Denied." &mdash; rejecting an invalid counter under the pre-2026 rule.</li>
+          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Amended.</strong> "Player-for-player" broadened to "asset-for-asset." Example: a trade of MHJ for 50 FAAB can be countered where either MHJ <em>or</em> at least 50 FAAB is included in the counter.</li>
         </ul>
-        <p class="rh-verdict"><strong>Where it stands:</strong> in effect and enforced. The Friday question is whether to keep the "must include an original player" requirement as-is or loosen it.</p>
+        <p class="rh-verdict"><strong>Where it stands:</strong> in effect with the 6/27/26 amendment. FAAB is now a first-class asset for both proposing and countering trades.</p>
+      </div>
+
+      <div class="rh-rule">
+        <div class="rh-rhead"><span class="rh-rname">7 &middot; Proxy voting &mdash; banned; mail-in ballots &mdash; allowed</span> <span class="rh-chip rh-live">Passed 6/27/26</span></div>
+        <p class="rh-sum">A manager can no longer vote by proxy through another manager present at the summit. Mail-in ballots (a manager's vote submitted in writing ahead of time) remain a legitimate substitute for absentees.</p>
+        <ul class="rh-rec">
+          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Passes.</strong> No proxy; mail-in allowed. Retroactively noted: 12 votes were present via proxy at this summit (Hodor represented Bill + Schlosberg + himself; George represented Vesco; Tom represented Aric; Greg, Dan, Paul, Monty, Brian each 1). Future summits use mail-in for absentees.</li>
+        </ul>
+        <p class="rh-verdict"><strong>Where it stands:</strong> in effect from 2026-06-27 forward.</p>
       </div>
 
       <div class="rh-rule">
@@ -5838,8 +5889,8 @@ def render_rules_history_section():
 
       <div class="rh-rule">
         <div class="rh-rhead"><span class="rh-rname">"George $200 Rule"</span> <span class="rh-chip rh-fail">Never a rule</span></div>
-        <p class="rh-sum">The <em>name</em> for the 1.01 loophole maneuver itself (drop a DRC-1 keeper, re-pick him at 1.01 for $0 instead of paying $200). Discussed at summit; never sanctioned.</p>
-        <p class="rh-verdict"><strong>Status:</strong> never adopted. Per canon, it is not in the algorithm or the books.</p>
+        <p class="rh-sum">The <em>name</em> for the 1.01 loophole maneuver itself (drop a DRC-1 keeper, re-pick him at 1.01 for $0 instead of paying $200). Discussed at summit; never sanctioned as a legal move.</p>
+        <p class="rh-verdict"><strong>Status:</strong> the maneuver was never legal, and as of 2026-06-27 it is explicitly <em>banned</em> (see docket item 2 above). The name persists as folklore.</p>
       </div>
 
       <div class="rh-rule">
@@ -5946,8 +5997,8 @@ def render_rules_section():
 
         <section class="rule-block">
           <h2 class="rule-h2">Trades</h2>
-          <h3 class="rule-h3">Trade review</h3>
-          <p>All trades undergo a <strong>48-hour review window</strong>. During the window, other teams may counter the original agreement with a better offer. A successful counter must include at least one of the players involved in the original trade. The 48-hour timer starts at the acceptance of the original trade; successful counters do <em>not</em> reset it.</p>
+          <h3 class="rule-h3">Trade review &mdash; asset-for-asset counters <span class="rule-new-pill" style="display:inline-block;margin-left:8px;">Updated 6/27/26</span></h3>
+          <p>All trades undergo a <strong>48-hour review window</strong>. During the window, other teams may counter the original agreement with a better offer. As of the 2026-06-27 summit, a valid counter is <strong>asset-for-asset</strong> &mdash; an "asset" is a player, a draft pick, <em>or</em> FAAB. The counter must include at least one of the original trade's assets; if the shared asset is FAAB, the counter's FAAB must be at least the original amount. Example: a trade of MHJ for 50 FAAB can be countered where either MHJ or at least 50 FAAB is included in the counter. The 48-hour timer starts at the acceptance of the original trade; successful counters do <em>not</em> reset it.</p>
           <h3 class="rule-h3">DRC freeze on trade</h3>
           <p>When a player is traded, their DRC is <strong>frozen for one season</strong> at the value they carried at the moment of the trade. After that freeze season, the normal year-over-year decrement resumes.</p>
           <ul class="rules-list">
@@ -5975,6 +6026,14 @@ def render_rules_section():
           <p>The slide rule has a hard limit: a keeper can only slide into a draft slot that the manager <em>still owns</em>. If a manager has traded away the round their keeper would need to slide to, they have created a chasm the player cannot span &mdash; and <strong>that player becomes ineligible to keep</strong>.</p>
           <p>Example: a manager has two DRC 1 keepers, both wanting the Round 1 slot. Normally the slide rule would push the second keeper into the Round 2 slot. But if that manager has traded away their Round 2 pick, there is no slot for the second keeper to occupy. The second keeper becomes un-keepable and must be released back to the draft pool.</p>
           <p class="rules-note">This is a strategic constraint at keeper-designation time, not a runtime cost computation. Trade pick activity should be planned with the keeper roster in mind.</p>
+        </section>
+
+        <section class="rule-block rule-block-new">
+          <div class="rule-new-pill">Newly passed 6/27/26</div>
+          <h2 class="rule-h2">1.01 free-keeper ban</h2>
+          <p>The manager holding the <strong>1.01</strong> (first overall pick) may <em>not</em> drop a DRC-1 keeper during draft selection and then re-select that same player at 1.01 for the cheap original cost. The choice is binary: <strong>keep the player at full $200</strong>, or release them and pick a different player at 1.01.</p>
+          <p>Closes the loophole informally known as the "George $200 Rule" &mdash; the workaround that would have let the 1.01 holder pay $0 for a DRC-1 player instead of the $200 that keeping normally costs. Complements the general no-drop-and-immediately-re-add rule below by removing the 1.01-specific edge case that survived it.</p>
+          <p class="rules-note">Passed at the 2026-06-27 Beach Summit. Third attempt cleared; failed at the 2024 and 2025 summits.</p>
         </section>
 
         <section class="rule-block">
@@ -6021,6 +6080,19 @@ def render_rules_section():
           <h2 class="rule-h2">FAAB washing rule</h2>
           <p>A manager <strong>cannot drop a player and immediately reclaim them for FAAB</strong> on the next waiver wire cycle. If you drop a player, they must clear waivers first and become a free agent before you can pick them back up.</p>
           <p class="rules-note">This rule applies specifically to managers with the most FAAB in the league. Commissioner discretion determines whether a given transaction qualifies as FAAB washing or a legitimate roster move.</p>
+        </section>
+
+        <section class="rule-block rule-block-new">
+          <div class="rule-new-pill">Newly passed 6/27/26</div>
+          <h2 class="rule-h2">Voting &mdash; proxy banned, mail-in allowed</h2>
+          <p><strong>Proxy voting is not allowed.</strong> A manager present at a league vote cannot cast a vote on another manager's behalf.</p>
+          <p><strong>Mail-in ballots are allowed.</strong> A manager who cannot attend in person may submit their vote in writing ahead of the meeting. A mail-in ballot counts the same as an in-person vote for quorum and tally purposes.</p>
+          <p class="rules-note">Passed at the 2026-06-27 Beach Summit. That summit itself was decided on proxies (12 votes present via proxy: Hodor represented Bill Keenan + Alex Schlosberg + himself; George represented Vesco; Tom represented Aric; Greg, Dan, Paul, Monty, Brian each cast one) &mdash; from the next league vote forward, absentees submit mail-in ballots.</p>
+        </section>
+
+        <section class="rule-block">
+          <h2 class="rule-h2">Pending votes</h2>
+          <p><strong>Lottery timing.</strong> Whether the annual draft lottery should happen <em>after</em> the keeper deadline (rather than before, as it does now) was raised at the 2026-06-27 summit and left unresolved. Consequential for keeper strategy since knowing your draft slot changes which players are worth keeping at their DRC cost. Carried to the next league vote.</p>
         </section>
 
       </div>
@@ -6441,6 +6513,17 @@ def render_trade_analyzer(by_manager):
                 pool.remove(hit)
                 if hit["o"] == src:
                     lost[src].append({"r": rnd, "to": dst})
+                elif orig in lost:
+                    # Multi-hop pick: keep the original owner's "traded to"
+                    # note pointing at the CURRENT holder, not the first hop
+                    # (e.g. Dan's R16 went Dan -> Pete -> Scott; Dan's board
+                    # should read "traded to Scott").
+                    note = next((e for e in lost[orig]
+                                 if e["r"] == rnd and e.get("to") == src),
+                                next((e for e in lost[orig] if e["r"] == rnd),
+                                     None))
+                    if note:
+                        note["to"] = dst
         if dst in held:
             held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
 
