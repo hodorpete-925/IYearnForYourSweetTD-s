@@ -54,3 +54,18 @@ runs.json
 
 # Deck QA preview renders — regenerable scratch
 qa_dash/
+
+# Backups - manual snapshots; git history is the real backup
+Backups/
+
+# Working drafts and private prep - final versions publish via comms/
+Roster Preview - Fact Pack (2026).md
+rules_reconciliation_ledger_DRAFT.html
+yahoo_api_application_draft.md
+
+# Preview renders - regenerable scratch
+lottery_section_preview.html
+
+# Design Brief bulk items - dashboard copy is in git history, zip is a transfer bundle
+Design Brief/Current Dashboard (reference - do not edit).html
+Design Brief/GitHub dashboard review setup.zip

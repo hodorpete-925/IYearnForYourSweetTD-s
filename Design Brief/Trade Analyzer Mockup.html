@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade Analyzer — redesign mockup</title>
+<style>
+:root{
+  --blue-800:#022479; --blue-600:#0038FF; --blue-400:#269AFF; --blue-200:#77CEFF;
+  --gold-400:#E1B523; --gray-700:#2a2a2e; --gray-600:#606C71; --gray-500:#8e8e93;
+  --gray-200:#ebebed; --gray-100:#f5f5f5; --gray-50:#fcfcfd; --off-white:#fafafb;
+  --green-700:#1c7a4a; --green-100:#e6f6ee; --red-700:#b42318; --red-100:#fdecea;
+}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,sans-serif;
+  color:#000;background:#fff;font-size:14.5px;line-height:1.55;margin:0;padding:28px 22px 60px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto}
+.mock-banner{background:var(--gold-400);color:#3a2f00;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:6px 12px;border-radius:5px;display:inline-block;margin-bottom:18px}
+h1.title{font-size:26px;color:var(--blue-800);margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--gray-600);font-size:13.5px;margin:0 0 22px;max-width:620px}
+h2.sec{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-500);
+  font-weight:700;margin:26px 0 10px;border-bottom:1px solid var(--gray-200);padding-bottom:6px}
+
+/* team pickers */
+.pickers{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-bottom:6px}
+.picker{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 14px}
+.picker .lab{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-500);font-weight:600}
+.picker .team{font-size:17px;font-weight:700;color:var(--blue-800);margin-top:3px}
+.picker .mgr{font-size:12.5px;color:var(--gray-600)}
+.swap{width:34px;height:34px;border-radius:50%;background:var(--blue-800);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:15px;font-weight:700}
+
+/* two-column rosters */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{border:1px solid var(--gray-200);border-radius:9px;overflow:hidden;background:#fff}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;padding:11px 14px;
+  background:var(--blue-800);color:#fff}
+.card-head .t{font-weight:700;font-size:14px}
+.card-head .cap{font-size:12px;color:var(--blue-200);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-500);
+  font-weight:600;padding:7px 12px;border-bottom:1px solid var(--gray-200);background:var(--gray-50)}
+th.num,td.num{text-align:right}
+td{padding:7px 12px;border-bottom:1px solid var(--gray-100)}
+.pname{font-weight:600;color:var(--gray-700)}
+.pos{color:var(--gray-500);font-size:11.5px}
+/* DRC tier chip */
+.drc{display:inline-block;min-width:22px;text-align:center;border-radius:4px;padding:1px 6px;font-weight:700;font-size:12px}
+.t1{background:#e7ecfa;color:var(--blue-800)}      /* DRC 1-2 premium */
+.t2{background:#eef4e2;color:#5b6b16}               /* DRC 3-5 */
+.t3{background:var(--gray-100);color:var(--gray-600)} /* DRC 6-9 */
+.t4{background:#fbf3e0;color:#8a6a12}               /* DRC 10-16 */
+.cost{font-weight:700;color:var(--blue-800)}
+tr.out td{background:var(--red-100)}
+tr.out .tag{color:var(--red-700);font-weight:700;font-size:10.5px;letter-spacing:.04em}
+tr.in td{background:var(--green-100)}
+tr.in .tag{color:var(--green-700);font-weight:700;font-size:10.5px;letter-spacing:.04em}
+tr.chasm td{background:var(--red-100)}
+.flag{color:var(--red-700);font-weight:600;font-size:11.5px}
+.strike{ text-decoration:line-through;color:var(--gray-500)}
+tfoot td{padding:9px 12px;border-top:2px solid var(--gray-200);font-weight:700}
+.delta-up{color:var(--red-700)} .delta-dn{color:var(--green-700)}
+
+/* the trade strip */
+.trade-strip{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin:6px 0 4px}
+.leg{border:1px solid var(--gray-200);border-radius:8px;padding:11px 14px;background:var(--gray-50)}
+.leg .dir{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--gray-500);font-weight:600;margin-bottom:6px}
+.leg .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13px}
+.leg .row .who{font-weight:600;color:var(--gray-700)}
+.leg .row .meta{color:var(--gray-500);font-size:11.5px}
+.arrows{display:flex;align-items:center;color:var(--blue-600);font-size:20px;font-weight:700}
+
+/* callout */
+.callout{margin-top:14px;border:1px solid #f3c7c0;background:var(--red-100);border-radius:8px;padding:12px 14px;
+  display:flex;gap:10px;align-items:flex-start}
+.callout .icn{color:var(--red-700);font-weight:800;font-size:16px;line-height:1.2}
+.callout .body{font-size:13px;color:#7a1a12}
+.callout .body b{color:var(--red-700)}
+.assump{margin-top:20px;font-size:11.5px;color:var(--gray-500);border-top:1px solid var(--gray-200);padding-top:10px}
+.note{font-size:11.5px;color:var(--gray-500);margin:4px 0 0}
+@media(max-width:760px){.cols,.pickers,.trade-strip{grid-template-columns:1fr}.arrows{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mock-banner">Mockup · redesign concept · not live data</div>
+  <h1 class="title">Trade Analyzer</h1>
+  <p class="sub">Pick two teams and see what moves each way — production exchanged, the cap swing, and exactly where each incoming keeper slots (or can't). Numbers, not advice.</p>
+
+  <!-- PICKERS -->
+  <div class="pickers">
+    <div class="picker"><div class="lab">Team A</div><div class="team">Dreorge Bledsoe</div><div class="mgr">George Mensing · cap $820</div></div>
+    <div class="swap">&#8646;</div>
+    <div class="picker"><div class="lab">Team B</div><div class="team">King Of The Castle</div><div class="mgr">Brian Malconian · cap $760</div></div>
+  </div>
+
+  <!-- CURRENT ROSTERS -->
+  <h2 class="sec">Current rosters &middot; sorted by DRC (most expensive first)</h2>
+  <div class="cols">
+    <div class="card">
+      <div class="card-head"><span class="t">George Mensing</span><span class="cap">cap $820 · 10 keepers</span></div>
+      <table>
+        <thead><tr><th>Player</th><th>Pos</th><th class="num">DRC</th><th class="num">Cost</th><th class="num">'25 pts</th></tr></thead>
+        <tbody>
+          <tr><td class="pname">Breece Hall</td><td class="pos">RB</td><td class="num"><span class="drc t1">1</span></td><td class="num cost">$200</td><td class="num">210.4</td></tr>
+          <tr><td class="pname">Josh Allen</td><td class="pos">QB</td><td class="num"><span class="drc t1">1</span></td><td class="num cost">$200</td><td class="num">381.2</td></tr>
+          <tr><td class="pname">DeVonta Smith</td><td class="pos">WR</td><td class="num"><span class="drc t1">2</span></td><td class="num cost">$100</td><td class="num">180.6</td></tr>
+          <tr><td class="pname">Zay Flowers</td><td class="pos">WR</td><td class="num"><span class="drc t2">3</span></td><td class="num cost">$80</td><td class="num">165.1</td></tr>
+          <tr class="out"><td class="pname">James Conner <span class="tag">TRADE &rarr;</span></td><td class="pos">RB</td><td class="num"><span class="drc t2">4</span></td><td class="num cost">$60</td><td class="num">27.3</td></tr>
+          <tr><td class="pname">Jaylen Waddle</td><td class="pos">WR</td><td class="num"><span class="drc t2">4</span></td><td class="num cost">$60</td><td class="num">150.9</td></tr>
+          <tr><td class="pname">Brian Thomas Jr.</td><td class="pos">WR</td><td class="num"><span class="drc t2">5</span></td><td class="num cost">$50</td><td class="num">243.7</td></tr>
+          <tr><td class="pname">Mike Evans</td><td class="pos">WR</td><td class="num"><span class="drc t3">6</span></td><td class="num cost">$30</td><td class="num">191.0</td></tr>
+          <tr><td class="pname">David Montgomery</td><td class="pos">RB</td><td class="num"><span class="drc t3">9</span></td><td class="num cost">$30</td><td class="num">175.4</td></tr>
+          <tr><td class="pname">J.J. McCarthy</td><td class="pos">QB</td><td class="num"><span class="drc t4">12</span></td><td class="num cost">$10</td><td class="num">88.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="t">Brian Malconian</span><span class="cap">cap $760 · 10 keepers</span></div>
+      <table>
+        <thead><tr><th>Player</th><th>Pos</th><th class="num">DRC</th><th class="num">Cost</th><th class="num">'25 pts</th></tr></thead>
+        <tbody>
+          <tr><td class="pname">Ja'Marr Chase</td><td class="pos">WR</td><td class="num"><span class="drc t1">1</span></td><td class="num cost">$200</td><td class="num">311.5</td></tr>
+          <tr><td class="pname">Joe Burrow</td><td class="pos">QB</td><td class="num"><span class="drc t1">2</span></td><td class="num cost">$100</td><td class="num">339.8</td></tr>
+          <tr class="out"><td class="pname">De'Von Achane <span class="tag">&larr; TRADE</span></td><td class="pos">RB</td><td class="num"><span class="drc t1">2</span></td><td class="num cost">$100</td><td class="num">130.2</td></tr>
+          <tr><td class="pname">Jonathan Taylor</td><td class="pos">RB</td><td class="num"><span class="drc t2">3</span></td><td class="num cost">$80</td><td class="num">250.7</td></tr>
+          <tr><td class="pname">Jaxon Smith-Njigba</td><td class="pos">WR</td><td class="num"><span class="drc t2">4</span></td><td class="num cost">$60</td><td class="num">222.9</td></tr>
+          <tr><td class="pname">Trey McBride</td><td class="pos">TE</td><td class="num"><span class="drc t2">5</span></td><td class="num cost">$50</td><td class="num">201.4</td></tr>
+          <tr><td class="pname">George Pickens</td><td class="pos">WR</td><td class="num"><span class="drc t3">6</span></td><td class="num cost">$30</td><td class="num">178.3</td></tr>
+          <tr><td class="pname">Drake Maye</td><td class="pos">QB</td><td class="num"><span class="drc t3">8</span></td><td class="num cost">$30</td><td class="num">240.1</td></tr>
+          <tr><td class="pname">Rashee Rice</td><td class="pos">WR</td><td class="num"><span class="drc t3">9</span></td><td class="num cost">$30</td><td class="num">160.8</td></tr>
+          <tr><td class="pname">Jaylen Wright</td><td class="pos">RB</td><td class="num"><span class="drc t4">15</span></td><td class="num cost">$10</td><td class="num">44.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- THE TRADE -->
+  <h2 class="sec">The trade</h2>
+  <div class="trade-strip">
+    <div class="leg">
+      <div class="dir">George sends</div>
+      <div class="row"><span class="who">James Conner</span><span class="meta">RB · DRC 4 · $60 · 27.3 pts</span></div>
+    </div>
+    <div class="arrows">&#8646;</div>
+    <div class="leg">
+      <div class="dir">Brian sends</div>
+      <div class="row"><span class="who">De'Von Achane</span><span class="meta">RB · DRC 2 · $100 · 130.2 pts</span></div>
+    </div>
+  </div>
+  <p class="note">Production swing: George +102.9 pts / Brian &minus;102.9 pts (2025 basis).</p>
+
+  <!-- AFTER THE TRADE -->
+  <h2 class="sec">After the trade &middot; keeper slotting &amp; cost</h2>
+  <div class="cols">
+    <!-- George after -->
+    <div class="card">
+      <div class="card-head"><span class="t">George Mensing — after</span><span class="cap">cap $820 &rarr; $860</span></div>
+      <table>
+        <thead><tr><th>Player</th><th class="num">DRC</th><th class="num">Slot</th><th class="num">Cost</th></tr></thead>
+        <tbody>
+          <tr><td class="pname">Breece Hall</td><td class="num"><span class="drc t1">1</span></td><td class="num">R1</td><td class="num cost">$200</td></tr>
+          <tr><td class="pname">Josh Allen</td><td class="num"><span class="drc t1">1</span></td><td class="num">R2*</td><td class="num cost">$200</td></tr>
+          <tr class="in"><td class="pname">De'Von Achane <span class="tag">IN · frozen '26</span></td><td class="num"><span class="drc t1">2</span></td><td class="num">R3?</td><td class="num cost">$100</td></tr>
+          <tr><td class="pname">DeVonta Smith</td><td class="num"><span class="drc t1">2</span></td><td class="num">R4*</td><td class="num cost">$100</td></tr>
+          <tr><td class="pname">Zay Flowers</td><td class="num"><span class="drc t2">3</span></td><td class="num">R5*</td><td class="num cost">$80</td></tr>
+          <tr class="chasm"><td class="pname strike">Jaylen Waddle</td><td class="num"><span class="drc t2">4</span></td><td class="num"><span class="flag">&mdash;</span></td><td class="num"><span class="flag">chasm</span></td></tr>
+          <tr><td class="pname">Brian Thomas Jr.</td><td class="num"><span class="drc t2">5</span></td><td class="num">R6*</td><td class="num cost">$50</td></tr>
+        </tbody>
+        <tfoot><tr><td>New cap commitment</td><td></td><td></td><td class="num cost">$860 <span class="delta-up">▲$40</span></td></tr></tfoot>
+      </table>
+      <div class="callout">
+        <span class="icn">&#9888;</span>
+        <div class="body"><b>Jaylen Waddle becomes un-keepable.</b> Adding Achane pushes George's DRC 2–4 keepers down the board, but he traded away his <b>R6</b> pick — there's no slot for Waddle to slide into (chasm). He'd need to re-acquire a mid-round pick or drop a keeper above him.</div>
+      </div>
+    </div>
+    <!-- Brian after -->
+    <div class="card">
+      <div class="card-head"><span class="t">Brian Malconian — after</span><span class="cap">cap $760 &rarr; $720</span></div>
+      <table>
+        <thead><tr><th>Player</th><th class="num">DRC</th><th class="num">Slot</th><th class="num">Cost</th></tr></thead>
+        <tbody>
+          <tr><td class="pname">Ja'Marr Chase</td><td class="num"><span class="drc t1">1</span></td><td class="num">R1</td><td class="num cost">$200</td></tr>
+          <tr><td class="pname">Joe Burrow</td><td class="num"><span class="drc t1">2</span></td><td class="num">R2</td><td class="num cost">$100</td></tr>
+          <tr><td class="pname">Jonathan Taylor</td><td class="num"><span class="drc t2">3</span></td><td class="num">R3</td><td class="num cost">$80</td></tr>
+          <tr class="in"><td class="pname">James Conner <span class="tag">IN · frozen '26</span></td><td class="num"><span class="drc t2">4</span></td><td class="num">R4</td><td class="num cost">$60</td></tr>
+          <tr><td class="pname">Jaxon Smith-Njigba</td><td class="num"><span class="drc t2">4</span></td><td class="num">R5*</td><td class="num cost">$60</td></tr>
+          <tr><td class="pname">Trey McBride</td><td class="num"><span class="drc t2">5</span></td><td class="num">R6*</td><td class="num cost">$50</td></tr>
+          <tr><td class="pname">George Pickens</td><td class="num"><span class="drc t3">6</span></td><td class="num">R7</td><td class="num cost">$30</td></tr>
+        </tbody>
+        <tfoot><tr><td>New cap commitment</td><td></td><td></td><td class="num cost">$720 <span class="delta-dn">▼$40</span></td></tr></tfoot>
+      </table>
+      <div class="callout" style="border-color:#bfe3cf;background:var(--green-100)">
+        <span class="icn" style="color:var(--green-700)">&#10003;</span>
+        <div class="body" style="color:#155e38">All keepers slot cleanly. Conner takes R4; JSN slides to R5, McBride to R6 through picks Brian owns. No chasm.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="assump"><b>Assumptions</b> (collapsible in the real build): acquirer inherits each player's 2025 DRC, frozen for 2026, decrement resumes 2027. Same-DRC ties seat the higher 2025 scorer first (* = slid off native round). Slots collide down through consecutive owned rounds only; a missing round is a wall. Off-season trades are commissioner-executed.</p>
+</div>
+</body>
+</html>
