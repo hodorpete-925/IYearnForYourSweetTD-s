@@ -3655,6 +3655,9 @@ table.ta-table tr.ta-total td {
 .kb-pf-tag { flex:1 1 100%; color:#8a919c; font-size:10.5px; }
 .kb-pf-none { color:#606C71; font-size:12.5px; margin:4px 0 8px; }
 .kb-pf-cancel { margin-top:10px; width:100%; }
+/* Trade analyzer: pick pills are clickable (add to / remove from trade) */
+.ta-pill { cursor:pointer; user-select:none; }
+.ta-pill:hover { box-shadow:0 0 0 2px rgba(0,56,255,.15); }
 .kb-wait-chip { display:inline-block; background:#fff6e0; color:#8a6a12; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
 .kb-print { display:none; }
 @media (max-width: 900px) {
@@ -4210,8 +4213,11 @@ JS = r"""
     for (let r = 1; r <= 16; r++) {
       const held = picks.filter(pk => pk.r === r).map(pk => ({
         own: pk.o === slug,
+        r: r,
+        o: pk.o,
         num: pickNumTA(r, pk.o),
         hypo: !!pk.hypo,
+        hidx: pk.hidx,
         lp: !!pk.lp,
         acqFrom: pk.o === slug ? null : first((teamBy[pk.o] || {}).mgr || pk.o)
       })).sort((a, b) => ((a.num || 'zz') < (b.num || 'zz') ? -1 : 1));
@@ -4219,7 +4225,8 @@ JS = r"""
         .sort((a, b) => (b.pts || 0) - (a.pts || 0));
       rows.push({r, held, players, goneTo: (lostBy[r] || []).map(l => ({
         to: first((teamBy[l.to] || {}).mgr || l.to),
-        num: pickNumTA(r, slug)
+        num: pickNumTA(r, l.o != null ? l.o : slug),
+        tradeIdx: l.tradeIdx
       }))});
     }
     return rows;
@@ -4242,10 +4249,15 @@ JS = r"""
       .concat(recvPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, c: costRow(p)[0].c, incoming: true})));
     const postPicks = (D.picks[T] || []).slice();
     picksSent.filter(pk => pk.y === Y0).forEach(pk => {
-      let idx = postPicks.findIndex(c => c.r === pk.r && c.o !== T); if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
+      // Exact pick when the send came from a pill click (pk.o known);
+      // otherwise the old preference: spend an acquired copy first.
+      let idx = pk.o != null ? postPicks.findIndex(c => c.r === pk.r && c.o === pk.o) : -1;
+      if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r && c.o !== T);
+      if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
       if (idx >= 0) postPicks.splice(idx, 1);
     });
-    picksRecv.filter(pk => pk.y === Y0).forEach(pk => postPicks.push({r: pk.r, o: O, hypo: 1}));
+    picksRecv.map((pk, i) => ({pk, i})).filter(x => x.pk.y === Y0)
+      .forEach(x => postPicks.push({r: x.pk.r, o: x.pk.o != null ? x.pk.o : O, hypo: 1, hidx: x.i}));
     return {
       team, sends: sendPlayers, receives: recvPlayers, picksSent, picksRecv,
       capBefore: team.cap, capAfter, delta: capAfter - team.cap,
@@ -4254,10 +4266,14 @@ JS = r"""
       rosterN: postRosterArr.length,
       cantKeepN: Math.max(0, postRosterArr.length - fitCount(postPicks, postRosterArr)),
       /* Board shows sent players IN PLACE, grayed with an OUT tag, so you
-         see where the trade pulls from; math above already excludes them. */
+         see where the trade pulls from; math above already excludes them.
+         OUT cards display the FROZEN trade-time DRC (2025 anchor), same as
+         the IN card on the other board — in a trade the decrement pauses,
+         so the number stays flat across both sides (Pete, 2026-08-19). */
       boardPost: groupModel(T, postPicks,
-        postRosterArr.concat(sendPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(p.d6), pts: p.pts, outgoing: true}))),
-        (D.picks_lost[T] || []).concat(picksSent.filter(pk => pk.y === Y0).map(pk => ({r: pk.r, to: O})))),
+        postRosterArr.concat(sendPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, outgoing: true}))),
+        (D.picks_lost[T] || []).concat(picksSent.map((pk, i) => ({pk, i})).filter(x => x.pk.y === Y0)
+          .map(x => ({r: x.pk.r, to: O, tradeIdx: x.i, o: x.pk.o})))),
     };
   }
 
@@ -4279,13 +4295,22 @@ JS = r"""
         esc(t.team) + ' — ' + esc(t.mgr) + '</option>').join('');
   }
 
-  function taPickChip(h) {
+  function taPickChip(h, side) {
     const num = h.num ? '<b style="font-variant-numeric:tabular-nums;">' + h.num + '</b>' : (h.lp ? '<b>last pick</b>' : '<b>R?</b>');
-    if (h.own) {
-      return '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px solid #e0e0e3;border-radius:6px;font-size:10.5px;color:#606C71;background:#f7f8fa;">' + num + ' your pick</span>';
+    if (h.hypo) {
+      // Incoming via this trade: click removes it (mirrors the sender's send list)
+      const other = side === 'L' ? 'R' : 'L';
+      return '<span class="ta-pill" data-act="rm' + other + '" data-idx="' + h.hidx + '" title="Remove from trade" ' +
+        'style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px solid #bfe3cf;border-radius:6px;font-size:10.5px;color:#1c7a4a;background:#f2fbf5;font-weight:600;">' +
+        num + (h.acqFrom ? ' from ' + esc(h.acqFrom) : ' acquired') + ' &middot; this trade &times;</span>';
     }
-    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px ' + (h.hypo ? 'solid' : 'dashed') + ' #bfe3cf;border-radius:6px;font-size:10.5px;color:#1c7a4a;background:#f2fbf5;font-weight:600;">' +
-      num + (h.acqFrom ? ' from ' + esc(h.acqFrom) : ' acquired') + (h.hypo ? ' &middot; this trade' : '') + '</span>';
+    if (h.own) {
+      return '<span class="ta-pill" data-addpick="1" data-side="' + side + '" data-r="' + h.r + '" data-o="' + esc(h.o) + '" title="Add to trade" ' +
+        'style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px solid #e0e0e3;border-radius:6px;font-size:10.5px;color:#606C71;background:#f7f8fa;">' + num + ' your pick</span>';
+    }
+    return '<span class="ta-pill" data-addpick="1" data-side="' + side + '" data-r="' + h.r + '" data-o="' + esc(h.o) + '" title="Add to trade" ' +
+      'style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px dashed #bfe3cf;border-radius:6px;font-size:10.5px;color:#1c7a4a;background:#f2fbf5;font-weight:600;">' +
+      num + (h.acqFrom ? ' from ' + esc(h.acqFrom) : ' acquired') + '</span>';
   }
 
   function taPlayerCard(p, recvIds) {
@@ -4314,10 +4339,12 @@ JS = r"""
     const deltaStyle = d > 0 ? 'color:#b42318;font-weight:700;' : d < 0 ? 'color:#1c7a4a;font-weight:700;' : 'color:#606C71;';
     let rows = '';
     sideVM.boardPost.forEach(row => {
-      let strip = row.held.map(h => taPickChip(h)).join('');
+      let strip = row.held.map(h => taPickChip(h, side)).join('');
       row.goneTo.forEach(g => {
-        strip += '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px dashed #e3c4be;border-radius:6px;font-size:10.5px;color:#b06a60;background:#fdf4f2;">' +
-          (g.num ? '<b style="font-variant-numeric:tabular-nums;">' + g.num + '</b> ' : '') + 'traded to ' + esc(g.to) + '</span>';
+        const clickable = g.tradeIdx != null;
+        strip += '<span' + (clickable ? ' class="ta-pill" data-act="rm' + side + '" data-idx="' + g.tradeIdx + '" title="Remove from trade"' : '') +
+          ' style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px dashed #e3c4be;border-radius:6px;font-size:10.5px;color:#b06a60;background:#fdf4f2;">' +
+          (g.num ? '<b style="font-variant-numeric:tabular-nums;">' + g.num + '</b> ' : '') + 'traded to ' + esc(g.to) + (clickable ? ' &times;' : '') + '</span>';
       });
       if (!strip) strip = '<span style="display:inline-flex;align-items:center;padding:2px 8px;border:1px dashed #e0e0e3;border-radius:6px;font-size:10.5px;color:#b8b8bc;">no pick</span>';
       const cards = row.players.map(p => taPlayerCard(p, recvIds)).join('');
@@ -4331,7 +4358,8 @@ JS = r"""
     const yearOpts = [Y0, Y0 + 1].map(y => '<option value="' + y + '"' + (y === dyv ? ' selected' : '') + '>' + y + '</option>').join('');
     const roundOpts = Array.from({length: 16}, (_, i) => '<option value="' + (i + 1) + '"' + ((i + 1) === drv ? ' selected' : '') + '>R' + (i + 1) + '</option>').join('');
     const pickChips = picksArr.map((pk, i) => '<span style="display:inline-flex;align-items:center;gap:4px;background:#e6f6ee;color:#1c7a4a;border-radius:5px;padding:3px 6px;font-size:11.5px;font-weight:600;">' +
-      pk.y + ' R' + pk.r + '<button type="button" data-act="rm' + side + '" data-idx="' + i + '" style="border:none;background:none;color:#1c7a4a;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button></span>').join('');
+      pk.y + ' ' + (pk.o != null && pickNumTA(pk.r, pk.o) ? pickNumTA(pk.r, pk.o) : 'R' + pk.r) +
+      '<button type="button" data-act="rm' + side + '" data-idx="' + i + '" style="border:none;background:none;color:#1c7a4a;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button></span>').join('');
     const footer = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:9px 14px;border-top:1px solid #ebebed;background:#fcfcfd;">' +
       '<span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:#8e8e93;font-weight:600;">Add pick</span>' +
       '<select data-role="dy' + side + '" style="border:1px solid #d8d8dc;border-radius:6px;padding:4px 6px;font:inherit;font-size:12px;">' + yearOpts + '</select>' +
@@ -4353,7 +4381,7 @@ JS = r"""
     const L = vm.L, R = vm.R;
     const items = (sideVM) => {
       let a = sideVM.sends.map(p => '<button type="button" data-toggle="' + p.i + '" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 8px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">' + esc(p.n) + ' <span style="color:#77CEFF;font-size:13px;">×</span></button>');
-      sideVM.picksSent.forEach(pk => a.push('<span style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;white-space:nowrap;">' + pk.y + ' R' + pk.r + '</span>'));
+      sideVM.picksSent.forEach(pk => a.push('<span style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;white-space:nowrap;">' + pk.y + ' ' + (pk.o != null && pickNumTA(pk.r, pk.o) ? pickNumTA(pk.r, pk.o) : 'R' + pk.r) + '</span>'));
       return a.length ? a.join('') : '<span style="color:#9fbdff;font-size:12.5px;">nothing yet</span>';
     };
     const sw = n => (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(1) + ' pts';
@@ -4507,22 +4535,23 @@ JS = r"""
   };
   const app = root.querySelector('.ta-app');
 
-  function commitAdd(side) {
-    if (side === 'L') st.picksL.push({y: st.dyL, r: st.drL});
-    else st.picksR.push({y: st.dyR, r: st.drR});
+  function commitAdd(side, pend) {
+    const entry = pend || (side === 'L' ? {y: st.dyL, r: st.drL} : {y: st.dyR, r: st.drR});
+    if (side === 'L') st.picksL.push(entry); else st.picksR.push(entry);
   }
 
   /* "This pick currently houses a player" check (Pete's ruling 2026-08-19):
      adding a Y0 pick to the send side warns, before committing, when the
      round still houses players' native DRC or the removal breaks a slide
      chain (chasm count rises). Facts + an are-you-sure; never a block. */
-  function sendImpact(side) {
-    const y = side === 'L' ? st.dyL : st.dyR, r = side === 'L' ? st.drL : st.drR;
+  function sendImpact(side, pend) {
+    const entry = pend || (side === 'L' ? {y: st.dyL, r: st.drL} : {y: st.dyR, r: st.drR});
+    const y = entry.y, r = entry.r;
     if (y !== Y0 || !st.teamL || !st.teamR || st.teamL === st.teamR) return null;
     const cfgNow = {L: st.teamL, R: st.teamR, sel: st.sel, picksL: st.picksL.slice(), picksR: st.picksR.slice()};
     const cfgAfter = {L: st.teamL, R: st.teamR, sel: st.sel,
-      picksL: side === 'L' ? st.picksL.concat([{y, r}]) : st.picksL.slice(),
-      picksR: side === 'R' ? st.picksR.concat([{y, r}]) : st.picksR.slice()};
+      picksL: side === 'L' ? st.picksL.concat([entry]) : st.picksL.slice(),
+      picksR: side === 'R' ? st.picksR.concat([entry]) : st.picksR.slice()};
     const vmNow = computeTrade(cfgNow), vmAfter = computeTrade(cfgAfter);
     if (!vmNow.valid || !vmAfter.valid) return null;
     const now = side === 'L' ? vmNow.L : vmNow.R, aft = side === 'L' ? vmAfter.L : vmAfter.R;
@@ -4540,7 +4569,7 @@ JS = r"""
     if (st.warn) {
       const w = e.target.closest('[data-act="warnok"], [data-act="warnno"]');
       if (w) {
-        if (w.dataset.act === 'warnok') commitAdd(st.warn.side);
+        if (w.dataset.act === 'warnok') commitAdd(st.warn.side, st.warn.pend);
         st.warn = null; render(); return;
       }
       if (!e.target.closest('.ta-warn-card')) { st.warn = null; render(); }
@@ -4548,6 +4577,14 @@ JS = r"""
     }
     const tog = e.target.closest('[data-toggle]');
     if (tog) { const pid = +tog.dataset.toggle; if (st.sel[pid]) delete st.sel[pid]; else st.sel[pid] = true; render(); return; }
+    const pill = e.target.closest('[data-addpick]');
+    if (pill) {
+      const side = pill.dataset.side;
+      const pend = {y: Y0, r: +pill.dataset.r, o: pill.dataset.o};
+      const impact = sendImpact(side, pend);
+      if (impact) { st.warn = {side, pend, impact}; render(); return; }
+      commitAdd(side, pend); render(); return;
+    }
     const act = e.target.closest('[data-act]');
     if (!act) return;
     const a = act.dataset.act;
@@ -4675,14 +4712,28 @@ JS = r"""
         sl.taken = p; sl.manual = true; placed[p.i] = { slot: sl, manual: true };
       }
     });
-    // Pass 2: auto-seat own native pick for checkbox keeps, in KEEP ORDER
-    // (first kept holds his seat; a later same-DRC keep waits for a
-    // conscious placement instead of displacing the sitter)
+    // Pass 2: auto-seat checkbox keeps in KEEP ORDER (first-come). Own
+    // native pick if free; otherwise SLIDE down the consecutive-held chain
+    // to the first free OWN pick — league physics, per Brian via Pete
+    // 2026-08-19. Acquired picks stay protected: they keep the chain alive
+    // as held rounds but are never auto-consumed. Chain wall (unheld
+    // round) or no own seat -> Awaiting placement (up-moves and acquired
+    // picks remain conscious choices).
+    const byR2 = {}; slots.forEach(s => { (byR2[s.r] = byR2[s.r] || []).push(s); });
     ks.filter(p => !placed[p.i] && st.manual[p.i] == null)
       .sort((a, b) => (st.keep[a.i] || 0) - (st.keep[b.i] || 0))
       .forEach(p => {
-        const f = slots.find(s => s.r === clampDrc(p.d6) && s.own && !s.taken);
-        if (f) { f.taken = p; placed[p.i] = { slot: f, manual: false }; }
+        const d = clampDrc(p.d6);
+        let seat = slots.find(s => s.r === d && s.own && !s.taken);
+        if (!seat && (byR2[d] || []).length) {
+          for (let r = d + 1; r <= 16; r++) {
+            const here = byR2[r] || [];
+            if (!here.length) break;                       // chasm wall
+            const f = here.find(s => s.own && !s.taken);
+            if (f) { seat = f; break; }
+          }
+        }
+        if (seat) { seat.taken = p; placed[p.i] = { slot: seat, manual: false }; }
       });
     // Pass 3: below-native manuals — legal only as the activated slide destination
     ks.forEach(p => {
@@ -4696,12 +4747,22 @@ JS = r"""
     badManual.forEach(pid => delete st.manual[pid]);
     // A dropped manual usually means its collision vanished (e.g. the
     // native-round occupant was unkept) — the slide unwinds, so fall the
-    // player back to his own native pick if it's free.
+    // player back to auto seating: own native pick, else the own-pick
+    // slide chain (same rule as pass 2).
     badManual.forEach(pid => {
       const p = ks.find(x => x.i === pid);
       if (!p || placed[p.i]) return;
-      const f = slots.find(s => s.r === clampDrc(p.d6) && s.own && !s.taken);
-      if (f) { f.taken = p; placed[p.i] = { slot: f, manual: false }; }
+      const d = clampDrc(p.d6);
+      let seat = slots.find(s => s.r === d && s.own && !s.taken);
+      if (!seat && (byR2[d] || []).length) {
+        for (let r = d + 1; r <= 16; r++) {
+          const here = byR2[r] || [];
+          if (!here.length) break;
+          const f = here.find(s => s.own && !s.taken);
+          if (f) { seat = f; break; }
+        }
+      }
+      if (seat) { seat.taken = p; placed[p.i] = { slot: seat, manual: false }; }
     });
     const unplaced = [], chasm = [];
     ks.filter(p => !placed[p.i]).forEach(p => {
@@ -6359,22 +6420,19 @@ def render_trade_analyzer(by_manager):
     slug_by_tsid = {}
     for r in conn.execute(
             "SELECT t.team_season_id, m.full_name FROM teams t "
-            "JOIN managers m ON m.manager_id = t.manager_id WHERE t.season = 2025"):
+            "JOIN managers m ON m.manager_id = t.manager_id "
+            "WHERE t.season IN (2025, 2026)"):
         slug_by_tsid[r["team_season_id"]] = slugify(r["full_name"])
     held = {t["slug"]: [{"r": r, "o": t["slug"]} for r in range(1, 17)]
             for t in teams}
     lost = {t["slug"]: [] for t in teams}
-    for mv in conn.execute(
-            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
-            " tp.destination_team_season_id d, tp.original_team_season_id o "
-            "FROM transaction_picks tp "
-            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
-            "WHERE t.season = 2025 ORDER BY t.timestamp"):
-        rnd = min(mv["rnd"], 16)
-        last_pick = mv["rnd"] > 16
-        src = slug_by_tsid.get(mv["s"])
-        dst = slug_by_tsid.get(mv["d"])
-        orig = slug_by_tsid.get(mv["o"]) or src
+
+    def _apply_pick_move(rnd_raw, s_id, d_id, o_id):
+        rnd = min(rnd_raw, 16)
+        last_pick = rnd_raw > 16
+        src = slug_by_tsid.get(s_id)
+        dst = slug_by_tsid.get(d_id)
+        orig = slug_by_tsid.get(o_id) or src
         if src in held:
             pool = held[src]
             hit = next((p for p in pool if p["r"] == rnd and p["o"] == orig),
@@ -6385,6 +6443,28 @@ def render_trade_analyzer(by_manager):
                     lost[src].append({"r": rnd, "to": dst})
         if dst in held:
             held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
+
+    # Real Yahoo pick trades: season-2025 transactions deal 2026-draft picks
+    for mv in conn.execute(
+            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
+            " tp.destination_team_season_id d, tp.original_team_season_id o "
+            "FROM transaction_picks tp "
+            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
+            "WHERE t.season = 2025 ORDER BY t.timestamp"):
+        _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
+
+    # Synthetic pick trades (post-API-outage, commissioner-entered):
+    # 2026 off-season trades deal 2026-draft picks. Table appears once
+    # add_synthetic_trades.py has run its migration; absent = no moves yet.
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
+                    "AND name='synthetic_transaction_picks'").fetchone():
+        for mv in conn.execute(
+                "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
+                " sp.destination_team_season_id d, sp.original_team_season_id o "
+                "FROM synthetic_transaction_picks sp "
+                "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
+                "WHERE st.season = 2026 ORDER BY st.timestamp"):
+            _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
     conn.close()
 
     # --- 2026 draft order (lottery result) -> per-team draft slot -------
