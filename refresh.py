@@ -89,9 +89,13 @@ if m and int(m.group(1)) > 0 and not FORCE:
 
 print("\nStep 2/6 — verifying the build on disk is fresh ...")
 html = (HERE / "dashboard.html").read_text(encoding="utf-8", errors="replace")
-fm = re.search(r"Generated (\d{4}-\d{2}-\d{2} \d{2}:\d{2})", html)
+# The footer was redesigned (ce746a7, Aug 2026): the build stamp now reads
+# "Dashboard rebuilt <timestamp> (this page)" with markup between the label
+# and the value. Match tolerantly so small markup tweaks don't break this.
+fm = re.search(r"Dashboard rebuilt.{0,160}?(\d{4}-\d{2}-\d{2} \d{2}:\d{2})", html, re.S)
 if not fm:
-    die("verifying the build", "No 'Generated <timestamp>' footer found in dashboard.html")
+    die("verifying the build",
+        "No 'Dashboard rebuilt <timestamp>' footer found in dashboard.html")
 built = datetime.strptime(fm.group(1), "%Y-%m-%d %H:%M")
 if datetime.now() - built > timedelta(minutes=10):
     die("verifying the build",
