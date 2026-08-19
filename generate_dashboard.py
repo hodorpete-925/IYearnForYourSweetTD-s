@@ -1989,19 +1989,22 @@ tr.history-row > td.history-cell {
 .ps-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 16px;
+  padding: 14px 18px 14px 46px;
   font-family: inherit;
-  font-size: 15px;
-  border: 1.5px solid var(--gray-300);
-  border-radius: 6px;
-  background: #fff;
+  font-size: 15.5px;
+  border: 2px solid #c5c9d2;
+  border-radius: 10px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23606C71' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E") 14px center / 20px 20px no-repeat;
   color: var(--gray-800);
+  box-shadow: 0 2px 8px rgba(2, 36, 121, 0.08);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+.ps-input:hover { border-color: #9aa1ad; }
+.ps-input::placeholder { color: #82889a; }
 .ps-input:focus {
   outline: none;
   border-color: var(--blue-600);
-  box-shadow: 0 0 0 3px rgba(0, 56, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 56, 255, 0.14), 0 2px 8px rgba(2, 36, 121, 0.08);
 }
 .ps-input-meta {
   margin-top: 6px;
@@ -3558,6 +3561,30 @@ table.ta-table tr.ta-total td {
   .section-title { font-size: 20px; }
 }
 
+/* ---- Player comparison ----------------------------------------------- */
+.pc-top { position:relative; max-width:560px; margin:0 0 16px; }
+.pc-sugg { position:absolute; top:100%; left:0; right:0; z-index:40; background:#fff; border:1px solid #d8d8dc; border-radius:10px; margin-top:4px; box-shadow:0 8px 24px rgba(0,0,0,.12); overflow:hidden; }
+.pc-sugg-item { display:flex; align-items:center; gap:8px; padding:8px 12px; cursor:pointer; font-size:13px; }
+.pc-sugg-item:hover { background:#eef4ff; }
+.pc-sugg-item .pc-sugg-meta { color:#8e8e93; font-size:11.5px; flex:none; }
+.pc-sugg-item .pc-sugg-owner { margin-left:auto; color:#606C71; font-size:11px; text-align:right; }
+.pc-cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; align-items:start; }
+.pc-card { background:#fff; border:1px solid #e3e3e6; border-radius:12px; padding:14px 16px; }
+.pc-head { display:flex; align-items:baseline; gap:8px; }
+.pc-name { font-weight:700; font-size:15.5px; color:#022479; flex:1 1 auto; min-width:0; }
+.pc-x { flex:none; border:none; background:none; color:#98a0ad; cursor:pointer; font-size:14px; padding:0 2px; }
+.pc-x:hover { color:#b42318; }
+.pc-meta { color:#606C71; font-size:12px; margin:2px 0 8px; }
+.pc-owner { font-size:12px; color:#2a2a2e; background:#f7f8fa; border:1px solid #ececef; border-radius:8px; padding:5px 9px; margin:0 0 4px; }
+.pc-owner b { color:#022479; }
+.pc-season { border-top:1px solid #f0f0f2; padding-top:10px; margin-top:10px; }
+.pc-yr { font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:#8e8e93; font-weight:700; }
+.pc-dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px; vertical-align:baseline; }
+.pc-pts { font-size:20px; font-weight:700; color:#022479; font-variant-numeric:tabular-nums; }
+.pc-sub { color:#606C71; font-size:11.5px; margin:1px 0 6px; }
+.pc-empty { color:#8e8e93; font-size:12.5px; padding:8px 0 2px; }
+.pc-hintcard { border:1px dashed #d8d8dc; border-radius:10px; padding:26px; text-align:center; color:#8e8e93; font-size:13px; grid-column:1/-1; }
+.pc-chart { width:100%; height:54px; display:block; }
 /* ---- Keeper board ---------------------------------------------------- */
 .kb-top { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:0 0 14px; }
 .kb-top select { font: inherit; padding:7px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; min-width:230px; }
@@ -3583,12 +3610,14 @@ table.ta-table tr.ta-total td {
 .kb-card.kb-chasm-card { background:#fdecea; }
 .kb-board .kb-row { display:flex; align-items:center; gap:10px; padding:7px 12px; border-bottom:1px solid #f0f0f2; min-height:38px; }
 .kb-board .kb-rnum { flex:none; width:26px; font-weight:700; color:#606C71; font-size:12.5px; text-align:right; }
-.kb-slot { flex:1 1 0; border:1.5px dashed #d6d9e0; border-radius:8px; min-height:30px; padding:3px 8px; display:flex; align-items:center; gap:8px; font-size:12.5px; background:#fbfbfc; }
+.kb-slot { flex:1 1 0; border:1.5px dashed #d6d9e0; border-radius:8px; min-height:30px; padding:3px 8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12.5px; background:#fbfbfc; }
 .kb-slot.kb-acq { border-style:solid; border-color:#c9b45e; background:#fdfaf0; }
 .kb-slot .kb-origin { color:#8a6a12; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; flex:none; }
 .kb-slot.kb-legal { border-color:#0038FF; background:#eef4ff; box-shadow:0 0 0 2px rgba(0,56,255,.12); cursor:pointer; }
 .kb-slot.kb-illegal { opacity:.45; }
-.kb-slot .kb-seated { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kb-slot .kb-seated { font-weight:600; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kb-slot .kb-meta { flex:none; font-variant-numeric:tabular-nums; }
+.kb-slot .kb-slot-notes { flex:1 1 100%; order:9; color:#98a0ad; font-size:10.5px; line-height:1.3; padding:0 0 1px 2px; margin-top:-2px; }
 .kb-slot .kb-flag { flex:none; font-size:10.5px; background:#fff6e0; color:#8a6a12; border-radius:10px; padding:1px 7px; }
 .kb-slot .kb-x { flex:none; margin-left:auto; border:none; background:none; color:#98a0ad; cursor:pointer; font-size:13px; padding:0 2px; }
 .kb-slot .kb-x:hover { color:#b42318; }
@@ -3597,6 +3626,20 @@ table.ta-table tr.ta-total td {
 .kb-chasm-strip { margin:10px 12px; border-top:1px dashed #f0cfc9; padding-top:10px; }
 .kb-chasm-chip { display:inline-block; background:#fdecea; color:#b42318; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
 .kb-hint { color:#606C71; font-size:12px; margin:10px 0 0; }
+/* Pick numbers (lottery order), stacked multi-pick rounds, drag states */
+.kb-picknum { flex:none; font-size:10.5px; font-weight:700; color:#606C71; background:#f0f1f4; border-radius:6px; padding:1px 6px; font-variant-numeric:tabular-nums; }
+.kb-slot.kb-acq .kb-picknum { background:#f5ecce; color:#8a6a12; }
+.kb-picknum-gone { background:#f7dcd8; color:#b42318; }
+.kb-row.kb-row-cont { border-top:none; padding-top:2px; }
+.kb-rnum-cont { color:#c5c9d2; font-weight:600; }
+.kb-gone-slot { border-style:none; background:none; }
+.kb-slot[data-dragpid] { cursor:grab; user-select:none; }
+.kb-slot[data-dragpid]:active { cursor:grabbing; }
+.kb-slot.kb-drop-hot { background:#dbe7ff; border-style:solid; border-color:#0038FF; }
+.kb-dragging .kb-roster { opacity:.75; }
+.kb-card.kb-unplaced { background:#fff8e6; }
+.kb-card.kb-unplaced .kb-check { background:#c9971c; border-color:#c9971c; }
+.kb-wait-chip { display:inline-block; background:#fff6e0; color:#8a6a12; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
 .kb-print { display:none; }
 @media (max-width: 900px) {
   .kb-cols { grid-template-columns: 1fr; }
@@ -3705,6 +3748,7 @@ table.ta-table tr.ta-total td {
 .kb-print td { padding:4px 8px; border-bottom:1px solid #ebebed; vertical-align:top; }
 .kb-print .num { text-align:right; font-variant-numeric:tabular-nums; }
 .kb-print .kb-print-flag { color:#8a6a12; font-size:10.5px; margin-right:6px; }
+.kb-print .kb-print-picknum { color:#98a0ad; font-size:11px; font-weight:400; }
 .kb-print .kb-print-chasm { color:#b42318; font-weight:700; }
 /* Full-slot export: one row per pick, whether keeper, open, or traded. */
 .kb-print .kb-print-full td.num:first-child { font-weight:700; color:#606C71; }
@@ -4009,6 +4053,13 @@ JS = r"""
     (playersBy[p.m] = playersBy[p.m] || []).push(p);
   });
 
+  /* Pick numbering from the 2026 lottery order (linear draft). Hypothetical
+     picks added in the trade builder carry the SENDER's slug, so they
+     number as the sender's own slot — a stated simplification (the sender
+     could in principle deal a pick they themselves acquired). */
+  const DPOS = D.draft_pos || {};
+  const pickNumTA = (r, o) => { const p = DPOS[o]; return p ? r + '.' + String(p).padStart(2, '0') : null; };
+
   // Trade-time DRC anchor: the player's 2025 DRC; acquirer is frozen there
   // for Y0, then the decrement resumes. Fall back to the keep-path 2026
   // value for the rare player with no 2025 cost on record.
@@ -4082,17 +4133,78 @@ JS = r"""
     return 'display:inline-block;min-width:22px;text-align:center;border-radius:4px;padding:1px 6px;font-weight:700;font-size:11.5px;flex:none;background:' + c[0] + ';color:' + c[1];
   }
 
-  function boardModel(slug, picks, sim, picksLost) {
+  /* DRC-grouped inventory board (Pete's ruling 2026-08-19): NO simulated
+     seating. Each round row shows the picks held there (native + acquired,
+     numbered) and every roster player whose post-trade DRC equals that
+     round — stacked when several share it. Arrangement work (slides,
+     up-moves) lives in the Keeper board tab; this view states facts. */
+  /* Chasm-only count (Pete's ruling 2026-08-19): flag ONLY structural
+     impossibility, never "roster bigger than pick pool." Per DRC group:
+     reachable seats = every pick at an earlier round (up-moves are always
+     legal) + the slide chain from the native round (consecutive HELD
+     rounds; a missing round is the wall). Group size beyond that bound is
+     chasm-blocked no matter which keepers the manager picks. The bound
+     ignores competition between groups, so it only reports certainties. */
+  function chasmCount(picks, rosterArr) {
+    const heldBy = {}; picks.forEach(pk => { heldBy[pk.r] = (heldBy[pk.r] || 0) + 1; });
+    const groups = {}; rosterArr.forEach(p => { const d = clampDrc(p.eff); groups[d] = (groups[d] || 0) + 1; });
+    let blocked = 0;
+    Object.keys(groups).forEach(k => {
+      const d = +k, n = groups[d];
+      let above = 0; for (let r = 1; r < d; r++) above += heldBy[r] || 0;
+      let chain = 0;
+      if (heldBy[d]) { let r = d; while (r <= 16 && heldBy[r]) { chain += heldBy[r]; r++; } }
+      const cap = above + chain;
+      if (n > cap) blocked += n - cap;
+    });
+    return blocked;
+  }
+
+  /* Exact "how many can be kept at all" via augmenting-path matching:
+     players -> pick slots. A player of DRC d may use any pick at round
+     q <= d (native or up-move) or, below native, a pick reachable through
+     CONSECUTIVE held rounds from d (the slide chain). Roster minus this
+     matching = the total that can't be kept, whatever the manager picks. */
+  function fitCount(picks, rosterArr) {
+    const seats = picks.map(pk => pk.r);
+    const heldRounds = {}; seats.forEach(r => { heldRounds[r] = 1; });
+    const legal = (d, q) => {
+      if (q <= d) return true;
+      for (let r = d; r <= q; r++) if (!heldRounds[r]) return false;
+      return true;
+    };
+    const ds = rosterArr.map(p => clampDrc(p.eff));
+    const seatOf = new Array(seats.length).fill(-1);
+    function tryPlace(i, seen) {
+      for (let s = 0; s < seats.length; s++) {
+        if (seen[s] || !legal(ds[i], seats[s])) continue;
+        seen[s] = true;
+        if (seatOf[s] === -1 || tryPlace(seatOf[s], seen)) { seatOf[s] = i; return true; }
+      }
+      return false;
+    }
+    let fit = 0;
+    for (let i = 0; i < ds.length; i++) if (tryPlace(i, new Array(seats.length).fill(false))) fit++;
+    return fit;
+  }
+
+  function groupModel(slug, picks, rosterArr, picksLost) {
     const lostBy = {}; (picksLost || []).forEach(l => (lostBy[l.r] = lostBy[l.r] || []).push(l));
     const rows = [];
     for (let r = 1; r <= 16; r++) {
-      const here = sim.slots.filter(s => s.r === r);
-      const slots = here.map(sl => {
-        const seat = sl.taken ? sim.placed.find(x => x.p === sl.taken) : null;
-        return {own: sl.own, acqFrom: sl.own ? null : ((teamBy[sl.o] || {}).mgr || sl.o),
-          seat: seat ? {i: seat.p.i, name: seat.p.n, drc: seat.p.eff, how: seat.how, viaAcq: seat.viaAcq, pos: seat.p.pos} : null};
-      });
-      rows.push({r, owned: here.length > 0, slots, goneTo: (lostBy[r] || []).map(l => (teamBy[l.to] || {}).mgr || l.to)});
+      const held = picks.filter(pk => pk.r === r).map(pk => ({
+        own: pk.o === slug,
+        num: pickNumTA(r, pk.o),
+        hypo: !!pk.hypo,
+        lp: !!pk.lp,
+        acqFrom: pk.o === slug ? null : first((teamBy[pk.o] || {}).mgr || pk.o)
+      })).sort((a, b) => ((a.num || 'zz') < (b.num || 'zz') ? -1 : 1));
+      const players = rosterArr.filter(p => clampDrc(p.eff) === r)
+        .sort((a, b) => (b.pts || 0) - (a.pts || 0));
+      rows.push({r, held, players, goneTo: (lostBy[r] || []).map(l => ({
+        to: first((teamBy[l.to] || {}).mgr || l.to),
+        num: pickNumTA(r, slug)
+      }))});
     }
     return rows;
   }
@@ -4117,18 +4229,19 @@ JS = r"""
       let idx = postPicks.findIndex(c => c.r === pk.r && c.o !== T); if (idx < 0) idx = postPicks.findIndex(c => c.r === pk.r);
       if (idx >= 0) postPicks.splice(idx, 1);
     });
-    picksRecv.filter(pk => pk.y === Y0).forEach(pk => postPicks.push({r: pk.r, o: 'acquired'}));
-    const postSim = slotSim(T, postRosterArr, postPicks);
-    const seatBy = {}; postSim.placed.forEach(a => seatBy[a.p.i] = a);
-    const after = postRosterArr.slice().sort((a, b) => (a.eff - b.eff) || ((b.pts || 0) - (a.pts || 0))).map(p => {
-      const seat = seatBy[p.i];
-      return {p, pos: p.pos, eff: p.eff, incoming: !!p.incoming, chasm: !seat};
-    });
+    picksRecv.filter(pk => pk.y === Y0).forEach(pk => postPicks.push({r: pk.r, o: O, hypo: 1}));
     return {
       team, sends: sendPlayers, receives: recvPlayers, picksSent, picksRecv,
       capBefore: team.cap, capAfter, delta: capAfter - team.cap,
-      ptsSwing: ptsIn - ptsOut, commit3yr, commitByYear, after,
-      boardPost: boardModel(T, postPicks, postSim, (D.picks_lost[T] || []).concat(picksSent.filter(pk => pk.y === Y0).map(pk => ({r: pk.r, to: O})))),
+      ptsSwing: ptsIn - ptsOut, commit3yr, commitByYear,
+      chasmN: chasmCount(postPicks, postRosterArr),
+      rosterN: postRosterArr.length,
+      cantKeepN: Math.max(0, postRosterArr.length - fitCount(postPicks, postRosterArr)),
+      /* Board shows sent players IN PLACE, grayed with an OUT tag, so you
+         see where the trade pulls from; math above already excludes them. */
+      boardPost: groupModel(T, postPicks,
+        postRosterArr.concat(sendPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(p.d6), pts: p.pts, outgoing: true}))),
+        (D.picks_lost[T] || []).concat(picksSent.filter(pk => pk.y === Y0).map(pk => ({r: pk.r, to: O})))),
     };
   }
 
@@ -4150,61 +4263,53 @@ JS = r"""
         esc(t.team) + ' — ' + esc(t.mgr) + '</option>').join('');
   }
 
-  function boardChipHTML(sl, recvIds) {
-    if (!sl.seat) {
-      const acq = !sl.own;
-      const st2 = 'display:flex;align-items:center;padding:5px 10px;border:1px dashed ' + (acq ? '#bfe3cf' : '#e0e0e3') +
-        ';border-radius:7px;font-size:11.5px;color:' + (acq ? '#1c7a4a' : '#b8b8bc') + ';background:' + (acq ? '#f2fbf5' : '#fff') + ';';
-      return '<div style="' + st2 + '">' + (acq ? ('acquired pick' + (sl.acqFrom ? ' · from ' + esc(sl.acqFrom) : '')) : 'open') + '</div>';
+  function taPickChip(h) {
+    const num = h.num ? '<b style="font-variant-numeric:tabular-nums;">' + h.num + '</b>' : (h.lp ? '<b>last pick</b>' : '<b>R?</b>');
+    if (h.own) {
+      return '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px solid #e0e0e3;border-radius:6px;font-size:10.5px;color:#606C71;background:#f7f8fa;">' + num + ' your pick</span>';
     }
-    const s = sl.seat, incoming = recvIds.has(s.i), tier = tierOf(s.drc);
-    const mark = s.how === 'slid' ? '↓' : s.how === 'up' ? '↑' : '';
+    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px ' + (h.hypo ? 'solid' : 'dashed') + ' #bfe3cf;border-radius:6px;font-size:10.5px;color:#1c7a4a;background:#f2fbf5;font-weight:600;">' +
+      num + (h.acqFrom ? ' from ' + esc(h.acqFrom) : ' acquired') + (h.hypo ? ' &middot; this trade' : '') + '</span>';
+  }
+
+  function taPlayerCard(p, recvIds) {
+    const incoming = recvIds.has(p.i) && !p.outgoing, tier = tierOf(p.eff);
     const chip = 'display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;border:1px solid ' +
-      (incoming ? '#bfe3cf' : '#e5e5e8') + ';background:' + (incoming ? '#e6f6ee' : '#fff') + ';';
+      (incoming ? '#bfe3cf' : '#e5e5e8') + ';background:' + (incoming ? '#e6f6ee' : (p.outgoing ? '#f4f4f6' : '#fff')) +
+      (p.outgoing ? ';opacity:.55;' : ';');
     const tag = incoming ? '<span style="color:#1c7a4a;font-weight:700;font-size:9.5px;letter-spacing:.04em;flex:none;">IN</span>'
-      : (s.viaAcq ? '<span style="color:#8e8e93;font-weight:600;font-size:9.5px;flex:none;">via acq</span>' : '');
-    return '<div data-toggle="' + s.i + '" style="' + chip + '">' +
+      : (p.outgoing ? '<span style="color:#b06a60;font-weight:700;font-size:9.5px;letter-spacing:.04em;flex:none;">OUT</span>' : '');
+    return '<div data-toggle="' + p.i + '" style="' + chip + '">' +
       '<span style="width:7px;height:7px;border-radius:50%;flex:none;background:' + dotColor(tier) + ';"></span>' +
-      '<span style="font-weight:600;color:#2a2a2e;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.name) + '</span>' +
-      '<span style="color:#a0a0a6;font-size:11px;flex:none;">' + esc(s.pos) + '</span>' +
-      '<span style="color:#0038FF;font-weight:700;flex:none;">' + mark + '</span>' +
+      '<span style="font-weight:600;color:#2a2a2e;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(p.n) + '</span>' +
+      '<span style="color:#a0a0a6;font-size:11px;flex:none;">' + esc(p.pos) + '</span>' +
       '<span style="flex:1;"></span>' + tag +
-      '<span style="' + drcChipStyle(tier) + '">' + s.drc + '</span>' +
-      '<span style="font-weight:700;color:#022479;font-size:12px;flex:none;font-variant-numeric:tabular-nums;">' + money($$(s.drc)) + '</span>' +
+      '<span style="' + drcChipStyle(tier) + '">' + p.eff + '</span>' +
+      '<span style="font-weight:700;color:#022479;font-size:12px;flex:none;font-variant-numeric:tabular-nums;">' + money($$(p.eff)) + '</span>' +
       '</div>';
   }
 
   function boardHTML(sideVM, side, active) {
     const recvIds = new Set(sideVM.receives.map(p => p.i));
-    const chasmN = sideVM.after.filter(a => a.chasm).length;
+    const chasmN = sideVM.chasmN;
     const d = sideVM.delta;
     const capStr = active ? ('cap ' + money(sideVM.capBefore) + ' → ' + money(sideVM.capAfter)) : ('cap ' + money(sideVM.capBefore));
     const deltaStr = active ? (d > 0 ? '▲ +$' + Math.abs(d).toLocaleString() : d < 0 ? '▼ −$' + Math.abs(d).toLocaleString() : '±0') : '';
     const deltaStyle = d > 0 ? 'color:#b42318;font-weight:700;' : d < 0 ? 'color:#1c7a4a;font-weight:700;' : 'color:#606C71;';
     let rows = '';
     sideVM.boardPost.forEach(row => {
-      let slots = row.slots.map(sl => boardChipHTML(sl, recvIds)).join('');
-      row.goneTo.forEach(m => { slots += '<div style="display:flex;align-items:center;padding:5px 10px;border:1px dashed #e3c4be;border-radius:7px;font-size:11.5px;color:#b06a60;background:#fdf4f2;">— traded to ' + esc(m) + '</div>'; });
-      if (!row.owned && row.goneTo.length === 0 && row.slots.length === 0)
-        slots += '<div style="display:flex;align-items:center;padding:5px 10px;border:1px dashed #e0e0e3;border-radius:7px;font-size:11.5px;color:#b8b8bc;">no pick</div>';
-      rows += '<div style="display:flex;align-items:flex-start;gap:8px;padding:2px 0;">' +
-        '<div style="width:30px;flex:none;text-align:center;font-size:11px;font-weight:700;color:#909096;font-variant-numeric:tabular-nums;padding-top:6px;">R' + row.r + '</div>' +
-        '<div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;">' + slots + '</div></div>';
+      let strip = row.held.map(h => taPickChip(h)).join('');
+      row.goneTo.forEach(g => {
+        strip += '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px dashed #e3c4be;border-radius:6px;font-size:10.5px;color:#b06a60;background:#fdf4f2;">' +
+          (g.num ? '<b style="font-variant-numeric:tabular-nums;">' + g.num + '</b> ' : '') + 'traded to ' + esc(g.to) + '</span>';
+      });
+      if (!strip) strip = '<span style="display:inline-flex;align-items:center;padding:2px 8px;border:1px dashed #e0e0e3;border-radius:6px;font-size:10.5px;color:#b8b8bc;">no pick</span>';
+      const cards = row.players.map(p => taPlayerCard(p, recvIds)).join('');
+      rows += '<div style="display:flex;align-items:flex-start;gap:8px;padding:3px 0;border-bottom:1px solid #f4f4f6;">' +
+        '<div style="width:30px;flex:none;text-align:center;font-size:11px;font-weight:700;color:#909096;font-variant-numeric:tabular-nums;padding-top:4px;">R' + row.r + '</div>' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;">' +
+        '<div style="display:flex;flex-wrap:wrap;gap:4px;">' + strip + '</div>' + cards + '</div></div>';
     });
-    let chasm = '';
-    const chItems = sideVM.after.filter(a => a.chasm);
-    if (chItems.length) {
-      chasm = '<div style="margin-top:10px;border-top:1px dashed #f0cfc9;padding-top:10px;">' +
-        '<div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:#b42318;font-weight:700;margin-bottom:6px;">Can&#39;t keep — no round to slot into</div>' +
-        '<div style="display:flex;flex-direction:column;gap:4px;">' +
-        chItems.map(a => '<div data-toggle="' + a.p.i + '" style="display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid #f3c7c0;background:#fdecea;border-radius:7px;cursor:pointer;font-size:12.5px;">' +
-          '<span style="color:#b42318;font-weight:800;flex:none;">⚠</span>' +
-          '<span style="font-weight:600;color:#7a1a12;">' + esc(a.p.n) + '</span>' +
-          '<span style="color:#b06a60;font-size:11px;">' + esc(a.pos) + '</span><span style="flex:1;"></span>' +
-          (recvIds.has(a.p.i) ? '<span style="color:#b42318;font-weight:700;font-size:9.5px;letter-spacing:.04em;">JUST ACQUIRED</span>' : '') +
-          '<span style="' + drcChipStyle(tierOf(a.eff)) + '">' + a.eff + '</span></div>').join('') +
-        '</div></div>';
-    }
     const picksArr = side === 'L' ? st.picksL : st.picksR;
     const dyv = side === 'L' ? st.dyL : st.dyR, drv = side === 'L' ? st.drL : st.drR;
     const yearOpts = [Y0, Y0 + 1].map(y => '<option value="' + y + '"' + (y === dyv ? ' selected' : '') + '>' + y + '</option>').join('');
@@ -4217,14 +4322,14 @@ JS = r"""
       '<select data-role="dr' + side + '" style="border:1px solid #d8d8dc;border-radius:6px;padding:4px 6px;font:inherit;font-size:12px;">' + roundOpts + '</select>' +
       '<button type="button" data-act="add' + side + '" style="border:1px solid #022479;background:#fff;color:#022479;border-radius:6px;padding:4px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;">Add</button>' + pickChips + '</div>';
     const chasmBadge = chasmN > 0 ? '<div style="margin-top:6px;"><span style="display:inline-block;background:#fdecea;color:#b42318;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">' +
-      chasmN + (chasmN === 1 ? ' keeper can&#39;t slot' : ' keepers can&#39;t slot') + '</span></div>' : '';
+      'chasm: ' + chasmN + (chasmN === 1 ? ' keeper can&#39;t slot' : ' keepers can&#39;t slot') + '</span></div>' : '';
     return '<div style="border:1px solid #ebebed;border-radius:12px;overflow:hidden;background:#fff;">' +
       '<div style="padding:12px 15px;background:#fcfcfd;border-bottom:1px solid #ebebed;">' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">' +
       '<span style="font-weight:700;font-size:15px;color:#022479;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(sideVM.team.mgr) + '</span>' +
       '<span style="font-size:12px;color:#606C71;font-variant-numeric:tabular-nums;white-space:nowrap;">' + capStr + ' <span style="' + deltaStyle + '">' + deltaStr + '</span></span></div>' +
       chasmBadge + '</div>' +
-      '<div style="padding:10px 12px;">' + rows + chasm + '</div>' + footer + '</div>';
+      '<div style="padding:10px 12px;">' + rows + '</div>' + footer + '</div>';
   }
 
   function trayHTML(vm) {
@@ -4271,16 +4376,18 @@ JS = r"""
     } else {
       futureStr = (cbY[1].y) + ' ' + money(cbY[1].c) + ' &middot; ' + (cbY[2].y) + ' ' + money(cbY[2].c);
     }
-    const chasmN = sideVM.after.filter(a => a.chasm).length;
-    const chasmStr = chasmN > 0 ? (chasmN + (chasmN === 1 ? ' keeper' : ' keepers') + ' can&rsquo;t slot') : 'clean';
+    const chasmN = sideVM.chasmN;
+    const chasmStr = chasmN > 0 ? (chasmN + (chasmN === 1 ? ' keeper' : ' keepers') + ' chasm-blocked') : 'clean';
     const chasmStyle = chasmN > 0 ? 'color:#b42318;font-weight:700;' : 'color:#1c7a4a;';
+    const cantStr = sideVM.cantKeepN + ' of ' + sideVM.rosterN + ' can&rsquo;t be kept';
     return '<div class="ta-sum-card">' +
       '<div class="ta-sum-mgr">' + esc(sideVM.team.mgr) + '</div>' +
       '<div class="ta-sum-row"><span class="ta-sum-k">2025 pts</span><span class="ta-sum-v" style="' + ptsStyle + '">' + ptsStr + '</span></div>' +
       '<div class="ta-sum-row"><span class="ta-sum-k">Cap ' + Y0 + '</span><span class="ta-sum-v">' + capNowStr +
         '<span style="' + capDeltaStyle + 'font-weight:700;">' + capDeltaStr + '</span></span></div>' +
       '<div class="ta-sum-row"><span class="ta-sum-k">Future commit</span><span class="ta-sum-v">' + futureStr + '</span></div>' +
-      '<div class="ta-sum-row"><span class="ta-sum-k">Slot risk</span><span class="ta-sum-v" style="' + chasmStyle + '">' + chasmStr + '</span></div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">Can&rsquo;t keep</span><span class="ta-sum-v" style="font-weight:700;color:#2a2a2e;">' + cantStr + '</span></div>' +
+      '<div class="ta-sum-row"><span class="ta-sum-k">Chasm</span><span class="ta-sum-v" style="' + chasmStyle + '">' + chasmStr + '</span></div>' +
       '</div>';
   }
   function summaryStripHTML(vm, active) {
@@ -4347,7 +4454,32 @@ JS = r"""
     html += positionSwingHTML(vm, active);
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start;margin-top:14px;">' +
       boardHTML(vm.L, 'L', active) + boardHTML(vm.R, 'R', active) + '</div>';
-    html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a keeper on either board to move them across. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#0038FF;font-weight:600;">↓/↑</span> = slid to a nearby round · <span style="color:#1c7a4a;font-weight:600;">green</span> = just acquired · a round you don&#39;t own is a wall, and anyone who can&#39;t reach a round drops to <span style="color:#b42318;font-weight:600;">can&#39;t keep</span>.</p>';
+    html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a player on either board to move them across. Each round shows the picks held there (numbered by lottery order) and every player whose DRC lands in it &mdash; a stack means more keepers than picks in that round. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#1c7a4a;font-weight:600;">green</span> = acquired or incoming · <span style="color:#b06a60;font-weight:600;">red</span> = pick traded away. The <span style="color:#b42318;font-weight:600;">chasm</span> badge counts only keepers a broken slide chain makes impossible, not roster overflow.</p>';
+    if (st.warn) {
+      const w = st.warn.impact;
+      const names = w.names.slice(0, 3).map(esc).join(', ') + (w.names.length > 3 ? ' and ' + (w.names.length - 3) + ' more' : '');
+      let body = '';
+      if (w.names.length && w.heldAfter < w.names.length) {
+        body += '<p style="margin:0 0 10px;color:#606C71;font-size:12.5px;">Round ' + w.r + ' currently houses <b>' + names +
+          '</b> (DRC ' + w.r + '). After this trade ' + esc(w.mgr) + ' would hold ' + w.heldAfter +
+          (w.heldAfter === 1 ? ' pick' : ' picks') + ' there for ' + w.names.length +
+          (w.names.length === 1 ? ' player' : ' players') + '.</p>';
+      }
+      if (w.chasmDelta > 0) {
+        body += '<p style="margin:0 0 10px;color:#b42318;font-size:12.5px;font-weight:600;">It also breaks a slide chain: ' +
+          w.chasmDelta + ' more ' + (w.chasmDelta === 1 ? 'keeper becomes' : 'keepers become') + ' impossible to slot.</p>';
+      }
+      if (w.cantDelta > 0) {
+        body += '<p style="margin:0 0 10px;color:#606C71;font-size:12.5px;">Total that can&rsquo;t be kept rises by ' + w.cantDelta + '.</p>';
+      }
+      html += '<div style="position:fixed;inset:0;background:rgba(15,18,25,.45);z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;">' +
+        '<div class="ta-warn-card" style="background:#fff;border-radius:14px;max-width:440px;width:100%;padding:18px 20px;box-shadow:0 12px 40px rgba(0,0,0,.25);">' +
+        '<h3 style="margin:0 0 8px;font-size:15px;">Send the R' + w.r + ' pick?</h3>' + body +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">' +
+        '<button type="button" data-act="warnno" style="font:inherit;font-size:12.5px;font-weight:600;border:1px solid #d6d9e0;background:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;">Keep the pick</button>' +
+        '<button type="button" data-act="warnok" style="font:inherit;font-size:12.5px;font-weight:700;border:1px solid #022479;background:#022479;color:#fff;border-radius:8px;padding:7px 14px;cursor:pointer;">Send it anyway</button>' +
+        '</div></div></div>';
+    }
     app.innerHTML = html;
   }
 
@@ -4355,17 +4487,60 @@ JS = r"""
     teamL: '', teamR: '',
     sel: {}, picksL: [], picksR: [],
     dyL: Y0, drL: 1, dyR: Y0, drR: 1,
+    warn: null,
   };
   const app = root.querySelector('.ta-app');
 
+  function commitAdd(side) {
+    if (side === 'L') st.picksL.push({y: st.dyL, r: st.drL});
+    else st.picksR.push({y: st.dyR, r: st.drR});
+  }
+
+  /* "This pick currently houses a player" check (Pete's ruling 2026-08-19):
+     adding a Y0 pick to the send side warns, before committing, when the
+     round still houses players' native DRC or the removal breaks a slide
+     chain (chasm count rises). Facts + an are-you-sure; never a block. */
+  function sendImpact(side) {
+    const y = side === 'L' ? st.dyL : st.dyR, r = side === 'L' ? st.drL : st.drR;
+    if (y !== Y0 || !st.teamL || !st.teamR || st.teamL === st.teamR) return null;
+    const cfgNow = {L: st.teamL, R: st.teamR, sel: st.sel, picksL: st.picksL.slice(), picksR: st.picksR.slice()};
+    const cfgAfter = {L: st.teamL, R: st.teamR, sel: st.sel,
+      picksL: side === 'L' ? st.picksL.concat([{y, r}]) : st.picksL.slice(),
+      picksR: side === 'R' ? st.picksR.concat([{y, r}]) : st.picksR.slice()};
+    const vmNow = computeTrade(cfgNow), vmAfter = computeTrade(cfgAfter);
+    if (!vmNow.valid || !vmAfter.valid) return null;
+    const now = side === 'L' ? vmNow.L : vmNow.R, aft = side === 'L' ? vmAfter.L : vmAfter.R;
+    const rowNow = now.boardPost.find(x => x.r === r), rowAft = aft.boardPost.find(x => x.r === r);
+    const groupNames = rowNow ? rowNow.players.filter(p => !p.outgoing).map(p => p.n) : [];
+    const heldAfter = rowAft ? rowAft.held.length : 0;
+    const housing = groupNames.length > 0 && heldAfter < groupNames.length;
+    const chasmDelta = aft.chasmN - now.chasmN;
+    const cantDelta = aft.cantKeepN - now.cantKeepN;
+    if (!housing && chasmDelta <= 0) return null;
+    return {r, names: groupNames, heldAfter, chasmDelta, cantDelta, mgr: first(now.team.mgr)};
+  }
+
   app.addEventListener('click', (e) => {
+    if (st.warn) {
+      const w = e.target.closest('[data-act="warnok"], [data-act="warnno"]');
+      if (w) {
+        if (w.dataset.act === 'warnok') commitAdd(st.warn.side);
+        st.warn = null; render(); return;
+      }
+      if (!e.target.closest('.ta-warn-card')) { st.warn = null; render(); }
+      return;
+    }
     const tog = e.target.closest('[data-toggle]');
     if (tog) { const pid = +tog.dataset.toggle; if (st.sel[pid]) delete st.sel[pid]; else st.sel[pid] = true; render(); return; }
     const act = e.target.closest('[data-act]');
     if (!act) return;
     const a = act.dataset.act;
-    if (a === 'addL') st.picksL.push({y: st.dyL, r: st.drL});
-    else if (a === 'addR') st.picksR.push({y: st.dyR, r: st.drR});
+    if (a === 'addL' || a === 'addR') {
+      const side = a === 'addL' ? 'L' : 'R';
+      const impact = sendImpact(side);
+      if (impact) { st.warn = {side, impact}; render(); return; }
+      commitAdd(side);
+    }
     else if (a === 'rmL') st.picksL.splice(+act.dataset.idx, 1);
     else if (a === 'rmR') st.picksR.splice(+act.dataset.idx, 1);
     render();
@@ -4403,7 +4578,25 @@ JS = r"""
   const teamBy = {}; D.teams.forEach(t => teamBy[t.slug] = t);
   const playersBy = {}; D.players.forEach(p => { (playersBy[p.m] = playersBy[p.m] || []).push(p); });
 
-  const st = { team: '', keep: {}, manual: {}, pick: null };
+  /* Pick numbering from the 2026 lottery order (linear draft: a round-N
+     pick from the team drafting 2nd is N.02, wherever it lives now). */
+  const DPOS = D.draft_pos || {};
+  const pickNumOf = sl => {
+    if (sl.lp) return null;                    // "last pick" notation, no fixed slot
+    const p = DPOS[sl.o];
+    return p ? sl.r + '.' + String(p).padStart(2, '0') : null;
+  };
+  const pickChip = sl => {
+    const n = pickNumOf(sl);
+    let out = n ? '<span class="kb-picknum">' + n + '</span>' : '';
+    if (sl.lp) out += '<span class="kb-flag">last pick</span>';
+    return out;
+  };
+  /* st.keep[pid] = keep-order sequence number (1, 2, 3, ...), not a bare
+     boolean: auto-seating is FIRST-COME, so whoever was kept earlier holds
+     his native pick and a later same-DRC keep goes to Awaiting placement
+     instead of stealing the chair (Pete's ruling, 2026-08-19). */
+  const st = { team: '', keep: {}, manual: {}, pick: null, seq: 0 };
 
   function mkSlots() {
     return (D.picks[st.team] || []).map((pk, i) =>
@@ -4414,60 +4607,92 @@ JS = r"""
   }
   function keepers() { return roster().filter(p => st.keep[p.i]); }
 
-  /* Rounds this player may legally occupy, per slide rules:
-     native DRC round; slide-down through CONSECUTIVE held rounds below it;
-     any held round above it (moving up is always allowed). */
-  function legalRoundsFor(d, slots) {
-    const held = {}; slots.forEach(s => held[s.r] = 1);
+  /* SLOT-level legality for placing a player (league rules, Pete 2026-08-19):
+     - Native DRC round or any earlier held round: any FREE slot, own or
+       acquired, is a legal conscious choice.
+     - BELOW native: only the ACTIVATED SLIDE DESTINATION — native must be
+       held and full, every round walking down must be held and full, and
+       the first held round with a free slot is the (only) legal landing.
+       A held-but-unfilled gap means you'd land there instead; an unheld
+       round is the chasm wall. Ownership doesn't matter at the
+       destination (this is how an acquired 16th can catch a DRC-15
+       overflow), but you can never voluntarily park below native without
+       the collision chain above. */
+  function legalSlotIds(d, slots) {
+    const byR = {}; slots.forEach(s => { (byR[s.r] = byR[s.r] || []).push(s); });
     const ok = {};
-    for (let r = d - 1; r >= 1; r--) if (held[r]) ok[r] = 1;
-    if (held[d]) {
-      ok[d] = 1;
-      for (let r = d + 1; r <= 16; r++) { if (!held[r]) break; ok[r] = 1; }
+    for (let r = d; r >= 1; r--) (byR[r] || []).forEach(s => { if (!s.taken) ok[s.id] = 1; });
+    const native = byR[d] || [];
+    if (native.length && !native.some(s => !s.taken)) {
+      let r = d + 1;
+      while (r <= 16) {
+        const here = byR[r] || [];
+        if (!here.length) break;                       // chasm wall
+        const free = here.filter(s => !s.taken);
+        if (free.length) { free.forEach(s => { ok[s.id] = 1; }); break; }
+        r++;
+      }
     }
     return ok;
   }
 
-  /* Sim honoring manual placements, then auto-seating the rest
-     (own picks first, acquired only as fallback; DRC order, pts tiebreak). */
+  /* Sim (Pete's conscious-placement model, 2026-08-19):
+     - Auto-seat does ONE thing: a keeper's own native pick, if free.
+     - Everything else is a conscious manual placement (drag or tap),
+       validated against legalSlotIds.
+     - Kept players with no seat split into "unplaced" (legal spots exist,
+       manager must choose) and "chasm" (no legal spot at all).
+     Three passes so a below-native slide placement can depend on the
+     native-round collision that auto/native placements create. */
   function kbSim(excludePid) {
     const slots = mkSlots();
-    const placed = {}, unkeepable = [];
+    const placed = {};
     const ks = keepers().filter(p => p.i !== excludePid);
+    const byId = {}; slots.forEach(s => { byId[s.id] = s; });
     const badManual = [];
+    // Pass 1: manual placements at native-or-earlier (always legal if free)
     ks.forEach(p => {
       const sid = st.manual[p.i];
       if (sid == null) return;
-      const sl = slots.find(s => s.id === sid);
-      const ok = sl && !sl.taken && legalRoundsFor(clampDrc(p.d6), slots)[sl.r];
-      if (ok) { sl.taken = p; sl.manual = true; placed[p.i] = { slot: sl, manual: true }; }
-      else badManual.push(p.i);
+      const sl = byId[sid];
+      if (sl && !sl.taken && sl.r <= clampDrc(p.d6)) {
+        sl.taken = p; sl.manual = true; placed[p.i] = { slot: sl, manual: true };
+      }
+    });
+    // Pass 2: auto-seat own native pick for checkbox keeps, in KEEP ORDER
+    // (first kept holds his seat; a later same-DRC keep waits for a
+    // conscious placement instead of displacing the sitter)
+    ks.filter(p => !placed[p.i] && st.manual[p.i] == null)
+      .sort((a, b) => (st.keep[a.i] || 0) - (st.keep[b.i] || 0))
+      .forEach(p => {
+        const f = slots.find(s => s.r === clampDrc(p.d6) && s.own && !s.taken);
+        if (f) { f.taken = p; placed[p.i] = { slot: f, manual: false }; }
+      });
+    // Pass 3: below-native manuals — legal only as the activated slide destination
+    ks.forEach(p => {
+      const sid = st.manual[p.i];
+      if (sid == null || placed[p.i]) return;
+      const sl = byId[sid];
+      if (sl && !sl.taken && legalSlotIds(clampDrc(p.d6), slots)[sl.id]) {
+        sl.taken = p; sl.manual = true; placed[p.i] = { slot: sl, manual: true };
+      } else badManual.push(p.i);
     });
     badManual.forEach(pid => delete st.manual[pid]);
-    const auto = ks.filter(p => !placed[p.i])
-      .sort((a, b) => (a.d6 - b.d6) || ((b.pts || 0) - (a.pts || 0)));
-    const held = {}; slots.forEach(s => { (held[s.r] = held[s.r] || []).push(s); });
-    const freeAt = (r, ownOnly) => (held[r] || []).find(s => !s.taken && (!ownOnly || s.own));
-    function findSeat(d, ownOnly) {
-      if ((held[d] || []).length) {
-        let f = freeAt(d, ownOnly);
-        if (f) return f;
-        for (let r = d + 1; r <= 16; r++) {
-          if (!(held[r] || []).length) break;
-          f = freeAt(r, ownOnly);
-          if (f) return f;
-        }
-      }
-      for (let r = d - 1; r >= 1; r--) { const f = freeAt(r, ownOnly); if (f) return f; }
-      return null;
-    }
-    auto.forEach(p => {
-      const d = clampDrc(p.d6);
-      const seat = findSeat(d, true) || findSeat(d, false);
-      if (seat) { seat.taken = p; placed[p.i] = { slot: seat, manual: false }; }
-      else unkeepable.push(p);
+    // A dropped manual usually means its collision vanished (e.g. the
+    // native-round occupant was unkept) — the slide unwinds, so fall the
+    // player back to his own native pick if it's free.
+    badManual.forEach(pid => {
+      const p = ks.find(x => x.i === pid);
+      if (!p || placed[p.i]) return;
+      const f = slots.find(s => s.r === clampDrc(p.d6) && s.own && !s.taken);
+      if (f) { f.taken = p; placed[p.i] = { slot: f, manual: false }; }
     });
-    return { slots, placed, unkeepable };
+    const unplaced = [], chasm = [];
+    ks.filter(p => !placed[p.i]).forEach(p => {
+      const ok = legalSlotIds(clampDrc(p.d6), slots);
+      (Object.keys(ok).length ? unplaced : chasm).push(p);
+    });
+    return { slots, placed, unplaced, chasm };
   }
 
   function capTotal() { return keepers().reduce((s, p) => s + (p.c6 || 0), 0); }
@@ -4505,18 +4730,19 @@ JS = r"""
     let legal = null;
     if (st.pick != null) {
       const p = D.players.find(x => x.i === st.pick);
-      if (p) legal = legalRoundsFor(clampDrc(p.d6), sim.slots);
+      if (p) legal = legalSlotIds(clampDrc(p.d6), sim.slots);
     }
 
     const cards = roster().map(p => {
       const on = !!st.keep[p.i];
       const isPick = st.pick === p.i;
-      const chasm = sim.unkeepable.some(u => u.i === p.i) && on;
+      const chasm = on && sim.chasm.some(u => u.i === p.i);
+      const waiting = on && sim.unplaced.some(u => u.i === p.i);
       const meta = 'DRC ' + p.d6 + ' &middot; ' + money(p.c6) +
-                   (p.pts != null ? ' &middot; ' + p.pts + ' pts' : '');
+                   (p.pts != null ? ' &middot; ' + p.pts + ' pts' : '') +
+                   (waiting ? ' &middot; needs a slot' : '');
       return '<div class="kb-card' + (on ? ' kb-on' : '') + (isPick ? ' kb-picked' : '') +
-        (chasm ? ' kb-chasm-card' : '') + '" data-pid="' + p.i + '"' +
-        (on ? ' draggable="true"' : '') + '>' +
+        (chasm ? ' kb-chasm-card' : '') + (waiting ? ' kb-unplaced' : '') + '" data-pid="' + p.i + '" draggable="true">' +
         '<span class="kb-check" data-role="check">' + (on ? '&#10003;' : '') + '</span>' +
         '<span class="kb-nm">' + esc(p.n) + ' <span style="color:#606C71;font-weight:400;">' +
         esc(p.p || '') + '</span></span>' +
@@ -4524,43 +4750,73 @@ JS = r"""
     }).join('');
 
     const lostBy = lostRows();
-    let rows = '';
-    for (let r = 1; r <= 16; r++) {
-      const here = sim.slots.filter(s => s.r === r);
-      const gone = (lostBy[r] || []).map(l => esc((teamBy[l.to] || {}).mgr || l.to));
-      let cells = here.map(sl => {
-        const cls = ['kb-slot'];
-        if (!sl.own) cls.push('kb-acq');
-        if (legal) cls.push(legal[sl.r] && !sl.taken ? 'kb-legal' : 'kb-illegal');
-        let inner = '';
+    function slotCell(sl) {
+      const cls = ['kb-slot'];
+      if (!sl.own) cls.push('kb-acq');
+      if (legal) cls.push(legal[sl.id] ? 'kb-legal' : 'kb-illegal');
+      let inner = pickChip(sl);
+      if (sl.taken) {
+        /* Seated: player, DRC and $ own the row; every provenance note
+           drops to one quiet text line below so nothing crowds the name. */
+        const p = sl.taken;
+        const notes = [];
+        if (sl.manual) notes.push('placed by you');
+        if (!sl.own) {
+          const from = ((teamBy[sl.o] || {}).mgr || '').split(' ')[0];
+          notes.push(from ? 'via ' + esc(from) + '&#39;s pick' : 'via acquired pick');
+        }
+        if (sl.r > clampDrc(p.d6)) notes.push('slid down from R' + clampDrc(p.d6));
+        if (sl.r < clampDrc(p.d6)) notes.push('earlier than needed &middot; frees R' + clampDrc(p.d6));
+        inner += '<span class="kb-seated">' + esc(p.n) + '</span>' +
+          '<span class="kb-meta">DRC ' + p.d6 + ' &middot; ' + money(p.c6) + '</span>' +
+          '<button class="kb-x" data-unseat="' + p.i + '" title="Remove from keepers" type="button">&#10005;</button>' +
+          (notes.length ? '<span class="kb-slot-notes">' + notes.join(' &middot; ') + '</span>' : '');
+        /* The WHOLE slot is the drag handle for a seated player — a full
+           row grabs reliably where a clipped name span does not. */
+        return '<div class="' + cls.join(' ') + '" data-slot="' + sl.id + '" draggable="true" data-dragpid="' + p.i +
+          '" title="Drag to another lit slot to move">' + inner + '</div>';
+      } else {
+        cls.push('kb-open');
         if (!sl.own) inner += '<span class="kb-origin">acq &middot; ' +
           esc(((teamBy[sl.o] || {}).mgr || '').split(' ')[0]) + '</span>';
-        if (sl.taken) {
-          const p = sl.taken;
-          const flags = [];
-          if (sl.r < clampDrc(p.d6)) flags.push('<span class="kb-flag" title="Seated earlier than DRC requires; round ' + clampDrc(p.d6) + ' freed">earlier than needed</span>');
-          if (!sl.own) flags.push('<span class="kb-flag">via acquired pick</span>');
-          if (sl.manual) flags.push('<span class="kb-flag" style="background:#e9f0ff;color:#022479;">placed by you</span>');
-          inner += '<span class="kb-seated">' + esc(p.n) + '</span>' +
-            '<span class="kb-meta">DRC ' + p.d6 + ' &middot; ' + money(p.c6) + '</span>' +
-            flags.join('') +
-            '<button class="kb-x" data-unseat="' + p.i + '" title="Remove from keepers" type="button">&#10005;</button>';
-        } else if (!legal) {
-          inner += '<span style="color:#b6bcc7;">open</span>';
-        }
-        return '<div class="' + cls.join(' ') + '" data-slot="' + sl.id + '">' + inner + '</div>';
-      }).join('');
-      if (!here.length) {
-        cells = '<div class="kb-slot kb-illegal" style="border-style:none;background:none;">' +
-          '<span class="kb-goneto">pick traded away' + (gone.length ? ' to ' + gone.join(', ') : '') + '</span></div>';
+        if (!legal) inner += '<span style="color:#b6bcc7;">open</span>';
       }
-      rows += '<div class="kb-row' + (!here.length ? ' kb-gone' : '') + '"><span class="kb-rnum">' + r + '</span>' + cells + '</div>';
+      return '<div class="' + cls.join(' ') + '" data-slot="' + sl.id + '">' + inner + '</div>';
+    }
+    /* One row per pick. Multi-pick rounds stack: the first row carries the
+       bold round number, continuation rows repeat it muted so the round is
+       never ambiguous. Traded-away picks get their own red row, numbered. */
+    let rows = '';
+    for (let r = 1; r <= 16; r++) {
+      const sub = [];
+      sim.slots.filter(s => s.r === r).forEach(sl =>
+        sub.push({ pos: sl.lp ? 98 : (DPOS[sl.o] || 97), gone: false, cell: slotCell(sl) }));
+      (lostBy[r] || []).forEach(l => {
+        const mine = { r: r, o: st.team };
+        const n = pickNumOf(mine);
+        sub.push({ pos: DPOS[st.team] || 97, gone: true,
+          cell: '<div class="kb-slot kb-gone-slot">' +
+            (n ? '<span class="kb-picknum kb-picknum-gone">' + n + '</span>' : '') +
+            '<span class="kb-goneto">traded to ' + esc((teamBy[l.to] || {}).mgr || l.to) + '</span></div>' });
+      });
+      if (!sub.length) sub.push({ pos: 99, gone: true,
+        cell: '<div class="kb-slot kb-gone-slot"><span class="kb-goneto">no pick this round</span></div>' });
+      sub.sort((a, b) => a.pos - b.pos);
+      sub.forEach((row, i) => {
+        rows += '<div class="kb-row' + (row.gone ? ' kb-gone' : '') + (i > 0 ? ' kb-row-cont' : '') + '">' +
+          '<span class="kb-rnum' + (i > 0 ? ' kb-rnum-cont' : '') + '">' + r + '</span>' + row.cell + '</div>';
+      });
     }
     let chasmStrip = '';
-    if (sim.unkeepable.length) {
-      chasmStrip = '<div class="kb-chasm-strip"><strong style="color:#b42318;font-size:12px;">Can&#39;t slot (chasm):</strong> ' +
-        sim.unkeepable.map(p => '<span class="kb-chasm-chip">' + esc(p.n) + ' (DRC ' + p.d6 + ')</span>').join('') +
-        '<div class="kb-hint">No owned round can seat them under the slide rules with this board. Free a round or trade for a pick.</div></div>';
+    if (sim.unplaced.length) {
+      chasmStrip += '<div class="kb-chasm-strip"><strong style="color:#8a6a12;font-size:12px;">Awaiting placement:</strong> ' +
+        sim.unplaced.map(p => '<span class="kb-wait-chip">' + esc(p.n) + ' (DRC ' + p.d6 + ')</span>').join('') +
+        '<div class="kb-hint">Their own native pick is taken. Tap or drag each one to a lit slot: their DRC round or better, or the slide landing below a full native round.</div></div>';
+    }
+    if (sim.chasm.length) {
+      chasmStrip += '<div class="kb-chasm-strip"><strong style="color:#b42318;font-size:12px;">Can&#39;t slot (chasm):</strong> ' +
+        sim.chasm.map(p => '<span class="kb-chasm-chip">' + esc(p.n) + ' (DRC ' + p.d6 + ')</span>').join('') +
+        '<div class="kb-hint">No legal slot exists for them on this board. Free a round or trade for a pick.</div></div>';
     }
 
     // Preserve the roster list's scroll position across the innerHTML
@@ -4571,12 +4827,12 @@ JS = r"""
 
     app.innerHTML = top +
       '<div class="kb-cols">' +
-      '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep &middot; tap a kept player to place them</span></div>' +
+      '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep (seats at your open native pick) &middot; drag anywhere lit to place by hand</span></div>' +
       '<div class="kb-roster">' + cards + '</div></div>' +
       '<div class="kb-panel"><div class="kb-panel-h">2026 draft board <span class="kb-sub">' +
-      (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'your picks, with keepers seated by the slide rules') +
+      (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'one row per pick, numbered by the lottery order') +
       '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
-      '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Moving a player up spends a better pick than needed; the board flags it and shows the freed round, the call is yours. Acquired picks are protected: the auto-seat never uses them while one of your own picks works.</p>';
+      '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Checkbox keeps auto-seat only on your own open native pick; anything else is your conscious call. Legal by hand: the native round or any earlier held pick, plus the slide landing below a native round that&#39;s full (every round between must be full too). Acquired picks are never consumed automatically. Pick numbers (10.02 = round 10, 2nd overall slot) come from the published lottery order.</p>';
 
     if (prevScroll) {
       const newRoster = app.querySelector('.kb-roster');
@@ -4614,6 +4870,8 @@ JS = r"""
         continue;
       }
       here.forEach(sl => {
+        const num = pickNumOf(sl);
+        const numTag = num ? ' <span class="kb-print-picknum">(' + num + ')</span>' : (sl.lp ? ' <span class="kb-print-picknum">(last pick)</span>' : '');
         if (sl.taken) {
           const p = sl.taken;
           const notes = [];
@@ -4623,39 +4881,52 @@ JS = r"""
           if (sl.manual) notes.push('<span class="kb-print-flag" style="color:#022479;">placed by you</span>');
           rowsHtml.push(
             '<tr><td class="num">' + r + '</td>' +
-            '<td class="kb-print-name">' + esc(p.n) + '</td>' +
+            '<td class="kb-print-name">' + esc(p.n) + numTag + '</td>' +
             '<td class="num">' + p.d6 + '</td>' +
             '<td class="num">' + money(p.c6) + '</td>' +
             '<td class="kb-print-notes">' + notes.join(' ') + '</td></tr>');
         } else if (sl.own) {
           rowsHtml.push(
             '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
-            '<td colspan="4" class="kb-print-note">open &mdash; you draft here</td></tr>');
+            '<td colspan="4" class="kb-print-note">open &mdash; you draft here' + numTag + '</td></tr>');
         } else {
           rowsHtml.push(
             '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
             '<td colspan="4" class="kb-print-note">open &mdash; acquired pick, you draft here' +
-            ((teamBy[sl.o] || {}).mgr ? ' (from ' + esc((teamBy[sl.o] || {}).mgr.split(' ')[0]) + ')' : '') + '</td></tr>');
+            ((teamBy[sl.o] || {}).mgr ? ' (from ' + esc((teamBy[sl.o] || {}).mgr.split(' ')[0]) + ')' : '') + numTag + '</td></tr>');
         }
       });
       gone.forEach(l => {
         const to = (teamBy[l.to] || {}).mgr || l.to;
+        const num = pickNumOf({ r: r, o: st.team });
         rowsHtml.push(
           '<tr class="kb-print-gone"><td class="num">' + r + '</td>' +
-          '<td colspan="4" class="kb-print-note kb-print-gone-note">traded to ' + esc(to) + '</td></tr>');
+          '<td colspan="4" class="kb-print-note kb-print-gone-note">traded to ' + esc(to) +
+          (num ? ' <span class="kb-print-picknum">(' + num + ')</span>' : '') + '</td></tr>');
       });
     }
 
     let chasmBlock = '';
-    if (sim.unkeepable.length) {
-      chasmBlock = '<h3 class="kb-print-chasm-h">Can&rsquo;t slot (chasm) &mdash; keeper designation blocked</h3>' +
+    if (sim.unplaced.length) {
+      chasmBlock += '<h3 class="kb-print-chasm-h" style="color:#8a6a12;">Kept, awaiting placement &mdash; seat before entering in Yahoo</h3>' +
+        '<table><thead><tr><th>Player</th><th>Pos</th><th>DRC</th><th>$</th><th>Status</th></tr></thead><tbody>' +
+        sim.unplaced.map(p =>
+          '<tr><td>' + esc(p.n) + '</td>' +
+          '<td>' + esc(p.p || '') + '</td>' +
+          '<td class="num">' + p.d6 + '</td>' +
+          '<td class="num">' + money(p.c6) + '</td>' +
+          '<td>native pick taken; place by hand on the board</td></tr>').join('') +
+        '</tbody></table>';
+    }
+    if (sim.chasm.length) {
+      chasmBlock += '<h3 class="kb-print-chasm-h">Can&rsquo;t slot (chasm) &mdash; keeper designation blocked</h3>' +
         '<table><thead><tr><th>Player</th><th>Pos</th><th>DRC</th><th>$</th><th>Reason</th></tr></thead><tbody>' +
-        sim.unkeepable.map(p =>
+        sim.chasm.map(p =>
           '<tr><td class="kb-print-chasm">' + esc(p.n) + '</td>' +
           '<td>' + esc(p.p || '') + '</td>' +
           '<td class="num">' + p.d6 + '</td>' +
           '<td class="num">' + money(p.c6) + '</td>' +
-          '<td class="kb-print-chasm">no round available under the slide rules</td></tr>').join('') +
+          '<td class="kb-print-chasm">no legal slot under the slide rules</td></tr>').join('') +
         '</tbody></table>';
     }
 
@@ -4675,7 +4946,7 @@ JS = r"""
 
   app.addEventListener('change', e => {
     if (e.target.dataset.role === 'kbteam') {
-      st.team = e.target.value; st.keep = {}; st.manual = {}; st.pick = null; render();
+      st.team = e.target.value; st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; render();
     }
   });
 
@@ -4684,7 +4955,7 @@ JS = r"""
     if (unseat) { const pid = +unseat.dataset.unseat; delete st.keep[pid]; delete st.manual[pid]; if (st.pick === pid) st.pick = null; render(); return; }
     const act = e.target.closest('[data-kbact]');
     if (act) {
-      if (act.dataset.kbact === 'reset') { st.keep = {}; st.manual = {}; st.pick = null; render(); }
+      if (act.dataset.kbact === 'reset') { st.keep = {}; st.manual = {}; st.pick = null; st.seq = 0; render(); }
       else if (act.dataset.kbact === 'print') {
         document.body.classList.add('kb-printing');
         const done = () => { document.body.classList.remove('kb-printing'); window.removeEventListener('afterprint', done); };
@@ -4701,7 +4972,7 @@ JS = r"""
     if (card) {
       const pid = +card.dataset.pid;
       const onCheck = !!e.target.closest('[data-role="check"]');
-      if (!st.keep[pid]) { st.keep[pid] = true; st.pick = null; }
+      if (!st.keep[pid]) { st.keep[pid] = ++st.seq; st.pick = null; }
       else if (onCheck) { delete st.keep[pid]; delete st.manual[pid]; if (st.pick === pid) st.pick = null; }
       else st.pick = (st.pick === pid ? null : pid);
       render(); return;
@@ -4709,23 +4980,158 @@ JS = r"""
     if (st.pick != null) { st.pick = null; render(); }
   });
 
+  /* Real drag and drop. The old version re-rendered on dragstart, which
+     destroyed the dragged node and killed the drag in every browser; this
+     one lights the legal slots IN PLACE and only re-renders on drop.
+     Draggable: any roster card (dragging an unkept player keeps AND
+     places them in one motion) and any seated player on the board. */
+  let dragPid = null;
   app.addEventListener('dragstart', e => {
+    const seated = e.target.closest('[data-dragpid]');
     const card = e.target.closest('.kb-card');
-    if (!card || !st.keep[+card.dataset.pid]) { e.preventDefault(); return; }
-    st.pick = +card.dataset.pid;
-    e.dataTransfer.setData('text/plain', card.dataset.pid);
-    setTimeout(render, 0);
+    const pid = seated ? +seated.dataset.dragpid : (card ? +card.dataset.pid : null);
+    if (pid == null) { e.preventDefault(); return; }
+    dragPid = pid;
+    e.dataTransfer.setData('text/plain', String(pid));
+    e.dataTransfer.effectAllowed = 'move';
+    const p = D.players.find(x => x.i === pid);
+    const sim = kbSim(pid);
+    const freeIds = p ? legalSlotIds(clampDrc(p.d6), sim.slots) : {};
+    app.querySelectorAll('.kb-slot[data-slot]').forEach(el => {
+      el.classList.remove('kb-legal', 'kb-illegal', 'kb-drop-hot');
+      el.classList.add(freeIds[+el.dataset.slot] ? 'kb-legal' : 'kb-illegal');
+    });
+    app.classList.add('kb-dragging');
   });
   app.addEventListener('dragover', e => {
-    if (e.target.closest('.kb-slot.kb-legal')) e.preventDefault();
+    const slot = e.target.closest('.kb-slot.kb-legal');
+    if (slot) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (!slot.classList.contains('kb-drop-hot')) {
+        app.querySelectorAll('.kb-slot.kb-drop-hot').forEach(el => el.classList.remove('kb-drop-hot'));
+        slot.classList.add('kb-drop-hot');
+      }
+    }
+  });
+  app.addEventListener('dragleave', e => {
+    const slot = e.target.closest('.kb-slot.kb-drop-hot');
+    if (slot && !slot.contains(e.relatedTarget)) slot.classList.remove('kb-drop-hot');
   });
   app.addEventListener('drop', e => {
     const slot = e.target.closest('.kb-slot.kb-legal');
-    if (slot && st.pick != null) { e.preventDefault(); st.manual[st.pick] = +slot.dataset.slot; }
-    st.pick = null; render();
+    if (slot && dragPid != null) {
+      e.preventDefault();
+      if (!st.keep[dragPid]) st.keep[dragPid] = ++st.seq;
+      st.manual[dragPid] = +slot.dataset.slot;
+    }
+    dragPid = null; app.classList.remove('kb-dragging'); render();
   });
-  app.addEventListener('dragend', () => { if (st.pick != null) { st.pick = null; render(); } });
+  app.addEventListener('dragend', () => {
+    if (dragPid != null || app.classList.contains('kb-dragging')) {
+      dragPid = null; app.classList.remove('kb-dragging'); render();
+    }
+  });
 
+  render();
+})();
+
+/* ---- Player comparison ----------------------------------------------- */
+(function() {
+  const C = window.COMPARE_DATA;
+  const root = document.getElementById('player-compare');
+  if (!C || !root) return;
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const input = document.getElementById('pc-input');
+  const sugg = document.getElementById('pc-sugg');
+  const cols = document.getElementById('pc-cols');
+  const byId = {}; C.forEach(p => { byId[p.i] = p; });
+  let sel = [];
+
+  function bars(w, maxV, color) {
+    const W = 170, H = 54, PB = 3, slots = 17;
+    const sw = W / slots, bw = sw * 0.62, ch = H - 3 - PB;
+    let out = '';
+    for (let k = 0; k < slots; k++) {
+      const v = w ? w[k] : null;
+      const x = k * sw + (sw - bw) / 2;
+      if (v == null || v <= 0) {
+        out += '<rect x="' + x.toFixed(1) + '" y="' + (H - PB - 1).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="1" rx="0.5" fill="var(--gray-200)"/>';
+      } else {
+        const bh = Math.max(1.5, (v / maxV) * ch);
+        out += '<rect x="' + x.toFixed(1) + '" y="' + (H - PB - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="1" fill="' + color + '"/>';
+      }
+    }
+    return '<svg class="pc-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' + out + '</svg>';
+  }
+
+  /* Empty seasons render at FULL block height (dash + stub bars) so all
+     three cards line up row for row, rookie or not. */
+  function seasonBlock(label, s, maxV, color) {
+    const head = '<div class="pc-yr"><span class="pc-dot" style="background:' + color + ';"></span>' + label + '</div>';
+    if (!s) {
+      return '<div class="pc-season">' + head +
+        '<div class="pc-pts" style="color:#c5c9d2;">&mdash;</div>' +
+        '<div class="pc-sub">no recorded weeks</div>' +
+        bars(null, maxV, color) + '</div>';
+    }
+    const w = (s.w || []).filter(v => v != null);
+    const n = w.length;
+    const tot = s.pts != null ? s.pts : w.reduce((a, b) => a + b, 0);
+    const ppg = n ? (tot / n) : null;
+    return '<div class="pc-season">' + head +
+      '<div class="pc-pts">' + Number(tot).toFixed(1) + ' <span style="font-size:12px;color:#8e8e93;font-weight:600;">pts</span></div>' +
+      '<div class="pc-sub">' + n + ' wks' + (ppg != null ? ' &middot; ' + ppg.toFixed(1) + '/wk' : '') + (s.rk ? ' &middot; pos rank ' + s.rk : '') + '</div>' +
+      bars(s.w, maxV, color) + '</div>';
+  }
+
+  function render() {
+    let maxV = 0;
+    sel.forEach(id => {
+      const p = byId[id];
+      [p.y25, p.y24].forEach(s => { if (s && s.w) s.w.forEach(v => { if (v != null && v > maxV) maxV = v; }); });
+    });
+    if (maxV <= 0) maxV = 1;
+    if (!sel.length) {
+      cols.innerHTML = '<div class="pc-hintcard">Search a player above to start a comparison. Up to three side by side.</div>';
+    } else {
+      cols.innerHTML = sel.map(id => {
+        const p = byId[id];
+        const adp = p.a != null ? ' &middot; ADP ' + (p.a % 1 === 0 ? p.a : p.a.toFixed(1)) : '';
+        const own = (p.o
+          ? ('Currently: <b>' + esc(p.o) + '</b>' + (p.k ? ' &middot; DRC ' + p.k.d + ' &middot; $' + (p.k.c || 0).toLocaleString() + ' to keep' : ''))
+          : 'No current owner') + adp;
+        return '<div class="pc-card"><div class="pc-head"><span class="pc-name">' + esc(p.n) + '</span>' +
+          '<button class="pc-x" data-pcrm="' + p.i + '" title="Remove" type="button">&#10005;</button></div>' +
+          '<div class="pc-meta">' + esc(p.p || '') + ' &middot; ' + esc(p.t || '') + '</div>' +
+          '<div class="pc-owner">' + own + '</div>' +
+          seasonBlock('2025', p.y25, maxV, 'var(--blue-600)') +
+          seasonBlock('2024', p.y24, maxV, '#022479') +
+          '</div>';
+      }).join('');
+    }
+    input.disabled = sel.length >= 3;
+    input.placeholder = sel.length >= 3 ? 'Three players max — remove one to swap' : 'Type a player name to add (up to 3)…';
+  }
+
+  function hideSugg() { sugg.hidden = true; sugg.innerHTML = ''; }
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { hideSugg(); return; }
+    const hits = C.filter(p => p.n.toLowerCase().indexOf(q) >= 0 && sel.indexOf(p.i) < 0).slice(0, 8);
+    if (!hits.length) { hideSugg(); return; }
+    sugg.innerHTML = hits.map(p => '<div class="pc-sugg-item" data-pcadd="' + p.i + '"><b>' + esc(p.n) + '</b>' +
+      '<span class="pc-sugg-meta">' + esc(p.p || '') + ' &middot; ' + esc(p.t || '') + '</span>' +
+      '<span class="pc-sugg-owner">' + (p.o ? esc(p.o) : 'free agent') + '</span></div>').join('');
+    sugg.hidden = false;
+  });
+  document.addEventListener('click', e => {
+    const add = e.target.closest('[data-pcadd]');
+    if (add) { if (sel.length < 3) sel.push(+add.dataset.pcadd); input.value = ''; hideSugg(); render(); return; }
+    const rm = e.target.closest('[data-pcrm]');
+    if (rm) { sel = sel.filter(x => x !== +rm.dataset.pcrm); render(); return; }
+    if (!e.target.closest('.pc-top')) hideSugg();
+  });
   render();
 })();
 """
@@ -5813,6 +6219,7 @@ def build_sidebar(by_manager):
         <summary>Manager Tools</summary>
         <div class="sidebar-team-list">
           <a class="nav-link" data-target="player-search">Player search</a>
+          <a class="nav-link" data-target="player-compare">Player comparison</a>
           <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
           <a class="nav-link" data-target="keeper-board">Keeper board</a>
         </div>
@@ -5903,11 +6310,42 @@ def render_trade_analyzer(by_manager):
         if dst in held:
             held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
     conn.close()
+
+    # --- 2026 draft order (lottery result) -> per-team draft slot -------
+    # The draft is LINEAR (verified against 2023-25 draft_picks: rounds run
+    # in the same order, no snake), so a team's round-N pick is N.<slot>,
+    # e.g. slot 2 in round 10 = 10.02. Keyed by manager slug from
+    # lottery_result.json; unmatched entries warn and render without
+    # numbers rather than guessing.
+    draft_pos = {}
+    lottery_path = Path(__file__).parent / "lottery_result.json"
+    if lottery_path.exists():
+        with open(lottery_path, encoding="utf-8") as f:
+            _lot = json.load(f)
+        _known = {t["slug"] for t in teams}
+        _slug_by_team_name = {t["team"]: t["slug"] for t in teams}
+        for entry in (_lot.get("lottery") or []) + (_lot.get("playoff") or []):
+            s = slugify(entry.get("manager") or "")
+            if s not in _known:
+                s = _slug_by_team_name.get(entry.get("team") or "")
+            if s in _known:
+                draft_pos[s] = entry["pick"]
+            else:
+                print(f"WARNING: lottery entry unmatched to a team: "
+                      f"{entry.get('manager')!r} / {entry.get('team')!r}")
+        _missing = _known - set(draft_pos)
+        if _missing:
+            print(f"WARNING: no draft slot for {sorted(_missing)} — "
+                  f"their picks render without numbers")
+    else:
+        print("WARNING: lottery_result.json not found — pick numbers omitted")
+
     for slug in held:
-        held[slug].sort(key=lambda p: (p["r"], p["o"]))
+        held[slug].sort(key=lambda p: (p["r"], draft_pos.get(p["o"], 99), p["o"]))
 
     data_json = json.dumps({"teams": teams, "players": players,
                             "picks": held, "picks_lost": lost,
+                            "draft_pos": draft_pos,
                             "season": TARGET_SEASON}, separators=(",", ":"))
 
     return f"""
@@ -5919,9 +6357,58 @@ def render_trade_analyzer(by_manager):
 
       <div class="ta-app"></div>
 
-      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The keeper-slotting boards place every rostered player at their DRC round under the league's slide rules &mdash; collisions slide down only through consecutive rounds you own (a missing round is a wall), and a player whose own round is gone can move UP into a free earlier pick but never down past the gap. Acquired picks are protected from the slide: the sim never spends them while one of your own picks can seat the player, and labels any optional use. Where two keepers share a DRC, the sim seats the higher 2025 scorer first; in real life that ordering is the manager's call, so treat slot assignments as one valid arrangement, not the only one. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
+      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The boards are an inventory view, not an arrangement: each round shows the picks you'd hold there (numbered by the lottery order; green means acquired) and every player whose DRC lands in that round &mdash; two players stacked under one round means more keepers than that round has picks, and sorting out who sits where is what the Keeper board tab is for. The chasm counter flags only STRUCTURAL impossibility: a DRC group bigger than the seats its slide chain and earlier picks can ever reach (a missing round is the wall). Having more players than picks overall is not flagged &mdash; nobody keeps a whole roster, and choosing who stays is the manager's call. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
     </section>
     <script>window.TRADE_DATA = {data_json};</script>"""
+
+
+def render_player_compare(search_players):
+    """Player comparison tab (Manager Tools): search like the player-search
+    view, pin up to three players side by side. Shows the two most recent
+    completed seasons of production (2025 + 2024) plus current ownership
+    and the 2026 keep cost. Client-side; embeds a compact COMPARE_DATA
+    JSON derived from the same corpus as player search."""
+    rows = []
+    for p in search_players:
+        def season_pack(yr):
+            py = next((y for y in p["per_year"] if y["year"] == yr), {}) or {}
+            weekly = p["weekly_by_year"].get(yr, {})
+            w = [round(weekly[wk], 1) if weekly.get(wk) is not None else None
+                 for wk in range(1, 18)]
+            has = any(v is not None for v in w) or py.get("pts") is not None
+            if not has:
+                return None
+            return {"pts": py.get("pts"), "rk": py.get("pos_rank"), "w": w}
+        cur = next((y for y in p["per_year"] if y["year"] == 2026), None) or {}
+        entry = {
+            "i": p["player_id"], "n": p["name"], "p": p["position"],
+            "t": p["nfl_team"], "o": p["current_owner"] or None,
+        }
+        if cur.get("drc"):
+            entry["k"] = {"d": cur["drc"], "c": cur.get("dollars")}
+        if p.get("adp_2026") is not None:
+            entry["a"] = round(p["adp_2026"], 1)
+        y25, y24 = season_pack(2025), season_pack(2024)
+        if y25: entry["y25"] = y25
+        if y24: entry["y24"] = y24
+        rows.append(entry)
+    data_json = json.dumps(rows, separators=(",", ":"))
+    return f"""
+    <section class="team-section" id="player-compare" hidden>
+      <header class="section-header">
+        <h1 class="section-title">Player comparison</h1>
+        <p class="section-sub">Line up to three players side by side: {TARGET_SEASON - 1} and {TARGET_SEASON - 2} production, current ownership, and the {TARGET_SEASON} keep cost. Bars share one scale across everyone compared, so height means the same thing in every column.</p>
+      </header>
+      <div class="pc-app">
+        <div class="pc-top">
+          <input type="search" id="pc-input" class="ps-input" placeholder="Type a player name to add (up to 3)&hellip;" autocomplete="off">
+          <div class="pc-sugg" id="pc-sugg" hidden></div>
+        </div>
+        <div class="pc-cols" id="pc-cols"></div>
+        <p class="kb-hint">Weekly bars cover weeks the player was on a league roster; position ranks are within players logged in league data. Rookies and never-rostered weeks show as gaps, not zeros. ADP is the {TARGET_SEASON} superflex/2-QB overall rank.</p>
+      </div>
+      <script>window.COMPARE_DATA = {data_json};</script>
+    </section>"""
 
 
 def render_keeper_board():
@@ -5939,7 +6426,7 @@ def render_keeper_board():
       </header>
       <div class="kb-app"></div>
       <div class="kb-print"></div>
-      <p class="kb-foot">Seating defaults follow the sim&rsquo;s rule of thumb: at the same DRC, the higher 2025 scorer takes the earlier pick. The seating order is still yours to set. Pick up any kept player and move them wherever the rules allow. Print / save PDF gives you a sheet to hold next to Yahoo&rsquo;s keeper page when you enter your real designations.</p>
+      <p class="kb-foot">Checkbox keeps auto-seat on your own open native pick and nothing else; every other placement is your conscious call. Seats are first-come: whoever you kept first holds his pick, and a later keep at the same DRC waits in Awaiting placement for you to place. Drag any player (from the roster or between board slots) and the legal landings light up: his DRC round, any earlier held pick, or the slide landing below a full native round (every round between must also be full &mdash; that&rsquo;s the slide rule doing the work, and the only path onto a below-native pick, acquired or not). Pick numbers like 10.02 read round 10, 2nd draft slot, straight from the published lottery order. Print / save PDF gives you a sheet to hold next to Yahoo&rsquo;s keeper page when you enter your real designations.</p>
     </section>"""
 
 
@@ -5947,6 +6434,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     sidebar = build_sidebar(by_manager)
     summary = render_summary_section(by_manager, generated_at, meta)
     player_search = render_player_search_section(search_players)
+    player_compare = render_player_compare(search_players)
     trade_analyzer = render_trade_analyzer(by_manager)
     keeper_board = render_keeper_board()
     desk = render_commissioners_desk_section(comms_posts)
@@ -5980,6 +6468,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {about}
 {summary}
 {player_search}
+{player_compare}
 {trade_analyzer}
 {keeper_board}
 {desk}
