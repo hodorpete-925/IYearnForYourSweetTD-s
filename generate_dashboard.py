@@ -1138,7 +1138,7 @@ def render_summary_section(by_manager, generated_at, meta=None):
 
     rows = ""
     for idx, t in enumerate(teams, 1):
-        slug = slugify(t["manager_actual"])
+        slug = manager_slug(t["manager_actual"])
         rows += f"""
           <tr>
             <td class="rank">{idx}</td>
@@ -1196,6 +1196,15 @@ def render_summary_section(by_manager, generated_at, meta=None):
 
 def slugify(name):
     return name.lower().replace(" ", "-").replace(".", "").replace("'", "")
+
+
+def manager_slug(name):
+    """Slug for a manager, aliased first. Real last names leak into HTML
+    attribute values (data-target, id) and JS payload keys otherwise —
+    'team-pete-hodor' is a real-name leak even though nothing renders it
+    visibly. Route every manager-derived slug through this helper so
+    aliases propagate into IDs, hrefs, and JSON keys too."""
+    return slugify(alias_name(name))
 
 
 CSS = r"""
@@ -6453,7 +6462,7 @@ def build_sidebar(by_manager):
     teams = sorted(by_manager.values(), key=sort_key)
     items = ''.join(
         (lambda pick: (
-            f'<a class="nav-link" data-target="team-{slugify(t["manager_actual"])}">'
+            f'<a class="nav-link" data-target="team-{manager_slug(t["manager_actual"])}">'
             + (f'<span class="draft-slot" aria-label="2026 draft pick {pick}">{pick}</span>'
                if pick is not None else '<span class="draft-slot" aria-hidden="true"></span>')
             + html.escape(t["team_name"])
@@ -6519,7 +6528,7 @@ def render_trade_analyzer(by_manager):
     teams = []
     players = []
     for name, data in sorted(by_manager.items()):
-        slug = slugify(data["manager_actual"])
+        slug = manager_slug(data["manager_actual"])
         teams.append({
             "slug": slug,
             "team": data["team_name"],
@@ -6556,7 +6565,7 @@ def render_trade_analyzer(by_manager):
             "SELECT t.team_season_id, m.full_name FROM teams t "
             "JOIN managers m ON m.manager_id = t.manager_id "
             "WHERE t.season IN (2025, 2026)"):
-        slug_by_tsid[r["team_season_id"]] = slugify(r["full_name"])
+        slug_by_tsid[r["team_season_id"]] = manager_slug(r["full_name"])
     held = {t["slug"]: [{"r": r, "o": t["slug"]} for r in range(1, 17)]
             for t in teams}
     lost = {t["slug"]: [] for t in teams}
@@ -6626,7 +6635,7 @@ def render_trade_analyzer(by_manager):
         _known = {t["slug"] for t in teams}
         _slug_by_team_name = {t["team"]: t["slug"] for t in teams}
         for entry in (_lot.get("lottery") or []) + (_lot.get("playoff") or []):
-            s = slugify(entry.get("manager") or "")
+            s = manager_slug(entry.get("manager") or "")
             if s not in _known:
                 s = _slug_by_team_name.get(entry.get("team") or "")
             if s in _known:
@@ -6744,7 +6753,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     about = render_about_section()
     feedback = render_feedback_widget()
     team_sections = "\n".join(
-        render_team_section(data, slugify(data["manager_actual"]))
+        render_team_section(data, manager_slug(data["manager_actual"]))
         for name, data in sorted(by_manager.items())
     )
     return f"""<!doctype html>
