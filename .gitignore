@@ -20,6 +20,10 @@ Thumbs.db
 *.db-wal
 *.db-shm
 
+# Manager real-name -> alias map. Do not commit — the whole point is to
+# keep real last names out of the public repo.
+manager_aliases.json
+
 # Excel workbooks - Pete's manual tracking, kept in OneDrive/source-of-truth
 *.xlsx
 ~$*.xlsx

@@ -28,11 +28,75 @@ OUT_PATH = Path(__file__).parent / "dashboard.html"
 TARGET_SEASON = drc.TARGET_SEASON  # 2026
 LEAGUE_NAME = "I Yearn For Your Sweet TD's"
 
-# Manager-name overrides for display only (the underlying DB is unchanged).
-# Useful when a manager has left the league and the seat hasn't been refilled.
-MANAGER_DISPLAY_NAMES = {
-    "Jon Lewitus": "TBD",
-}
+# Manager alias map: real full name -> "First L." for public rendering.
+# Real names stay in the DB for Yahoo API correlation; this layer sanitizes
+# every dashboard surface so no real last names ship to GitHub Pages.
+# The JSON file is gitignored — if it's missing we log a warning and
+# fall through to raw names (so we never silently ship the wrong thing).
+def _load_manager_aliases():
+    path = Path(__file__).parent / "manager_aliases.json"
+    if not path.exists():
+        print("  WARNING: manager_aliases.json missing — dashboard will render REAL manager names")
+        return {}
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"  WARNING: manager_aliases.json unreadable ({e}) — falling back to real names")
+        return {}
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+MANAGER_ALIASES = _load_manager_aliases()
+_ALIAS_MISSING_WARNED = set()
+
+
+def alias_name(name):
+    """Real manager name -> First+LastInitial alias. Unknown names fall
+    through with a one-time warning per name so leaks are visible in the
+    generator log instead of quietly shipping."""
+    if not name:
+        return name
+    if name in MANAGER_ALIASES:
+        return MANAGER_ALIASES[name]
+    if name not in _ALIAS_MISSING_WARNED:
+        _ALIAS_MISSING_WARNED.add(name)
+        print(f"  WARNING: no alias for {name!r} — add it to manager_aliases.json (raw name leaked in this build)")
+    return name
+
+
+def sanitize_rendered_html(html_str):
+    """Safety-net post-render pass. Sweeps the assembled HTML for any real
+    manager name that slipped through (embedded comms bodies, third-party
+    modules like trade_history, error text, anywhere) and rewrites it to
+    the alias.
+
+    Two passes:
+      1. Full "First Last" match -> full alias. Safe universally.
+      2. Bare surname -> full alias, but SKIPPED for surnames that
+         collide with NFL player surnames (Montgomery, Watson, Lewis,
+         Pearson, Keenan). Catches Pete's bare-surname prose in comms
+         bodies (e.g. "Schlosberg has been quite active") without
+         mangling player-search tables that list "David Montgomery" or
+         "Deshaun Watson". Longest first so partial-substring surnames
+         (unlikely here but future-proof) can't be nested-matched.
+    """
+    import re as _re
+    if not MANAGER_ALIASES:
+        return html_str
+    NFL_COLLIDING_SURNAMES = {"Montgomery", "Watson", "Lewis", "Pearson", "Keenan"}
+    # Pass 1 — full names
+    for real, alias in sorted(MANAGER_ALIASES.items(), key=lambda kv: -len(kv[0])):
+        html_str = _re.sub(r"\b" + _re.escape(real) + r"\b", alias, html_str)
+    # Pass 2 — bare surnames, skipping NFL colliders
+    for real, alias in sorted(MANAGER_ALIASES.items(), key=lambda kv: -len(kv[0].split()[-1] if " " in kv[0] else "")):
+        parts = real.split()
+        if len(parts) < 2:
+            continue
+        surname = parts[-1]
+        if surname in NFL_COLLIDING_SURNAMES:
+            continue
+        html_str = _re.sub(r"\b" + _re.escape(surname) + r"\b", alias, html_str)
+    return html_str
 
 
 # ---------- Data assembly ----------------------------------------------------
@@ -87,7 +151,7 @@ def build_data():
         drc_dollars = dollar.get(drc_int, 10)
 
         mgr = row["manager"]
-        display = MANAGER_DISPLAY_NAMES.get(mgr, mgr)
+        display = alias_name(mgr)
         if mgr not in by_manager:
             by_manager[mgr] = {
                 "manager": display,
@@ -209,9 +273,7 @@ def build_data():
                 (owner_team,),
             ).fetchone()
             if owner_row:
-                owner_name = MANAGER_DISPLAY_NAMES.get(
-                    owner_row["full_name"], owner_row["full_name"]
-                )
+                owner_name = alias_name(owner_row["full_name"])
 
         # Per-year DRC trajectory (2023..2026): reuse build_history_for_player
         # but pass the current team if we have one (otherwise use 0 sentinel).
@@ -236,7 +298,7 @@ def build_data():
                     (yr_owner_id,),
                 ).fetchone()
                 if r:
-                    yr_owner_name = MANAGER_DISPLAY_NAMES.get(r[0], r[0])
+                    yr_owner_name = alias_name(r[0])
             drc_v = h.get("drc")
             per_year.append({
                 "year": y,
@@ -5815,7 +5877,7 @@ def render_rules_history_section():
         <div class="rh-rhead"><span class="rh-rname">7 &middot; Proxy voting &mdash; banned; mail-in ballots &mdash; allowed</span> <span class="rh-chip rh-live">Passed 6/27/26</span></div>
         <p class="rh-sum">A manager can no longer vote by proxy through another manager present at the summit. Mail-in ballots (a manager's vote submitted in writing ahead of time) remain a legitimate substitute for absentees.</p>
         <ul class="rh-rec">
-          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Passes.</strong> No proxy; mail-in allowed. Retroactively noted: 12 votes were present via proxy at this summit (Hodor represented Bill + Schlosberg + himself; George represented Vesco; Tom represented Aric; Greg, Dan, Paul, Monty, Brian each 1). Future summits use mail-in for absentees.</li>
+          <li><span class="rh-date">2026-06-27</span><span class="rh-who">Summit minute:</span> <strong>Passes.</strong> No proxy; mail-in allowed. Retroactively noted: 12 votes were present via proxy at this summit (Pete H. represented Bill K. + Alex S. + himself; George M. represented Dan V.; Tom W. represented Aric T.; Greg P., Dan M., Paul L., Scott M., Brian M. each 1). Future summits use mail-in for absentees.</li>
         </ul>
         <p class="rh-verdict"><strong>Where it stands:</strong> in effect from 2026-06-27 forward.</p>
       </div>
@@ -6087,7 +6149,7 @@ def render_rules_section():
           <h2 class="rule-h2">Voting &mdash; proxy banned, mail-in allowed</h2>
           <p><strong>Proxy voting is not allowed.</strong> A manager present at a league vote cannot cast a vote on another manager's behalf.</p>
           <p><strong>Mail-in ballots are allowed.</strong> A manager who cannot attend in person may submit their vote in writing ahead of the meeting. A mail-in ballot counts the same as an in-person vote for quorum and tally purposes.</p>
-          <p class="rules-note">Passed at the 2026-06-27 Beach Summit. That summit itself was decided on proxies (12 votes present via proxy: Hodor represented Bill Keenan + Alex Schlosberg + himself; George represented Vesco; Tom represented Aric; Greg, Dan, Paul, Monty, Brian each cast one) &mdash; from the next league vote forward, absentees submit mail-in ballots.</p>
+          <p class="rules-note">Passed at the 2026-06-27 Beach Summit. That summit itself was decided on proxies (12 votes present via proxy: Pete H. represented Bill K. + Alex S. + himself; George M. represented Dan V.; Tom W. represented Aric T.; Greg P., Dan M., Paul L., Scott M., Brian M. each cast one) &mdash; from the next league vote forward, absentees submit mail-in ballots.</p>
         </section>
 
         <section class="rule-block">
@@ -6801,6 +6863,10 @@ def main():
     generated_at = meta["generated_at"]
     html_out = render_html(by_manager, search_players, comms_posts,
                            generated_at, meta)
+    # Belt-and-suspenders privacy sweep. Structured renders route through
+    # alias_name() already; this catches anything embedded from comms
+    # bodies or third-party modules (trade_history, draft_history, etc.).
+    html_out = sanitize_rendered_html(html_out)
     OUT_PATH.write_text(html_out, encoding="utf-8")
 
     print(f"Wrote {OUT_PATH}")
