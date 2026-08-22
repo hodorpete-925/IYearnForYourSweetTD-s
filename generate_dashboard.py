@@ -192,7 +192,8 @@ def build_data():
     # synthetic trades (manual entry while the Yahoo API is dead). In-season
     # 2026 trade handling is designed separately (live-season tracking).
     moves = conn.execute("""
-        SELECT sp.player_id, m_dst.full_name AS dst, m_src.full_name AS src
+        SELECT sp.player_id, m_dst.full_name AS dst, m_src.full_name AS src,
+               DATE(st.timestamp) AS d
         FROM synthetic_transactions st
         JOIN synthetic_transaction_players sp ON sp.synth_id = st.synth_id
         JOIN teams t_dst ON t_dst.team_season_id = sp.team_season_id
@@ -203,6 +204,24 @@ def build_data():
           AND sp.direction = 'incoming'
         ORDER BY st.timestamp
     """).fetchall()
+
+    # Collect the same moves into per-trade groups for the "Off-season
+    # trades" tab. One group per (date, pair of managers); players and
+    # picks received by each side, with the 2026 cost both ways: the
+    # keep-path DRC the old owner faced (no trade) and the frozen
+    # trade-time DRC the acquirer inherits.
+    offseason_groups = {}
+
+    def _trade_group(date, mgr_x, mgr_y):
+        key = (date, frozenset((mgr_x, mgr_y)))
+        if key not in offseason_groups:
+            offseason_groups[key] = {
+                "date": date, "mgr_a": mgr_x, "mgr_b": mgr_y,
+                "players_a": [], "players_b": [],
+                "picks_a": [], "picks_b": [],
+            }
+        return offseason_groups[key]
+
     for mv in moves:
         src_d, dst_d = by_manager.get(mv["src"]), by_manager.get(mv["dst"])
         if not src_d or not dst_d:
@@ -212,12 +231,48 @@ def build_data():
         if p is None:
             continue
         src_d["players"].remove(p)
+        keep_drc = p["drc"]                    # 2026 DRC had the old owner kept him
+        keep_dollars = p["drc_dollars"]
         anchor = ((p.get("history") or {}).get(2025) or {}).get("drc") or p["drc"]
         frozen = max(1, min(16, int(anchor)))
         p["drc"] = frozen
         p["drc_dollars"] = dollar.get(frozen, 10)
         p["via_trade_2026"] = True
         dst_d["players"].append(p)
+        g = _trade_group(mv["d"], mv["dst"], mv["src"])
+        entry = {
+            "name": p["name"], "position": p["position"],
+            "nfl_team": p["nfl_team"],
+            "keep_drc": keep_drc, "keep_dollars": keep_dollars,
+            "frozen_drc": frozen, "frozen_dollars": p["drc_dollars"],
+        }
+        (g["players_a"] if mv["dst"] == g["mgr_a"] else g["players_b"]).append(entry)
+
+    # Pick movements in the same trades (table exists once
+    # add_synthetic_trades.py has migrated; absent = no pick moves yet).
+    if conn.execute("SELECT name FROM sqlite_master WHERE type='table' "
+                    "AND name='synthetic_transaction_picks'").fetchone():
+        pick_moves = conn.execute("""
+            SELECT DATE(st.timestamp) AS d, sp.draft_round,
+                   m_src.full_name AS src, m_dst.full_name AS dst,
+                   m_orig.full_name AS orig
+            FROM synthetic_transaction_picks sp
+            JOIN synthetic_transactions st ON st.synth_id = sp.synth_id
+            JOIN teams t_src ON t_src.team_season_id = sp.source_team_season_id
+            JOIN managers m_src ON m_src.manager_id = t_src.manager_id
+            JOIN teams t_dst ON t_dst.team_season_id = sp.destination_team_season_id
+            JOIN managers m_dst ON m_dst.manager_id = t_dst.manager_id
+            JOIN teams t_orig ON t_orig.team_season_id = sp.original_team_season_id
+            JOIN managers m_orig ON m_orig.manager_id = t_orig.manager_id
+            WHERE st.season = 2026 AND st.event_type = 'trade'
+            ORDER BY st.timestamp
+        """).fetchall()
+        for pm in pick_moves:
+            g = _trade_group(pm["d"], pm["dst"], pm["src"])
+            entry = {"round": pm["draft_round"], "original": pm["orig"]}
+            (g["picks_a"] if pm["dst"] == g["mgr_a"] else g["picks_b"]).append(entry)
+
+    offseason_trades = sorted(offseason_groups.values(), key=lambda g: g["date"])
 
     # Sort players within each team by DRC ascending (most expensive first), then name
     for data in by_manager.values():
@@ -430,7 +485,7 @@ def build_data():
                 y["owner"] = owner_disp
 
     conn.close()
-    return by_manager, failures, search_players
+    return by_manager, failures, search_players, offseason_trades
 
 
 # ---------- HTML rendering ---------------------------------------------------
@@ -3881,6 +3936,88 @@ table.ta-table tr.ta-total td {
 .kb-print .kb-print-legend-key { display:inline-block; padding:0 5px; font-weight:700; font-size:10px; border-radius:3px; margin-right:3px; background:#f0f0f2; color:#606C71; }
 .kb-print .kb-print-legend-key.kb-print-legend-open { background:#e6efff; color:#0038FF; }
 .kb-print .kb-print-legend-key.kb-print-legend-gone { background:#fdecea; color:#b42318; }
+
+/* --- Off-season trades tab --------------------------------------------- */
+.ot-list { display: flex; flex-direction: column; gap: 20px; max-width: 880px; }
+.ot-card {
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.ot-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+.ot-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ot-teams { font-size: 15px; font-weight: 600; }
+.ot-swap { color: var(--blue-600); font-weight: 400; padding: 0 2px; }
+.ot-sides { display: grid; grid-template-columns: 1fr 1fr; }
+.ot-side { padding: 16px 20px 18px; }
+.ot-side + .ot-side { border-left: 1px solid var(--gray-200); }
+.ot-side-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ot-player { padding: 10px 0 12px; }
+.ot-player + .ot-player { border-top: 1px solid var(--gray-200); }
+.ot-player-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ot-player-name { font-weight: 600; font-size: 14.5px; }
+.ot-player-meta { color: var(--gray-500); font-size: 12px; }
+.ot-costline {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.ot-cost-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ot-cost-was { color: var(--gray-600); font-size: 13px; }
+.ot-cost-now .pill { font-size: 12px; }
+.ot-arrow { color: var(--blue-400); font-size: 15px; padding-bottom: 2px; }
+.ot-pick {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 10px 8px 0 0;
+  padding: 5px 10px;
+  border: 1px dashed var(--blue-200);
+  border-radius: 6px;
+  background: #f4faff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--blue-800);
+}
+.ot-pick-orig { font-weight: 400; color: var(--gray-600); font-size: 11.5px; }
+.ot-none { color: var(--gray-500); font-size: 13px; padding: 8px 0; }
+@media (max-width: 720px) {
+  .ot-sides { grid-template-columns: 1fr; }
+  .ot-side + .ot-side { border-left: none; border-top: 1px solid var(--gray-200); }
+  .ot-head { flex-direction: column; gap: 2px; }
+}
 """
 
 JS = r"""
@@ -5683,6 +5820,89 @@ def render_commissioners_desk_section(posts):
     </section>"""
 
 
+def _ot_player_card(entry):
+    """One traded-player card: name, pos/team, and the 2026 cost both
+    ways — keep-path DRC (what the old owner would have paid, no trade)
+    -> frozen trade-time DRC (what the acquirer pays in 2026)."""
+    meta = f'{entry["position"]} &middot; {entry["nfl_team"]}'
+    keep = f'DRC {entry["keep_drc"]} &middot; ${entry["keep_dollars"]}'
+    frozen = f'DRC {entry["frozen_drc"]} &middot; ${entry["frozen_dollars"]}'
+    tier = drc_tier_class(entry["frozen_drc"])
+    return f"""
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">{html.escape(entry["name"])}</span>
+              <span class="ot-player-meta">{meta}</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>{keep}</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill {tier}">{frozen}</span></span>
+            </div>
+          </div>"""
+
+
+def _ot_pick_chip(pick):
+    orig = alias_name(pick["original"])
+    return (f'<div class="ot-pick">R{pick["round"]} pick'
+            f'<span class="ot-pick-orig">orig. {html.escape(orig)}</span></div>')
+
+
+def _ot_side(mgr_actual, players, picks):
+    mgr = alias_name(mgr_actual)
+    cards = "".join(_ot_player_card(p) for p in players)
+    chips = "".join(_ot_pick_chip(pk) for pk in picks)
+    empty = ('<div class="ot-none">No players</div>'
+             if not players and not picks else "")
+    return f"""
+        <div class="ot-side">
+          <div class="ot-side-label">{html.escape(mgr)} receives</div>
+          {cards}{chips}{empty}
+        </div>"""
+
+
+def render_offseason_trades_section(trades, season=2026):
+    """One '{season} off-season trades' tab: one card per trade, the
+    players (and picks) moving each way, and each player's keeper cost
+    with and without the trade under the freeze rule. Facts only,
+    consistent with the trade analyzer's no-verdict stance.
+
+    Sidebar has a permanent 'Off-season Trades' group — each new season
+    gets its own section (call this once per season with that season's
+    trades) plus a matching sidebar link."""
+    cards = []
+    for t in trades:
+        try:
+            date_disp = datetime.strptime(t["date"], "%Y-%m-%d") \
+                .strftime("%b %d, %Y").replace(" 0", " ")
+        except (ValueError, TypeError):
+            date_disp = t["date"]
+        mgr_a = alias_name(t["mgr_a"])
+        mgr_b = alias_name(t["mgr_b"])
+        cards.append(f"""
+      <article class="ot-card">
+        <header class="ot-head">
+          <span class="ot-date">{date_disp}</span>
+          <span class="ot-teams">{html.escape(mgr_a)} <span class="ot-swap">&harr;</span> {html.escape(mgr_b)}</span>
+        </header>
+        <div class="ot-sides">
+          {_ot_side(t["mgr_a"], t["players_a"], t["picks_a"])}
+          {_ot_side(t["mgr_b"], t["players_b"], t["picks_b"])}
+        </div>
+      </article>""")
+    body = "".join(cards) if cards else \
+        f'<div class="ot-none">No off-season trades recorded yet for {season}.</div>'
+    count_note = f"{len(trades)} trade{'s' if len(trades) != 1 else ''} in the {season} off-season window."
+    return f"""
+    <section class="team-section" id="offseason-trades-{season}" hidden>
+      <header class="section-header">
+        <h1 class="section-title">{season} off-season trades</h1>
+        <p class="section-sub">Every trade since the {season - 1} season ended. Each player shows the {season} cost on their old owner's keep path and the frozen trade-time cost the new owner inherits (decrements resume {season + 1}). {count_note}</p>
+      </header>
+      <div class="ot-list">{body}</div>
+    </section>"""
+
+
 def render_about_section():
     """Welcome/about page. Brief tour of what the dashboard is, how it's
     organized, and how to give feedback. Image placeholders below each
@@ -6490,6 +6710,14 @@ def build_sidebar(by_manager):
         </div>
       </details>
       <details class="sidebar-teams">
+        <summary>Off-season Trades</summary>
+        <div class="sidebar-team-list">
+          <!-- One entry per year. Add the new season's link (and pass its
+               trades to render_offseason_trades_section) each off-season. -->
+          <a class="nav-link" data-target="offseason-trades-2026">2026 off-season trades</a>
+        </div>
+      </details>
+      <details class="sidebar-teams">
         <summary>League Standings and Records</summary>
         <div class="sidebar-team-list">
           <a class="nav-link" data-target="summary">Summary &amp; standings</a>
@@ -6740,8 +6968,10 @@ def render_keeper_board():
     </section>"""
 
 
-def render_html(by_manager, search_players, comms_posts, generated_at, meta=None):
+def render_html(by_manager, search_players, comms_posts, generated_at, meta=None,
+                offseason_trades=None):
     sidebar = build_sidebar(by_manager)
+    offseason = render_offseason_trades_section(offseason_trades or [])
     summary = render_summary_section(by_manager, generated_at, meta)
     player_search = render_player_search_section(search_players)
     player_compare = render_player_compare(search_players)
@@ -6782,6 +7012,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {trade_analyzer}
 {keeper_board}
 {desk}
+{offseason}
 {rules}
 {rules_history}
 {team_sections}
@@ -6866,12 +7097,12 @@ def _collect_update_meta():
 
 
 def main():
-    by_manager, failures, search_players = build_data()
+    by_manager, failures, search_players, offseason_trades = build_data()
     comms_posts = load_comms_posts()
     meta = _collect_update_meta()
     generated_at = meta["generated_at"]
     html_out = render_html(by_manager, search_players, comms_posts,
-                           generated_at, meta)
+                           generated_at, meta, offseason_trades)
     # Belt-and-suspenders privacy sweep. Structured renders route through
     # alias_name() already; this catches anything embedded from comms
     # bodies or third-party modules (trade_history, draft_history, etc.).

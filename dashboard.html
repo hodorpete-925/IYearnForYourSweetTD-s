@@ -2681,6 +2681,88 @@ table.ta-table tr.ta-total td {
 .kb-print .kb-print-legend-key { display:inline-block; padding:0 5px; font-weight:700; font-size:10px; border-radius:3px; margin-right:3px; background:#f0f0f2; color:#606C71; }
 .kb-print .kb-print-legend-key.kb-print-legend-open { background:#e6efff; color:#0038FF; }
 .kb-print .kb-print-legend-key.kb-print-legend-gone { background:#fdecea; color:#b42318; }
+
+/* --- Off-season trades tab --------------------------------------------- */
+.ot-list { display: flex; flex-direction: column; gap: 20px; max-width: 880px; }
+.ot-card {
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.ot-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+.ot-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ot-teams { font-size: 15px; font-weight: 600; }
+.ot-swap { color: var(--blue-600); font-weight: 400; padding: 0 2px; }
+.ot-sides { display: grid; grid-template-columns: 1fr 1fr; }
+.ot-side { padding: 16px 20px 18px; }
+.ot-side + .ot-side { border-left: 1px solid var(--gray-200); }
+.ot-side-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ot-player { padding: 10px 0 12px; }
+.ot-player + .ot-player { border-top: 1px solid var(--gray-200); }
+.ot-player-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ot-player-name { font-weight: 600; font-size: 14.5px; }
+.ot-player-meta { color: var(--gray-500); font-size: 12px; }
+.ot-costline {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.ot-cost-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ot-cost-was { color: var(--gray-600); font-size: 13px; }
+.ot-cost-now .pill { font-size: 12px; }
+.ot-arrow { color: var(--blue-400); font-size: 15px; padding-bottom: 2px; }
+.ot-pick {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 10px 8px 0 0;
+  padding: 5px 10px;
+  border: 1px dashed var(--blue-200);
+  border-radius: 6px;
+  background: #f4faff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--blue-800);
+}
+.ot-pick-orig { font-weight: 400; color: var(--gray-600); font-size: 11.5px; }
+.ot-none { color: var(--gray-500); font-size: 13px; padding: 8px 0; }
+@media (max-width: 720px) {
+  .ot-sides { grid-template-columns: 1fr; }
+  .ot-side + .ot-side { border-left: none; border-top: 1px solid var(--gray-200); }
+  .ot-head { flex-direction: column; gap: 2px; }
+}
 </style>
 </head>
 <body>
@@ -2704,6 +2786,14 @@ table.ta-table tr.ta-total td {
           <a class="nav-link" data-target="league-rules">League rules</a>
           <a class="nav-link" data-target="rules-history">Rules History</a>
           <a class="nav-link" data-target="about">About this dashboard</a>
+        </div>
+      </details>
+      <details class="sidebar-teams">
+        <summary>Off-season Trades</summary>
+        <div class="sidebar-team-list">
+          <!-- One entry per year. Add the new season's link (and pass its
+               trades to render_offseason_trades_section) each off-season. -->
+          <a class="nav-link" data-target="offseason-trades-2026">2026 off-season trades</a>
         </div>
       </details>
       <details class="sidebar-teams">
@@ -2934,19 +3024,19 @@ table.ta-table tr.ta-total td {
       <div class="updated-widget">
         <input type="checkbox" id="updated-toggle" class="updated-toggle">
         <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
-          Updated 2026-08-21 23:27 EDT
+          Updated 2026-08-21 23:46 EDT
         </label>
         <div class="updated-details" role="region" aria-labelledby="updated-toggle">
           <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-08-22 03:24 EDT</span></div>
-          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-08-20 12:15 EDT &mdash; Alias manager slugs too â€” IDs, hrefs, and JS payload keys no longer carry real last names</span></div>
-          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-08-21 23:27 EDT (this page)</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-08-21 23:27 EDT &mdash; Refresh dashboard (2026-08-21 23:27)</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-08-21 23:46 EDT (this page)</span></div>
           <div class="updated-log">
             <div class="updated-log-h">Recent activity</div>
-            <pre class="updated-log-body">  2026-08-20 12:15  Alias manager slugs too â€” IDs, hrefs, and JS payload keys no longer carry real last names
+            <pre class="updated-log-body">  2026-08-21 23:27  Refresh dashboard (2026-08-21 23:27)
+  2026-08-20 12:15  Alias manager slugs too â€” IDs, hrefs, and JS payload keys no longer carry real last names
   2026-08-20 12:05  Alias manager names to first-name + last-initial across all rendered surfaces (fix 10)
   2026-08-19 12:56  Rules update from 2026-06-27 summit â€” proxy/mail-in, 1.01 loophole ban, asset-for-asset counters, pending lottery timing vote
-  2026-08-19 08:15  Trade: McLaurin + Scott&#x27;s R4 to Pete for Tuten + the Dan R16; synthetic pick support
-  2026-08-19 08:13  Refresh dashboard (2026-08-19 08:13)</pre>
+  2026-08-19 08:15  Trade: McLaurin + Scott&#x27;s R4 to Pete for Tuten + the Dan R16; synthetic pick support</pre>
           </div>
         </div>
       </div>
@@ -18401,6 +18491,174 @@ table.ta-table tr.ta-total td {
 <p>A man after my own heart. Pete H..</p>
 <p><em>Overall Grade: C-</em></p></div></article></div>
       </div>
+    </section>
+
+    <section class="team-section" id="offseason-trades-2026" hidden>
+      <header class="section-header">
+        <h1 class="section-title">2026 off-season trades</h1>
+        <p class="section-sub">Every trade since the 2025 season ended. Each player shows the 2026 cost on their old owner's keep path and the frozen trade-time cost the new owner inherits (decrements resume 2027). 4 trades in the 2026 off-season window.</p>
+      </header>
+      <div class="ot-list">
+      <article class="ot-card">
+        <header class="ot-head">
+          <span class="ot-date">Aug 15, 2026</span>
+          <span class="ot-teams">Brian M. <span class="ot-swap">&harr;</span> Aric T.</span>
+        </header>
+        <div class="ot-sides">
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Brian M. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Ashton Jeanty</span>
+              <span class="ot-player-meta">RB &middot; LV</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 1 &middot; $200</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-premium">DRC 2 &middot; $100</span></span>
+            </div>
+          </div>
+        </div>
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Aric T. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Jonathan Taylor</span>
+              <span class="ot-player-meta">RB &middot; Ind</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 1 &middot; $200</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-premium">DRC 2 &middot; $100</span></span>
+            </div>
+          </div>
+        </div>
+        </div>
+      </article>
+      <article class="ot-card">
+        <header class="ot-head">
+          <span class="ot-date">Aug 19, 2026</span>
+          <span class="ot-teams">Pete H. <span class="ot-swap">&harr;</span> Scott M.</span>
+        </header>
+        <div class="ot-sides">
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Pete H. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Terry McLaurin</span>
+              <span class="ot-player-meta">WR &middot; Was</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 4 &middot; $60</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-mid">DRC 4 &middot; $60</span></span>
+            </div>
+          </div><div class="ot-pick">R4 pick<span class="ot-pick-orig">orig. Scott M.</span></div>
+        </div>
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Scott M. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Bhayshul Tuten</span>
+              <span class="ot-player-meta">RB &middot; Jax</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 15 &middot; $10</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-cheap">DRC 16 &middot; $10</span></span>
+            </div>
+          </div><div class="ot-pick">R16 pick<span class="ot-pick-orig">orig. Dan V.</span></div>
+        </div>
+        </div>
+      </article>
+      <article class="ot-card">
+        <header class="ot-head">
+          <span class="ot-date">Aug 20, 2026</span>
+          <span class="ot-teams">Brian M. <span class="ot-swap">&harr;</span> Greg P.</span>
+        </header>
+        <div class="ot-sides">
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Brian M. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Blake Corum</span>
+              <span class="ot-player-meta">RB &middot; LAR</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 15 &middot; $10</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-cheap">DRC 16 &middot; $10</span></span>
+            </div>
+          </div>
+        </div>
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Greg P. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Woody Marks</span>
+              <span class="ot-player-meta">RB &middot; Hou</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 15 &middot; $10</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-cheap">DRC 16 &middot; $10</span></span>
+            </div>
+          </div>
+        </div>
+        </div>
+      </article>
+      <article class="ot-card">
+        <header class="ot-head">
+          <span class="ot-date">Aug 20, 2026</span>
+          <span class="ot-teams">Dan V. <span class="ot-swap">&harr;</span> George M.</span>
+        </header>
+        <div class="ot-sides">
+          
+        <div class="ot-side">
+          <div class="ot-side-label">Dan V. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Jaylen Waddle</span>
+              <span class="ot-player-meta">WR &middot; Den</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 4 &middot; $60</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-mid">DRC 5 &middot; $50</span></span>
+            </div>
+          </div>
+        </div>
+          
+        <div class="ot-side">
+          <div class="ot-side-label">George M. receives</div>
+          
+          <div class="ot-player">
+            <div class="ot-player-top">
+              <span class="ot-player-name">Chris Olave</span>
+              <span class="ot-player-meta">WR &middot; NO</span>
+            </div>
+            <div class="ot-costline">
+              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>DRC 5 &middot; $50</span>
+              <span class="ot-arrow" aria-hidden="true">&rarr;</span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill tier-value">DRC 6 &middot; $30</span></span>
+            </div>
+          </div>
+        </div>
+        </div>
+      </article></div>
     </section>
 
     <section class="team-section" id="league-rules" hidden>
