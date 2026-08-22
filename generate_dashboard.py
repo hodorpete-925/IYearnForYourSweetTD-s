@@ -267,9 +267,17 @@ def build_data():
             WHERE st.season = 2026 AND st.event_type = 'trade'
             ORDER BY st.timestamp
         """).fetchall()
+        # Resolve each pick's number-in-round from the 2026 draft order
+        # (linear draft: a round-N pick originally from the team in slot S
+        # is pick N.S in every round). Lottery-file names can differ from
+        # DB manager names, so fall back to the team-name lookup.
+        pick_by_mgr, pick_by_team = _load_2026_draft_order()
         for pm in pick_moves:
             g = _trade_group(pm["d"], pm["dst"], pm["src"])
-            entry = {"round": pm["draft_round"], "original": pm["orig"]}
+            orig_team_name = (by_manager.get(pm["orig"]) or {}).get("team_name")
+            slot = pick_by_mgr.get(pm["orig"]) or pick_by_team.get(orig_team_name)
+            entry = {"round": pm["draft_round"], "original": pm["orig"],
+                     "slot": slot}
             (g["picks_a"] if pm["dst"] == g["mgr_a"] else g["picks_b"]).append(entry)
 
     offseason_trades = sorted(offseason_groups.values(), key=lambda g: g["date"])
@@ -5848,8 +5856,15 @@ def _ot_player_card(entry):
 
 
 def _ot_pick_chip(pick):
+    """Pick chip in R.PP format (4.05 = round 4, pick 5; linear draft, so
+    the pick-in-round equals the original owner's draft slot in every
+    round). Falls back to 'R{n} pick' if the slot can't be resolved from
+    lottery_result.json."""
     orig = alias_name(pick["original"])
-    return (f'<div class="ot-pick">R{pick["round"]} pick'
+    slot = pick.get("slot")
+    label = (f'Pick {pick["round"]}.{slot:02d}' if slot
+             else f'R{pick["round"]} pick')
+    return (f'<div class="ot-pick">{label}'
             f'<span class="ot-pick-orig">orig. {html.escape(orig)}</span></div>')
 
 
