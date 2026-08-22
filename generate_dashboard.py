@@ -754,14 +754,19 @@ def render_trade_side_table(label, players_list, subtotal, max_per_year):
 
 
 def _event_date_display(iso_date, is_trade, display=None):
-    """Date-slot label. Off-season trades (month < Sept) read 'OFF-SEASON
-    TRADE' — their exact date is fuzzy (synthetic / commish-pushed). Hardcoded
-    uppercase because the date slots have no CSS text-transform (only the method
-    label + section headers do), and we want it to match that caps styling.
-    `display` overrides the shown text otherwise (e.g. a pre-formatted date)."""
+    """Date-slot label. PRE-2026 off-season trades (month < Sept) read
+    'OFF-SEASON TRADE' — their exact date is fuzzy (synthetic /
+    commish-pushed, mostly pinned to June 30). From 2026 on, synthetic
+    trades are entered with their real transaction date (Pete's ruling
+    2026-08-22), so the actual date is shown like any other event.
+    Hardcoded uppercase because the date slots have no CSS text-transform
+    (only the method label + section headers do), and we want it to match
+    that caps styling. `display` overrides the shown text otherwise
+    (e.g. a pre-formatted date)."""
     shown = display if display is not None else iso_date
     try:
-        if is_trade and int(str(iso_date)[5:7]) < 9:
+        if (is_trade and int(str(iso_date)[5:7]) < 9
+                and int(str(iso_date)[:4]) < 2026):
             return "OFF-SEASON TRADE"
     except (ValueError, IndexError, TypeError):
         pass
