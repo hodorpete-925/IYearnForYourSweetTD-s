@@ -47,10 +47,12 @@ DB = Path(__file__).parent / "fantasy.db"
 TRADES = [
     {
         # Jeanty <-> Taylor, summer 2026 off-season swap. Reported by Pete
-        # 2026-08-15 (Yahoo API dead, no automated record). Both freeze at
-        # their 2025 DRC 2 ($100) for 2026, decrement resumes 2027.
+        # 2026-08-15 (Yahoo API dead, no automated record); actual trade
+        # date corrected to 2026-08-01 per Pete 2026-08-22 (DB re-dated by
+        # fix_jeanty_taylor_trade_date.py). Both freeze at their 2025
+        # DRC 2 ($100) for 2026, decrement resumes 2027.
         # Already in the DB (synth_ids 21-22); idempotence skips it.
-        "date": "2026-08-15",
+        "date": "2026-08-01",
         "season": 2026,
         "side_a": ("Brian Malconian", ["Ashton Jeanty"]),
         "side_b": ("Aric Tao", ["Jonathan Taylor"]),
@@ -78,6 +80,58 @@ TRADES = [
         "note": "Off-season 2026: Pete gets McLaurin + Scott's R4 (4.05); "
                 "Scott gets Tuten + the R16 Pete had acquired from Dan "
                 "(16.01). Entered manually post-API; date = report date.",
+    },
+    {
+        # Corum <-> Marks. Reported by Pete 2026-08-22 as FINAL (happened
+        # 8/20; the 48-hour counter window has passed).
+        # DRC (freeze rule): both players' 2025 anchor is an in-season
+        # waiver pickup (Corum re-added by Greg 12/3/25; Marks added by
+        # Brian 9/19/25) -> 2025 DRC 16. Trade-time DRC 16 ($10) frozen
+        # for 2026 on both sides; decrement resumes 2027.
+        "date": "2026-08-20",
+        "season": 2026,
+        "side_a": ("Brian Malconian", ["Blake Corum"]),
+        "side_b": ("Greg Pearson", ["Woody Marks"]),
+        "note": "Off-season 2026 swap: Malconian gets Corum, Pearson gets "
+                "Marks (player-for-player, no picks). Entered manually "
+                "post-API; date = trade date per Pete.",
+    },
+    {
+        # Waddle <-> Olave. Reported by Pete 2026-08-22 as FINAL (happened
+        # 8/20; the 48-hour counter window has passed).
+        # DRC (freeze rule): both 2025 rows are fresh ownership-changing
+        # drafts (Waddle: George 2025 R5, prior owner Pete; Olave: Dan
+        # 2025 R6, prior owner Pete). Waddle trade-time DRC 5 ($50)
+        # frozen for Dan in 2026; Olave trade-time DRC 6 ($30) frozen
+        # for George in 2026. Decrements resume 2027.
+        "date": "2026-08-20",
+        "season": 2026,
+        "side_a": ("Dan Vescuso", ["Jaylen Waddle"]),
+        "side_b": ("George Mensing", ["Chris Olave"]),
+        "note": "Off-season 2026 swap: Vescuso gets Waddle, Mensing gets "
+                "Olave (player-for-player, no picks). Entered manually "
+                "post-API; date = trade date per Pete.",
+    },
+    {
+        # McMillan + Brian's own R12  <->  the R4 Vescuso acquired from
+        # George. Reported by Pete 2026-08-24.
+        # DRC (freeze rule): Tetairoa McMillan's 2025 anchor is Brian's
+        # 2025 R4 draft pick -> trade-time DRC 4 ($60) frozen for
+        # Vescuso in 2026; decrement resumes 2027. (Keep-path for Brian
+        # would have been DRC 3 / $80 — the freeze supersedes it.)
+        # PICK IDENTITY: Brian sends his own R12 (12.12). Vescuso sends
+        # the R4 originally George Mensing's (4.03) — Vescuso's own 4.01
+        # stays put. Both teams stay at 16 picks.
+        "date": "2026-08-22",
+        "season": 2026,
+        "side_a": ("Dan Vescuso", ["Tetairoa McMillan"]),
+        "picks_a": [{"round": 12, "original": "Brian Malconian"}],
+        "side_b": ("Brian Malconian", []),
+        "picks_b": [{"round": 4, "original": "George Mensing"}],
+        "note": "Off-season 2026: Vescuso gets Tet McMillan + Brian's own "
+                "R12 (12.12); Malconian gets the R4 Vescuso had acquired "
+                "from George (4.03). Entered manually post-API; date = "
+                "trade date per Pete (8/22).",
     },
 ]
 
