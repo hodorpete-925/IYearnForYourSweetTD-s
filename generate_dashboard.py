@@ -3823,6 +3823,42 @@ table.ta-table tr.ta-total td {
 .ta-pill { cursor:pointer; user-select:none; }
 .ta-pill:hover { box-shadow:0 0 0 2px rgba(0,56,255,.15); }
 .kb-wait-chip { display:inline-block; background:#fff6e0; color:#8a6a12; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; margin:0 6px 6px 0; }
+/* ---- 2026 draft board (league-wide) ---------------------------------- */
+.db26-top { margin: 0 0 14px; }
+.db26-toggle { font-size: 13px; font-weight: 600; color: #2b2b2e; display: flex; align-items: baseline; gap: 8px; cursor: pointer; flex-wrap: wrap; }
+.db26-toggle input { transform: translateY(1px); }
+.db26-toggle-sub { font-weight: 400; color: #606C71; font-size: 12px; }
+.db26-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: start; }
+.db26-round { background: #fff; border: 1px solid #ebebed; border-radius: 8px; overflow: hidden; }
+.db26-round-h { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 12px; background: #f7f8fa; border-bottom: 1px solid #ebebed; font-weight: 700; font-size: 13px; color: #022479; }
+.db26-cost { font-weight: 600; font-size: 11px; color: #606C71; }
+.db26-pick { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; padding: 6px 12px; border-bottom: 1px solid #f2f2f4; }
+.db26-pick:last-child { border-bottom: none; }
+.db26-num { flex: 0 0 44px; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 12px; color: #606C71; }
+.db26-team { font-size: 13px; font-weight: 600; display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.db26-mgr { font-weight: 400; font-size: 11.5px; color: #606C71; }
+.db26-acq { background: #fdfaf0; }
+.db26-acq .db26-num { color: #8a6a12; }
+.db26-stack { flex-basis: 100%; padding: 2px 0 4px 52px; display: flex; flex-direction: column; gap: 2px; }
+.db26-kp { font-size: 12px; font-weight: 600; }
+.db26-kp-sub { font-weight: 400; color: #606C71; font-size: 11px; }
+.db26-none { font-size: 11px; color: #98a0ad; font-style: italic; }
+
+/* Keeper board: lineup preview (Yahoo slot layout) */
+.kb-lineup { margin-top: 16px; }
+.kb-lu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 10px 14px 14px; }
+.kb-lu-colh { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #606C71; padding: 6px 0 4px; border-bottom: 1px solid #ebebed; }
+.kb-lu-row { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f2f2f4; min-height: 30px; flex-wrap: wrap; }
+.kb-lu-slot { flex: 0 0 62px; font-size: 11px; font-weight: 700; color: #022479; background: #e6efff; border-radius: 4px; text-align: center; padding: 2px 0; }
+.kb-lu-slot-bn { background: #f0f0f2; color: #606C71; }
+.kb-lu-nm { font-weight: 600; font-size: 13px; }
+.kb-lu-sub { color: #606C71; font-weight: 400; font-size: 12px; }
+.kb-lu-meta { margin-left: auto; color: #606C71; font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.kb-lu-open { color: #98a0ad; font-size: 12px; font-style: italic; }
+.kb-lu-over { background: #fdf3f2; }
+.kb-lu-over .kb-lu-slot { background: #fdecea; color: #b42318; }
+@media (max-width: 760px) { .kb-lu-grid { grid-template-columns: 1fr; } }
+
 .kb-print { display:none; }
 @media (max-width: 900px) {
   .kb-cols { grid-template-columns: 1fr; }
@@ -4872,6 +4908,12 @@ JS = r"""
   const DOLLARS = {1:200, 2:100, 3:80, 4:60, 5:50, 6:30, 7:30, 8:30, 9:30};
   const $$ = d => DOLLARS[d] || 10;
   const clampDrc = d => Math.max(1, Math.min(16, d));
+  /* 2025 positional finish, e.g. "WR4" — pr comes from player_history's
+     pos_rank (rank by total 2025 points within position). Null for
+     rookies / players with no 2025 stats. Requested by Dan MacNulty:
+     the printout should show position + prior-year finish. */
+  const finish25 = p => (p && p.pr != null && p.p)
+    ? String(p.p).replace(/&/g, '&amp;').replace(/</g, '&lt;') + p.pr : '&mdash;';
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const money = n => '$' + n.toLocaleString();
   const teamBy = {}; D.teams.forEach(t => teamBy[t.slug] = t);
@@ -5019,6 +5061,79 @@ JS = r"""
   }
 
   function capTotal() { return keepers().reduce((s, p) => s + (p.c6 || 0), 0); }
+
+  /* ---- Lineup preview: keepers arranged in Yahoo's slot layout ---------
+     QB RB RB WR WR WR TE W/R/T Q/W/R/T K DEF + 5 BN + 2 IR (the 2026
+     shape, bench trimmed to 5). Dedicated slots fill first, best 2025
+     points first, then W/R/T, then the superflex, then bench. IR never
+     fills from keepers — you can't keep a player INTO an IR slot. This is
+     roster construction only; seating legality lives on the board above. */
+  function lineupAssign() {
+    const pool = { QB: [], RB: [], WR: [], TE: [], K: [], DEF: [] };
+    const other = [];
+    keepers().slice().sort((a, b) => (b.pts || 0) - (a.pts || 0))
+      .forEach(p => { (pool[p.p] || other).push(p); });
+    const take = pos => pool[pos].length ? pool[pos].shift() : null;
+    const takeBest = poss => {
+      let bestPos = null;
+      poss.forEach(pos => {
+        const c = pool[pos][0];
+        if (c && (bestPos == null || (c.pts || 0) > (pool[bestPos][0].pts || 0))) bestPos = pos;
+      });
+      return bestPos ? pool[bestPos].shift() : null;
+    };
+    const starters = [
+      { lbl: 'QB', p: take('QB') },
+      { lbl: 'RB', p: take('RB') },
+      { lbl: 'RB', p: take('RB') },
+      { lbl: 'WR', p: take('WR') },
+      { lbl: 'WR', p: take('WR') },
+      { lbl: 'WR', p: take('WR') },
+      { lbl: 'TE', p: take('TE') },
+      { lbl: 'W/R/T', p: takeBest(['WR', 'RB', 'TE']) },
+      { lbl: 'Q/W/R/T', p: takeBest(['QB', 'WR', 'RB', 'TE']) },
+      { lbl: 'K', p: take('K') },
+      { lbl: 'DEF', p: take('DEF') },
+    ];
+    const rest = [].concat(pool.QB, pool.RB, pool.WR, pool.TE, pool.K, pool.DEF, other)
+      .sort((a, b) => (b.pts || 0) - (a.pts || 0));
+    const bench = [];
+    for (let i = 0; i < 5; i++) bench.push({ lbl: 'BN', p: rest[i] || null });
+    return { starters, bench, overflow: rest.slice(5) };
+  }
+
+  function luRow(s, extraCls) {
+    const p = s.p;
+    let body;
+    if (p) {
+      body = '<span class="kb-lu-nm">' + esc(p.n) +
+        ' <span class="kb-lu-sub">' + esc(p.p || '') + (p.t ? ' &middot; ' + esc(p.t) : '') + '</span></span>' +
+        '<span class="kb-lu-meta">' + (p.pr != null ? finish25(p) + ' in 2025 &middot; ' : '') +
+        'DRC ' + p.d6 + ' &middot; ' + money(p.c6) + '</span>';
+    } else {
+      body = '<span class="kb-lu-open">' + (s.lbl === 'IR' ? 'empty &mdash; keepers can&#39;t fill IR' : 'open &mdash; filled at the draft') + '</span>';
+    }
+    return '<div class="kb-lu-row' + (p ? '' : ' kb-lu-empty') + (extraCls || '') + '">' +
+      '<span class="kb-lu-slot' + (s.lbl === 'BN' || s.lbl === 'IR' ? ' kb-lu-slot-bn' : '') + '">' + s.lbl + '</span>' + body + '</div>';
+  }
+
+  function lineupPrint() {
+    if (!keepers().length) return '';
+    const lu = lineupAssign();
+    const row = s => {
+      const p = s.p;
+      return '<tr' + (p ? '' : ' class="kb-print-open"') + '><td class="num" style="font-weight:700;color:#606C71;">' + s.lbl + '</td>' +
+        (p ? '<td class="kb-print-name">' + esc(p.n) + '</td><td>' + esc(p.p || '') + '</td><td>' + finish25(p) +
+             '</td><td class="num">' + p.d6 + '</td><td class="num">' + money(p.c6) + '</td>'
+           : '<td colspan="5" class="kb-print-note">' + (s.lbl === 'IR' ? 'empty' : 'open &mdash; filled at the draft') + '</td>') + '</tr>';
+    };
+    return '<h3 class="kb-print-chasm-h" style="color:#022479;">Lineup preview &mdash; keepers in Yahoo&#39;s slot layout</h3>' +
+      '<table><thead><tr><th style="width:64px;">Slot</th><th>Player</th><th>Pos</th><th>2025 finish</th><th>DRC</th><th>$</th></tr></thead><tbody>' +
+      lu.starters.map(row).join('') + lu.bench.map(row).join('') +
+      lu.overflow.map(p => row({ lbl: 'BN*', p })).join('') +
+      '<tr class="kb-print-open"><td class="num" style="font-weight:700;color:#606C71;">IR</td><td colspan="5" class="kb-print-note">empty</td></tr>'.repeat(2) +
+      '</tbody></table>';
+  }
 
   function lostRows() {
     const lostBy = {};
@@ -5172,6 +5287,22 @@ JS = r"""
     const prevRoster = app.querySelector('.kb-roster');
     const prevScroll = prevRoster ? prevRoster.scrollTop : 0;
 
+    /* Lineup preview panel — only once at least one keeper is checked. */
+    let lineupHtml = '';
+    if (keepers().length) {
+      const lu = lineupAssign();
+      const over = lu.overflow.map(p => luRow({ lbl: 'BN', p: p }, ' kb-lu-over')).join('');
+      lineupHtml = '<div class="kb-panel kb-lineup"><div class="kb-panel-h">Lineup preview <span class="kb-sub">' +
+        'your keepers in Yahoo&#39;s ' + D.season + ' slot layout &middot; best 2025 points fill each slot first &middot; open slots get filled at the draft</span></div>' +
+        '<div class="kb-lu-grid"><div class="kb-lu-col"><div class="kb-lu-colh">Starters</div>' +
+        lu.starters.map(s => luRow(s)).join('') + '</div>' +
+        '<div class="kb-lu-col"><div class="kb-lu-colh">Bench &amp; IR</div>' +
+        lu.bench.map(s => luRow(s)).join('') + over +
+        luRow({ lbl: 'IR', p: null }) + luRow({ lbl: 'IR', p: null }) + '</div></div>' +
+        (lu.overflow.length ? '<div class="kb-hint" style="color:#b42318;padding:0 14px 12px;">You&#39;ve kept more players than the 16 roster spots outside IR &mdash; the red bench rows don&#39;t fit.</div>' : '') +
+        '</div>';
+    }
+
     let pfHtml = '';
     if (st.pickFor != null) {
       const sl = sim.slots.find(s => s.id === st.pickFor);
@@ -5201,6 +5332,7 @@ JS = r"""
       '<div class="kb-panel"><div class="kb-panel-h">2026 draft board <span class="kb-sub">' +
       (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'one row per pick &middot; tap an open pick to fill it') +
       '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
+      lineupHtml +
       '<p class="kb-hint">Costs come from DRC, not from the round a keeper sits in. Checkbox keeps auto-seat only on your own open native pick; anything else is your conscious call. Tap any open pick to see who can legally take it, or drag players to lit slots. Legal by hand: the native round or any earlier held pick, plus the slide landing below a native round that&#39;s full (every round between must be full too). Acquired picks are never consumed automatically. Pick numbers (10.02 = round 10, 2nd overall slot) come from the published lottery order.</p>' +
       pfHtml;
 
@@ -5236,7 +5368,7 @@ JS = r"""
         // Round Pete owns nothing at (traded pre-history or never held)
         rowsHtml.push(
           '<tr class="kb-print-gone"><td class="num">' + r + '</td>' +
-          '<td colspan="4" class="kb-print-note">no pick this round</td></tr>');
+          '<td colspan="6" class="kb-print-note">no pick this round</td></tr>');
         continue;
       }
       here.forEach(sl => {
@@ -5252,17 +5384,19 @@ JS = r"""
           rowsHtml.push(
             '<tr><td class="num">' + r + '</td>' +
             '<td class="kb-print-name">' + esc(p.n) + numTag + '</td>' +
+            '<td>' + esc(p.p || '') + '</td>' +
+            '<td>' + finish25(p) + '</td>' +
             '<td class="num">' + p.d6 + '</td>' +
             '<td class="num">' + money(p.c6) + '</td>' +
             '<td class="kb-print-notes">' + notes.join(' ') + '</td></tr>');
         } else if (sl.own) {
           rowsHtml.push(
             '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
-            '<td colspan="4" class="kb-print-note">open &mdash; you draft here' + numTag + '</td></tr>');
+            '<td colspan="6" class="kb-print-note">open &mdash; you draft here' + numTag + '</td></tr>');
         } else {
           rowsHtml.push(
             '<tr class="kb-print-open"><td class="num">' + r + '</td>' +
-            '<td colspan="4" class="kb-print-note">open &mdash; acquired pick, you draft here' +
+            '<td colspan="6" class="kb-print-note">open &mdash; acquired pick, you draft here' +
             ((teamBy[sl.o] || {}).mgr ? ' (from ' + esc((teamBy[sl.o] || {}).mgr.split(' ')[0]) + ')' : '') + numTag + '</td></tr>');
         }
       });
@@ -5271,7 +5405,7 @@ JS = r"""
         const num = pickNumOf({ r: r, o: st.team });
         rowsHtml.push(
           '<tr class="kb-print-gone"><td class="num">' + r + '</td>' +
-          '<td colspan="4" class="kb-print-note kb-print-gone-note">traded to ' + esc(to) +
+          '<td colspan="6" class="kb-print-note kb-print-gone-note">traded to ' + esc(to) +
           (num ? ' <span class="kb-print-picknum">(' + num + ')</span>' : '') + '</td></tr>');
       });
     }
@@ -5279,10 +5413,11 @@ JS = r"""
     let chasmBlock = '';
     if (sim.unplaced.length) {
       chasmBlock += '<h3 class="kb-print-chasm-h" style="color:#8a6a12;">Kept, awaiting placement &mdash; seat before entering in Yahoo</h3>' +
-        '<table><thead><tr><th>Player</th><th>Pos</th><th>DRC</th><th>$</th><th>Status</th></tr></thead><tbody>' +
+        '<table><thead><tr><th>Player</th><th>Pos</th><th>2025 finish</th><th>DRC</th><th>$</th><th>Status</th></tr></thead><tbody>' +
         sim.unplaced.map(p =>
           '<tr><td>' + esc(p.n) + '</td>' +
           '<td>' + esc(p.p || '') + '</td>' +
+          '<td>' + finish25(p) + '</td>' +
           '<td class="num">' + p.d6 + '</td>' +
           '<td class="num">' + money(p.c6) + '</td>' +
           '<td>native pick taken; place by hand on the board</td></tr>').join('') +
@@ -5290,10 +5425,11 @@ JS = r"""
     }
     if (sim.chasm.length) {
       chasmBlock += '<h3 class="kb-print-chasm-h">Can&rsquo;t slot (chasm) &mdash; keeper designation blocked</h3>' +
-        '<table><thead><tr><th>Player</th><th>Pos</th><th>DRC</th><th>$</th><th>Reason</th></tr></thead><tbody>' +
+        '<table><thead><tr><th>Player</th><th>Pos</th><th>2025 finish</th><th>DRC</th><th>$</th><th>Reason</th></tr></thead><tbody>' +
         sim.chasm.map(p =>
           '<tr><td class="kb-print-chasm">' + esc(p.n) + '</td>' +
           '<td>' + esc(p.p || '') + '</td>' +
+          '<td>' + finish25(p) + '</td>' +
           '<td class="num">' + p.d6 + '</td>' +
           '<td class="num">' + money(p.c6) + '</td>' +
           '<td class="kb-print-chasm">no legal slot under the slide rules</td></tr>').join('') +
@@ -5307,8 +5443,9 @@ JS = r"""
       '<span class="kb-print-legend"><span class="kb-print-legend-item"><span class="kb-print-legend-key">R#</span> keeper slot</span> &middot; ' +
       '<span class="kb-print-legend-item"><span class="kb-print-legend-key kb-print-legend-open">R#</span> open draft slot</span> &middot; ' +
       '<span class="kb-print-legend-item"><span class="kb-print-legend-key kb-print-legend-gone">R#</span> traded away</span></span></p>' +
-      '<table class="kb-print-full"><thead><tr><th style="width:44px;">Rd</th><th>Slot</th><th style="width:56px;">DRC</th><th style="width:60px;">$</th><th style="width:38%;">Notes</th></tr></thead><tbody>' +
+      '<table class="kb-print-full"><thead><tr><th style="width:44px;">Rd</th><th>Slot</th><th style="width:44px;">Pos</th><th style="width:74px;">2025 finish</th><th style="width:56px;">DRC</th><th style="width:60px;">$</th><th style="width:30%;">Notes</th></tr></thead><tbody>' +
       rowsHtml.join('') + '</tbody></table>' +
+      lineupPrint() +
       chasmBlock;
   }
 
@@ -5416,6 +5553,87 @@ JS = r"""
     }
   });
 
+  render();
+})();
+
+/* ---- 2026 draft board (league-wide pick grid) ------------------------ */
+(function() {
+  const D = window.TRADE_DATA;
+  const root = document.getElementById('draft-board');
+  if (!D || !root) return;
+  const app = root.querySelector('.db26-app');
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const money = n => '$' + n.toLocaleString();
+  const DOLLARS = {1:200, 2:100, 3:80, 4:60, 5:50, 6:30, 7:30, 8:30, 9:30};
+  const roundCost = r => DOLLARS[r] || 10;
+  const clampDrc = d => Math.max(1, Math.min(16, d));
+  const teamBy = {}; D.teams.forEach(t => teamBy[t.slug] = t);
+  const playersBy = {}; D.players.forEach(p => { (playersBy[p.m] = playersBy[p.m] || []).push(p); });
+  const DPOS = D.draft_pos || {};
+  const firstName = s => (s || '').split(' ')[0];
+
+  /* League-wide pick map from the per-team inventories the analyzer and
+     keeper board already embed: D.picks[holder] lists {r, o, lp}. A pick
+     renders at its ORIGINAL owner's draft slot (that fixes its number,
+     linear draft), naming whoever holds it now. */
+  const byRound = {};
+  Object.keys(D.picks).forEach(h => (D.picks[h] || []).forEach(pk => {
+    (byRound[pk.r] = byRound[pk.r] || []).push({ h: h, o: pk.o, lp: pk.lp });
+  }));
+
+  let showKeep = false;
+
+  /* The keeper lens is an INVENTORY view, same principle as the trade
+     analyzer: players whose DRC natively lands in this round for the
+     pick's holder. It never assumes who is actually kept. */
+  function stackFor(holder, r) {
+    return (playersBy[holder] || []).filter(p => clampDrc(p.d6) === r)
+      .sort((a, b) => (b.pts || 0) - (a.pts || 0));
+  }
+
+  function render() {
+    const cards = [];
+    for (let r = 1; r <= 16; r++) {
+      const picks = (byRound[r] || []).slice()
+        .sort((a, b) => ((a.lp ? 98 : DPOS[a.o] || 97) - (b.lp ? 98 : DPOS[b.o] || 97)));
+      const stacked = {};   // holder -> already stacked this round (a team
+                            // with two picks here gets its players listed once)
+      const rows = picks.map(pk => {
+        const t = teamBy[pk.h] || {};
+        const slot = pk.lp ? null : DPOS[pk.o];
+        const num = slot ? r + '.' + String(slot).padStart(2, '0') : null;
+        const acq = pk.o !== pk.h;
+        let note = '';
+        if (acq) note = 'via trade from ' + esc(firstName((teamBy[pk.o] || {}).mgr));
+        if (pk.lp) note = (note ? note + ' &middot; ' : '') + 'last-pick convention';
+        let stack = '';
+        if (showKeep && !stacked[pk.h]) {
+          stacked[pk.h] = 1;
+          const ps = stackFor(pk.h, r);
+          stack = '<div class="db26-stack">' + (ps.length
+            ? ps.map(p => '<span class="db26-kp">' + esc(p.n) +
+                ' <span class="db26-kp-sub">' + esc(p.p || '') +
+                (p.pr != null && p.p ? ' &middot; ' + esc(p.p) + p.pr + ' in 2025' : '') + '</span></span>').join('')
+            : '<span class="db26-none">no roster player at DRC ' + r + '</span>') + '</div>';
+        }
+        return '<div class="db26-pick' + (acq ? ' db26-acq' : '') + '">' +
+          '<span class="db26-num">' + (num || 'LP') + '</span>' +
+          '<span class="db26-team">' + esc(t.team || pk.h) +
+          '<span class="db26-mgr">' + esc(t.mgr || '') + (note ? ' &middot; ' + note : '') + '</span></span>' +
+          stack + '</div>';
+      }).join('');
+      cards.push('<div class="db26-round"><div class="db26-round-h">Round ' + r +
+        '<span class="db26-cost">keeper cost ' + money(roundCost(r)) + '</span></div>' + rows + '</div>');
+    }
+    app.innerHTML =
+      '<div class="db26-top"><label class="db26-toggle"><input type="checkbox"' + (showKeep ? ' checked' : '') +
+      ' data-role="db26keep"> Show potential keepers<span class="db26-toggle-sub">each pick lists the holder&#39;s roster players whose DRC lands in that round &mdash; who could sit there, not who will</span></label></div>' +
+      '<div class="db26-grid">' + cards.join('') + '</div>';
+  }
+
+  app.addEventListener('change', e => {
+    if (e.target.dataset.role === 'db26keep') { showKeep = e.target.checked; render(); }
+  });
   render();
 })();
 
@@ -6750,6 +6968,7 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="player-compare">Player comparison</a>
           <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
           <a class="nav-link" data-target="keeper-board">Keeper board</a>
+          <a class="nav-link" data-target="draft-board">2026 draft board</a>
         </div>
       </details>
 
@@ -6846,29 +7065,6 @@ def render_trade_analyzer(by_manager):
         if dst in held:
             held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
 
-    # Real Yahoo pick trades: season-2025 transactions deal 2026-draft picks
-    for mv in conn.execute(
-            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
-            " tp.destination_team_season_id d, tp.original_team_season_id o "
-            "FROM transaction_picks tp "
-            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
-            "WHERE t.season = 2025 ORDER BY t.timestamp"):
-        _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
-
-    # Synthetic pick trades (post-API-outage, commissioner-entered):
-    # 2026 off-season trades deal 2026-draft picks. Table appears once
-    # add_synthetic_trades.py has run its migration; absent = no moves yet.
-    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
-                    "AND name='synthetic_transaction_picks'").fetchone():
-        for mv in conn.execute(
-                "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
-                " sp.destination_team_season_id d, sp.original_team_season_id o "
-                "FROM synthetic_transaction_picks sp "
-                "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
-                "WHERE st.season = 2026 ORDER BY st.timestamp"):
-            _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
-    conn.close()
-
     # --- 2026 draft order (lottery result) -> per-team draft slot -------
     # The draft is LINEAR (verified against 2023-25 draft_picks: rounds run
     # in the same order, no snake), so a team's round-N pick is N.<slot>,
@@ -6897,6 +7093,81 @@ def render_trade_analyzer(by_manager):
                   f"their picks render without numbers")
     else:
         print("WARNING: lottery_result.json not found — pick numbers omitted")
+
+    # "My last pick" IOUs: Yahoo recorded these as Round 17 in a 16-round
+    # draft (three real ones from the Nov 2025 deadline window — txns
+    # 1226, 1206, 1201; three more R17 rows in raw `transactions` are
+    # status='vetoed' and the all_transactions view already drops them).
+    # League convention (Pete, 2026-08-24): the giver conveys their
+    # actual final selection — the highest-round pick they still hold,
+    # cascading up (no 16th left -> the 15th, and so on).
+    last_pick_ious = []
+
+    def _settle_last_picks():
+        """Drain pending last-pick IOUs. ERA-ORDER RULING (Pete,
+        2026-08-24): an IOU settles after every concrete trade of its own
+        era but BEFORE the next era's trades apply — Alex's November
+        claim on Dan's last pick resolves against Dan's end-of-2025
+        holdings, so the 12.12 Dan acquired in Aug 2026 stays with Dan.
+        (Within an era it still settles last, so e.g. Dan's 11/14 R13+R14
+        trade is applied before his R17 IOU.) Highest round wins; within
+        a round the latest draft slot is the literal last pick. The
+        conveyed pick keeps its real identity, so it renders with its
+        true number and a "via trade from" note downstream."""
+        for src, dst in last_pick_ious:
+            pool = held.get(src)
+            if not pool:
+                print(f"WARNING: last-pick settlement: {src!r} holds no "
+                      f"picks to convey to {dst!r} — IOU dropped")
+                continue
+            hit = max(pool, key=lambda p: (p["r"], draft_pos.get(p["o"], 0)))
+            pool.remove(hit)
+            if dst in held:
+                held[dst].append(hit)
+            print(f"  last-pick IOU settled: {src} -> {dst} conveys "
+                  f"R{hit['r']} (orig {hit['o']})")
+        last_pick_ious.clear()
+
+    # Real Yahoo pick trades: season-2025 transactions deal 2026-draft picks
+    for mv in conn.execute(
+            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
+            " tp.destination_team_season_id d, tp.original_team_season_id o "
+            "FROM transaction_picks tp "
+            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
+            "WHERE t.season = 2025 ORDER BY t.timestamp"):
+        if mv["rnd"] > 16:
+            last_pick_ious.append((slug_by_tsid.get(mv["s"]),
+                                   slug_by_tsid.get(mv["d"])))
+        else:
+            _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
+
+    _settle_last_picks()   # 2025-era IOUs resolve before 2026 trades apply
+
+    # Synthetic pick trades (post-API-outage, commissioner-entered):
+    # 2026 off-season trades deal 2026-draft picks. Table appears once
+    # add_synthetic_trades.py has run its migration; absent = no moves yet.
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
+                    "AND name='synthetic_transaction_picks'").fetchone():
+        for mv in conn.execute(
+                "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
+                " sp.destination_team_season_id d, sp.original_team_season_id o "
+                "FROM synthetic_transaction_picks sp "
+                "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
+                "WHERE st.season = 2026 ORDER BY st.timestamp"):
+            if mv["rnd"] > 16:
+                last_pick_ious.append((slug_by_tsid.get(mv["s"]),
+                                       slug_by_tsid.get(mv["d"])))
+            else:
+                _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
+        _settle_last_picks()   # any synthetic-era IOU settles after its own era
+    conn.close()
+
+
+    total_picks = sum(len(v) for v in held.values())
+    if total_picks != 16 * len(teams):
+        print(f"WARNING: pick ledger out of balance — {total_picks} picks "
+              f"across {len(teams)} teams (expected {16 * len(teams)}). "
+              f"Check PICK_TXNS_IGNORED / last-pick settlements.")
 
     for slug in held:
         held[slug].sort(key=lambda p: (p["r"], draft_pos.get(p["o"], 99), p["o"]))
@@ -6988,6 +7259,25 @@ def render_keeper_board():
     </section>"""
 
 
+def render_draft_board():
+    """League-wide 2026 draft board (Manager Tools): every pick of the
+    linear draft in lottery order, round by round, naming the current
+    holder of each pick with traded picks flagged. Optional keeper lens
+    stacks each holder's roster players whose DRC lands in that round —
+    an inventory view (who COULD sit there), never a prediction of who's
+    kept. Reads the same TRADE_DATA embed as the analyzer and keeper
+    board; client-side only."""
+    return f"""
+    <section class="team-section" id="draft-board" hidden>
+      <header class="section-header">
+        <h1 class="section-title">{TARGET_SEASON} draft board</h1>
+        <p class="section-sub">Every pick in the {TARGET_SEASON} draft, laid out the way the draft will actually run: linear order from the published lottery, one card per round, traded picks sitting where they&rsquo;ll be made with a note on where they came from. Flip on the keeper lens to see which of the holder&rsquo;s roster players carry a DRC that lands in each round &mdash; the players who could occupy that pick as keepers, not a call on who will. Whittling possibilities down to an actual slate is what the Keeper board tab is for.</p>
+      </header>
+      <div class="db26-app"></div>
+      <p class="ta-foot">The draft is linear, no snake: a pick number like 3.07 reads round 3, 7th draft slot, and the slot follows the pick&rsquo;s ORIGINAL owner &mdash; a traded pick keeps its number and changes hands. Gold rows are picks that have moved. Each round&rsquo;s keeper cost is the DRC dollar figure a keeper seated in that round contributes to the pot. Trades of &ldquo;my last pick&rdquo; convey the giver&rsquo;s actual final selection &mdash; their highest remaining pick after all other trades settle &mdash; so those picks appear here under their real round and number.</p>
+    </section>"""
+
+
 def render_html(by_manager, search_players, comms_posts, generated_at, meta=None,
                 offseason_trades=None):
     sidebar = build_sidebar(by_manager)
@@ -6997,6 +7287,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     player_compare = render_player_compare(search_players)
     trade_analyzer = render_trade_analyzer(by_manager)
     keeper_board = render_keeper_board()
+    draft_board = render_draft_board()
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
     rules_history = render_rules_history_section()
@@ -7031,6 +7322,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {player_compare}
 {trade_analyzer}
 {keeper_board}
+{draft_board}
 {desk}
 {offseason}
 {rules}
