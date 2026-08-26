@@ -6066,9 +6066,9 @@ def _ot_player_card(entry):
               <span class="ot-player-meta">{meta}</span>
             </div>
             <div class="ot-costline">
-              <span class="ot-cost-was"><span class="ot-cost-label">No-trade path</span>{keep}</span>
+              <span class="ot-cost-was"><span class="ot-cost-label">Keeper DRC</span>{keep}</span>
               <span class="ot-arrow" aria-hidden="true">&rarr;</span>
-              <span class="ot-cost-now"><span class="ot-cost-label">Frozen 2026</span><span class="pill {tier}">{frozen}</span></span>
+              <span class="ot-cost-now"><span class="ot-cost-label">Trade DRC</span><span class="pill {tier}">{frozen}</span></span>
             </div>
           </div>"""
 
