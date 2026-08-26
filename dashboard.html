@@ -2576,6 +2576,15 @@ table.ta-table tr.ta-total td {
 .db26-kp-sub { font-weight: 400; color: #606C71; font-size: 11px; }
 .db26-none { font-size: 11px; color: #98a0ad; font-style: italic; }
 
+/* Keeper board: slot-occupancy banner */
+.kb-slotbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.kb-slotbar-inpanel { margin: 10px 14px 2px; }
+.kb-slotchip { font-size: 12px; font-weight: 600; color: #606C71; background: #f0f0f2; border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
+.kb-slotchip .kb-slotnum { font-variant-numeric: tabular-nums; font-weight: 700; }
+.kb-slot-part { background: #e6efff; color: #022479; }
+.kb-slot-full { background: #022479; color: #fff; }
+.kb-slot-over { background: #fdecea; color: #b42318; }
+
 /* Keeper board: lineup preview (Yahoo slot layout) */
 .kb-lineup { margin-top: 16px; }
 .kb-lu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 10px 14px 14px; }
@@ -3061,19 +3070,19 @@ table.ta-table tr.ta-total td {
       <div class="updated-widget">
         <input type="checkbox" id="updated-toggle" class="updated-toggle">
         <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
-          Updated 2026-08-26 08:47 EDT
+          Updated 2026-08-26 09:27 EDT
         </label>
         <div class="updated-details" role="region" aria-labelledby="updated-toggle">
           <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-08-26 12:31 EDT</span></div>
-          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-08-26 08:33 EDT &mdash; Add McMillan/pick trade (8/22); Dan V.-Brian M.</span></div>
-          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-08-26 08:47 EDT (this page)</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-08-26 08:47 EDT &mdash; Refresh dashboard (2026-08-26 08:47)</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-08-26 09:27 EDT (this page)</span></div>
           <div class="updated-log">
             <div class="updated-log-h">Recent activity</div>
-            <pre class="updated-log-body">  2026-08-26 08:33  Add McMillan/pick trade (8/22); Dan V.-Brian M.
+            <pre class="updated-log-body">  2026-08-26 08:47  Refresh dashboard (2026-08-26 08:47)
+  2026-08-26 08:33  Add McMillan/pick trade (8/22); Dan V.-Brian M.
   2026-08-26 08:32  Refresh dashboard (2026-08-26 08:32)
   2026-08-22 00:08  Refresh dashboard (2026-08-22 00:08)
-  2026-08-22 00:01  Refresh dashboard (2026-08-22 00:01)
-  2026-08-21 23:46  Refresh dashboard (2026-08-21 23:46)</pre>
+  2026-08-22 00:01  Refresh dashboard (2026-08-22 00:01)</pre>
           </div>
         </div>
       </div>
@@ -49822,21 +49831,26 @@ table.ta-table tr.ta-total td {
 
   /* ---- Lineup preview: keepers arranged in Yahoo's slot layout ---------
      QB RB RB WR WR WR TE W/R/T Q/W/R/T K DEF + 5 BN + 2 IR (the 2026
-     shape, bench trimmed to 5). Dedicated slots fill first, best 2025
-     points first, then W/R/T, then the superflex, then bench. IR never
-     fills from keepers — you can't keep a player INTO an IR slot. This is
-     roster construction only; seating legality lives on the board above. */
+     shape, bench trimmed to 5). Dedicated slots fill first by BEST 2026
+     ADP (lowest number = drafted earliest; Pete's ruling 2026-08-26 —
+     Lamar takes QB, Darnold flows to the superflex unless his ADP is
+     better), then W/R/T, then the superflex, then bench. Players with no
+     2026 ADP sort last within their position, tiebreak 2025 points. IR
+     never fills from keepers — you can't keep a player INTO an IR slot.
+     Roster construction only; seating legality lives on the board above. */
   function lineupAssign() {
+    const adpVal = p => (p.adp != null ? p.adp : 1e6);
+    const better = (a, b) => adpVal(a) - adpVal(b) || (b.pts || 0) - (a.pts || 0);
     const pool = { QB: [], RB: [], WR: [], TE: [], K: [], DEF: [] };
     const other = [];
-    keepers().slice().sort((a, b) => (b.pts || 0) - (a.pts || 0))
+    keepers().slice().sort(better)
       .forEach(p => { (pool[p.p] || other).push(p); });
     const take = pos => pool[pos].length ? pool[pos].shift() : null;
     const takeBest = poss => {
       let bestPos = null;
       poss.forEach(pos => {
         const c = pool[pos][0];
-        if (c && (bestPos == null || (c.pts || 0) > (pool[bestPos][0].pts || 0))) bestPos = pos;
+        if (c && (bestPos == null || better(c, pool[bestPos][0]) < 0)) bestPos = pos;
       });
       return bestPos ? pool[bestPos].shift() : null;
     };
@@ -49854,7 +49868,7 @@ table.ta-table tr.ta-total td {
       { lbl: 'DEF', p: take('DEF') },
     ];
     const rest = [].concat(pool.QB, pool.RB, pool.WR, pool.TE, pool.K, pool.DEF, other)
-      .sort((a, b) => (b.pts || 0) - (a.pts || 0));
+      .sort(better);
     const bench = [];
     for (let i = 0; i < 5; i++) bench.push({ lbl: 'BN', p: rest[i] || null });
     return { starters, bench, overflow: rest.slice(5) };
@@ -50045,13 +50059,36 @@ table.ta-table tr.ta-total td {
     const prevRoster = app.querySelector('.kb-roster');
     const prevScroll = prevRoster ? prevRoster.scrollTop : 0;
 
+    /* Slot-occupancy banner: how many of each lineup slot the current
+       keeper slate already fills (Pete's request 2026-08-26). Rendered
+       twice — under the top controls and again atop the lineup preview
+       panel (redundant on purpose, per Pete). */
+    const lu = lineupAssign();
+    const slotGroups = [];
+    const addGroup = (label, slots) => slotGroups.push(
+      { label: label, filled: slots.filter(s => s.p).length, total: slots.length });
+    addGroup('QB', lu.starters.filter(s => s.lbl === 'QB'));
+    addGroup('RB', lu.starters.filter(s => s.lbl === 'RB'));
+    addGroup('WR', lu.starters.filter(s => s.lbl === 'WR'));
+    addGroup('TE', lu.starters.filter(s => s.lbl === 'TE'));
+    addGroup('FLEX', lu.starters.filter(s => s.lbl === 'W/R/T'));
+    addGroup('Q/W/R/T', lu.starters.filter(s => s.lbl === 'Q/W/R/T'));
+    addGroup('K', lu.starters.filter(s => s.lbl === 'K'));
+    addGroup('DEF', lu.starters.filter(s => s.lbl === 'DEF'));
+    addGroup('BN', lu.bench);
+    const slotChips = slotGroups.map(g =>
+      '<span class="kb-slotchip' + (g.filled >= g.total ? ' kb-slot-full' : (g.filled ? ' kb-slot-part' : '')) + '">' +
+      '<span class="kb-slotnum">' + g.filled + '/' + g.total + '</span> ' + g.label + '</span>').join('') +
+      (lu.overflow.length ? '<span class="kb-slotchip kb-slot-over">+' + lu.overflow.length + ' over the roster</span>' : '');
+    const slotBanner = '<div class="kb-slotbar">' + slotChips + '</div>';
+
     /* Lineup preview panel — only once at least one keeper is checked. */
     let lineupHtml = '';
     if (keepers().length) {
-      const lu = lineupAssign();
       const over = lu.overflow.map(p => luRow({ lbl: 'BN', p: p }, ' kb-lu-over')).join('');
       lineupHtml = '<div class="kb-panel kb-lineup"><div class="kb-panel-h">Lineup preview <span class="kb-sub">' +
-        'your keepers in Yahoo&#39;s ' + D.season + ' slot layout &middot; best 2025 points fill each slot first &middot; open slots get filled at the draft</span></div>' +
+        'your keepers in Yahoo&#39;s ' + D.season + ' slot layout &middot; best 2026 ADP fills each slot first &middot; open slots get filled at the draft</span></div>' +
+        '<div class="kb-slotbar kb-slotbar-inpanel">' + slotChips + '</div>' +
         '<div class="kb-lu-grid"><div class="kb-lu-col"><div class="kb-lu-colh">Starters</div>' +
         lu.starters.map(s => luRow(s)).join('') + '</div>' +
         '<div class="kb-lu-col"><div class="kb-lu-colh">Bench &amp; IR</div>' +
@@ -50083,7 +50120,7 @@ table.ta-table tr.ta-total td {
       } else { st.pickFor = null; }
     }
 
-    app.innerHTML = top +
+    app.innerHTML = top + slotBanner +
       '<div class="kb-cols">' +
       '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep (seats at your open native pick) &middot; drag anywhere lit to place by hand</span></div>' +
       '<div class="kb-roster">' + cards + '</div></div>' +
