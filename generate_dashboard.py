@@ -415,6 +415,52 @@ def build_data():
                                     "method": method, "detail": desc})
                     last_manager = mgr
 
+        # ---- Cost annotations for the lineage (make the DRC chain explicit) ----
+        # Self-contained chain walk over the lineage nodes, mirroring the
+        # league rules: fresh draft anchors DRC at the round; waiver resets to
+        # 16; a trade conveys the trade-time DRC (pre-decrement for off-season
+        # trades) and freezes it for the next season. Independent of per_year
+        # history so dead cost cycles annotate correctly.
+        import re as _re_lin
+        _anchor_yr = None   # season whose DRC equals _anchor_drc
+        _anchor_drc = None
+        for _idx, _node in enumerate(lineage):
+            try:
+                _nyr = int((_node.get("date") or "")[:4])
+            except (ValueError, TypeError):
+                _nyr = None
+            try:
+                _nmo = int((_node.get("date") or "")[5:7])
+            except (ValueError, TypeError):
+                _nmo = None
+            _node["year"] = _nyr
+            _m = _node["method"]
+            _set = None
+            _tag = None
+            if _m == "Drafted":
+                _rm = _re_lin.search(r"R(\d+)", _node.get("detail", ""))
+                _set = int(_rm.group(1)) if _rm else None
+                if _set is not None and _nyr is not None:
+                    _anchor_yr, _anchor_drc = _nyr, _set
+                _tag = "new cost cycle" if _idx > 0 else "cost cycle starts"
+            elif _m in ("Waiver", "Free agent"):
+                _set = 16
+                if _nyr is not None:
+                    _anchor_yr, _anchor_drc = _nyr, 16
+                _tag = "cost resets to DRC 16"
+            elif _m == "Trade":
+                if _anchor_drc is not None and _nyr is not None:
+                    _mid = _nmo is not None and _nmo >= 9
+                    _conv = max(_nyr if _mid else _nyr - 1, _anchor_yr)
+                    _set = max(_anchor_drc - max(0, _conv - _anchor_yr), 1)
+                    _anchor_yr = (_nyr + 1) if _mid else _nyr
+                    _anchor_drc = _set
+                _tag = "carries DRC, trades never reset cost"
+            _node["drc_set"] = _set
+            _node["dollars_set"] = dollar.get(_set) if _set else None
+            _node["cost_tag"] = _tag
+            _node["cycle_break"] = _idx > 0 and _m in ("Drafted", "Waiver", "Free agent")
+
         # 2025 fantasy finish for the hero card
         pts_2025 = pts_by_year.get((pid, 2025))
         rank_2025 = pos_rank_by_year.get((pid, 2025))
@@ -2605,6 +2651,42 @@ tr.history-row > td.history-cell {
   color: var(--gray-400);
   font-size: 18px;
   padding: 0 2px;
+}
+.lineage-cost {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: var(--blue-800);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.lineage-cost-now { background: #e8f6ec; color: #14532d; font-size: 13px; }
+.lineage-now { border-left-color: #16a34a; background: #fbfffc; }
+.lineage-tag {
+  font-size: 10.5px;
+  color: var(--gray-500);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+.lineage-break {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 6px;
+  max-width: 92px;
+  text-align: center;
+}
+.lineage-break-x { color: #b91c1c; font-size: 14px; font-weight: 700; }
+.lineage-break-txt {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #b91c1c;
 }
 
 /* --- Commissioner's Desk ----------------------------------------------- */
@@ -6847,18 +6929,52 @@ def render_player_search_section(search_players):
             '</div>'
         )
 
-        lineage_recent = p["lineage"][-5:] if p["lineage"] else []
+        lineage_all = p["lineage"] if p["lineage"] else []
         lineage_nodes = []
-        for i, node in enumerate(lineage_recent):
+        for i, node in enumerate(lineage_all):
             if i > 0:
-                lineage_nodes.append('<div class="lineage-arrow">&rarr;</div>')
+                if node.get("cycle_break"):
+                    lineage_nodes.append(
+                        '<div class="lineage-break">'
+                        '<span class="lineage-break-x">&#10007;</span>'
+                        '<span class="lineage-break-txt">not kept &middot; back to draft pool</span>'
+                        '</div>'
+                    )
+                else:
+                    lineage_nodes.append('<div class="lineage-arrow">&rarr;</div>')
             method_class = node["method"].lower().replace(" ", "-")
+            cost_chip = ""
+            if node.get("drc_set"):
+                _d = node["drc_set"]
+                _dol = node.get("dollars_set")
+                cost_chip = (
+                    f'<div class="lineage-cost">DRC {_d}'
+                    + (f' &middot; ${_dol}' if _dol else '')
+                    + '</div>'
+                )
+            tag_html = (
+                f'<div class="lineage-tag">{html.escape(node["cost_tag"])}</div>'
+                if node.get("cost_tag") else ""
+            )
             lineage_nodes.append(
                 f'<div class="lineage-node lineage-{method_class}">'
                 f'<div class="lineage-date">{html.escape(_event_date_display(node["date"], node["method"] == "Trade"))}</div>'
                 f'<div class="lineage-manager">{html.escape(node["manager"])}</div>'
                 f'<div class="lineage-method">{html.escape(node["method"])}</div>'
                 f'<div class="lineage-detail">{html.escape(node["detail"])}</div>'
+                f'{cost_chip}{tag_html}'
+                '</div>'
+            )
+        # Terminal node: what this chain costs for 2026
+        cur_ln = next((y for y in p["per_year"] if y["year"] == 2026), None)
+        if lineage_nodes and cur_ln and cur_ln.get("drc") is not None:
+            lineage_nodes.append('<div class="lineage-arrow">&rarr;</div>')
+            lineage_nodes.append(
+                '<div class="lineage-node lineage-now">'
+                '<div class="lineage-date">2026</div>'
+                f'<div class="lineage-manager">{html.escape(cur_ln.get("owner") or "&#8212;")}</div>'
+                '<div class="lineage-method">Keeper cost</div>'
+                f'<div class="lineage-cost lineage-cost-now">DRC {cur_ln["drc"]} &middot; ${cur_ln["dollars"]}</div>'
                 '</div>'
             )
         lineage_html = (
@@ -6889,7 +7005,7 @@ def render_player_search_section(search_players):
           </div>
 
           <div class="ps-section">
-            <div class="ps-section-label">Ownership lineage</div>
+            <div class="ps-section-label">Ownership &amp; cost lineage</div>
             {lineage_html}
           </div>
 

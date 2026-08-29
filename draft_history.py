@@ -209,9 +209,36 @@ def build_transaction_log_for_player(conn, player_id, before_date):
         (player_id, int(before_date[:4])),
     ))
     import compute_drc as drc
+    import player_history as hist_mod
     for i, r in enumerate(draft_rows):
         season, dround, mgr, team_sid = r
-        if i == 0:
+        # Classify this row: fresh draft (new cost cycle) vs keeper allocation.
+        # The old "first row = draft, everything after = kept" heuristic
+        # misclassified players who were released and re-drafted by a different
+        # manager (the Josh Jacobs pattern: drafted 2023 by Tom, re-drafted
+        # fresh in 2024 by BRick and again in 2025 by Dan M.). A row is a
+        # keeper allocation only if the drafting manager (including handoff
+        # bridges) owned the player coming into that season, or acquired him
+        # via an off-season trade before that draft; keeper_status_overrides
+        # wins when present.
+        _ov = drc.get_keeper_status_override(conn, season, player_id, team_sid)
+        if _ov is not None:
+            _fresh = (_ov == 0)
+        elif i == 0:
+            _fresh = True
+        else:
+            _mgr_id = drc.get_manager_id(conn, team_sid)
+            _team_set = set(drc.get_manager_team_ids(conn, _mgr_id))
+            _prev_team = hist_mod.get_owner_at_year_end(conn, player_id, season - 1)
+            _same = _prev_team is not None and _prev_team in _team_set
+            if not _same:
+                _inc = drc.find_most_recent_incoming(
+                    conn, player_id, _team_set,
+                    before=f"{season}-08-24 00:00:00")
+                if _inc is not None and str(_inc[1])[:4] == str(season):
+                    _same = True
+            _fresh = not _same
+        if _fresh:
             desc = f"Drafted R{dround} by {mgr or '?'}"
             kind = "draft"
         else:
