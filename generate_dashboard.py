@@ -50,6 +50,19 @@ MANAGER_ALIASES = _load_manager_aliases()
 _ALIAS_MISSING_WARNED = set()
 
 
+# 2026 franchise handoffs: the person who ran the roster through 2025 vs the
+# person who owns it now. Used ONLY for current-season (2026) display slots —
+# roster headers, current-owner chips, 2026 lineage nodes. Historical events
+# keep the historical manager's name so the record reads true.
+CURRENT_HANDOFFS = {"Jon Lewitus": "Bill Keenan"}
+
+
+def current_face(name):
+    """Map a franchise's historical manager to its current (2026) manager
+    for display in current-season contexts, then alias."""
+    return alias_name(CURRENT_HANDOFFS.get(name, name))
+
+
 def alias_name(name):
     """Real manager name -> First+LastInitial alias. Unknown names fall
     through with a one-time warning per name so leaks are visible in the
@@ -151,7 +164,7 @@ def build_data():
         drc_dollars = dollar.get(drc_int, 10)
 
         mgr = row["manager"]
-        display = alias_name(mgr)
+        display = current_face(mgr)
         if mgr not in by_manager:
             by_manager[mgr] = {
                 "manager": display,
@@ -282,6 +295,41 @@ def build_data():
 
     offseason_trades = sorted(offseason_groups.values(), key=lambda g: g["date"])
 
+    # ---- Stamp finalized 2026 keeper selections -------------------------
+    # keeper_selections is the committed record (add_keeper_selections.py,
+    # loaded from the Yahoo submissions + the traded-in addendum). Board
+    # truth above stays canon for DRC math; a drift between the stored
+    # snapshot and the engine is a data problem worth a loud warning.
+    # Selections key by the CURRENT franchise face (e.g. Bill Keenan);
+    # by_manager keys by whoever ran the 2025 roster — bridge via
+    # CURRENT_HANDOFFS.
+    handoff_back = {v: k for k, v in CURRENT_HANDOFFS.items()}
+    if conn.execute("SELECT name FROM sqlite_master WHERE type='table' "
+                    "AND name='keeper_selections'").fetchone():
+        for r in conn.execute("""
+                SELECT ks.player_id, ks.drc, ks.drc_dollars, ks.source,
+                       m.full_name AS mgr
+                FROM keeper_selections ks
+                JOIN teams t ON t.team_season_id = ks.team_season_id
+                JOIN managers m ON m.manager_id = t.manager_id
+                WHERE ks.season = 2026"""):
+            board_mgr = handoff_back.get(r["mgr"], r["mgr"])
+            data = by_manager.get(board_mgr)
+            hit = None
+            if data:
+                hit = next((p for p in data["players"]
+                            if p["player_id"] == r["player_id"]), None)
+            if hit is None:
+                print(f"WARNING: keeper_selections row not on board: "
+                      f"{r['mgr']} player_id {r['player_id']}")
+                continue
+            if hit["drc"] != r["drc"] or hit["drc_dollars"] != r["drc_dollars"]:
+                print(f"WARNING: keeper_selections drift for {hit['name']} "
+                      f"({r['mgr']}): stored DRC {r['drc']}/${r['drc_dollars']}"
+                      f" vs engine DRC {hit['drc']}/${hit['drc_dollars']}")
+            hit["kept_2026"] = True
+            hit["keeper_source"] = r["source"]
+
     # Sort players within each team by DRC ascending (most expensive first), then name
     for data in by_manager.values():
         data["players"].sort(key=lambda p: (p["drc"], p["name"]))
@@ -289,6 +337,10 @@ def build_data():
         data["player_count"] = len(data["players"])
         data["expensive_count"] = sum(1 for p in data["players"] if p["drc"] <= 2)
         data["cheap_count"] = sum(1 for p in data["players"] if p["drc"] >= 10)
+        kept = [p for p in data["players"] if p.get("kept_2026")]
+        data["keeper_count"] = len(kept)
+        data["committed_total"] = sum(p["drc_dollars"] for p in kept)
+        data["premium_kept"] = sum(1 for p in kept if p["drc"] <= 2)
 
     # League-wide player search dataset: every player that's touched a roster,
     # a draft, or a transaction in our data. Each entry is enriched with a
@@ -336,7 +388,7 @@ def build_data():
                 (owner_team,),
             ).fetchone()
             if owner_row:
-                owner_name = alias_name(owner_row["full_name"])
+                owner_name = current_face(owner_row["full_name"])
 
         # Per-year DRC trajectory (2023..2026): reuse build_history_for_player
         # but pass the current team if we have one (otherwise use 0 sentinel).
@@ -361,7 +413,7 @@ def build_data():
                     (yr_owner_id,),
                 ).fetchone()
                 if r:
-                    yr_owner_name = alias_name(r[0])
+                    yr_owner_name = current_face(r[0]) if y >= 2026 else alias_name(r[0])
             drc_v = h.get("drc")
             per_year.append({
                 "year": y,
@@ -679,10 +731,41 @@ def render_year_card(year, rec):
         </div>"""
 
 
-def render_history_subrow(player_id, history, colspan):
-    """Render history as horizontal year-cards (descending: 2025, 2024, 2023).
-    2026 isn't here - it's already in the main row."""
-    cards = "".join(
+def render_year_card_2026(p):
+    """The 2026 card: the commitment is now KNOWN (keeper_selections), so
+    the year strip leads with it. Kept players show the committed DRC/$;
+    everyone else is headed to the draft pool."""
+    kept = p.get("kept_2026")
+    status = "Kept" if kept else "Not kept"
+    status_cls = " kept-yes" if kept else " kept-no"
+    adp_str = _fmt(p.get("adp_2026"), 1)
+    return f"""
+        <div class="year-card year-card-2026">
+          <div class="year-label">2026</div>
+          <div class="year-metric">
+            <span class="m-label">Cost</span>
+            <span class="m-val">DRC {p['drc']}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">Status</span>
+            <span class="m-val{status_cls}">{status}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">$</span>
+            <span class="m-val">${p['drc_dollars']}</span>
+          </div>
+          <div class="year-metric">
+            <span class="m-label">ADP</span>
+            <span class="m-val">{adp_str}</span>
+          </div>
+        </div>"""
+
+
+def render_history_subrow(player_id, history, colspan, player=None):
+    """Render history as horizontal year-cards (descending). 2026 leads
+    with the committed keeper status (Pete's request 2026-08-30), then
+    2025, 2024, 2023."""
+    cards = ("" if player is None else render_year_card_2026(player)) + "".join(
         render_year_card(year, history.get(year))
         for year in (2025, 2024, 2023)
     )
@@ -694,7 +777,7 @@ def render_history_subrow(player_id, history, colspan):
         </tr>"""
 
 
-def render_player_row(p):
+def render_player_row(p, slot_label=None):
     adp = p.get("adp_2026")
     adp_display = f"{adp:.1f}" if adp is not None else "—"
     value_tag = _adp_value_class(p["drc"], adp)
@@ -702,11 +785,17 @@ def render_player_row(p):
     if value_tag:
         labels = {"steal": "Steal", "fair": "Fair", "overpriced": "Overpriced"}
         value_pill = f'<span class="pill value-{value_tag}">{labels[value_tag]}</span>'
+    kept_pill = ('<span class="pill kept-pill">K</span>'
+                 if p.get("kept_2026") else "")
 
+    slot_cell = ("" if slot_label is None else
+                 f'<td class="meta slot-col">{html.escape(slot_label)}</td>')
     pid = p.get("player_id", id(p))
+    ncols = 8 + (1 if slot_label is not None else 0)
     main_row = f"""
         <tr>
-          <td class="player-name">{html.escape(p['name'])}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
+          {slot_cell}
+          <td class="player-name">{html.escape(p['name'])} {kept_pill}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
           <td class="meta">{html.escape(p['position'])}</td>
           <td class="meta">{html.escape(p['nfl_team'])}</td>
           <td class="num"><span class="pill {drc_tier_class(p['drc'])}">{p['drc']}</span></td>
@@ -718,8 +807,65 @@ def render_player_row(p):
           </td>
         </tr>"""
 
-    sub_row = render_history_subrow(pid, p.get("history", {}), colspan=8)
+    sub_row = render_history_subrow(pid, p.get("history", {}), colspan=ncols,
+                                    player=p)
     return main_row + sub_row
+
+
+def _lineup_assign(players):
+    """Mirror of the keeper board's lineupAssign(): best 2026 ADP fills
+    each starting slot first (2025 pts as tiebreak), the rest sit on the
+    bench. 2026 lineup: QB, RB, RB, WR, WR, WR, TE, W/R/T, Q/W/R/T, K,
+    DEF + bench. Returns (starters, bench): starters is a list of
+    (slot_label, player-or-None)."""
+    def adp_val(p):
+        a = p.get("adp_2026")
+        return a if a is not None else 1e6
+    def pts25(p):
+        h = (p.get("history") or {}).get(2025) or {}
+        v = h.get("pts")
+        return v if isinstance(v, (int, float)) else 0.0
+    pool = {"QB": [], "RB": [], "WR": [], "TE": [], "K": [], "DEF": []}
+    other = []
+    for p in sorted(players, key=lambda p: (adp_val(p), -pts25(p))):
+        pool.get(p.get("position"), other).append(p)
+
+    def take(pos):
+        return pool[pos].pop(0) if pool[pos] else None
+
+    def take_best(poss):
+        best = None
+        for pos in poss:
+            if pool[pos] and (best is None or
+                              (adp_val(pool[pos][0]), -pts25(pool[pos][0])) <
+                              (adp_val(pool[best][0]), -pts25(pool[best][0]))):
+                best = pos
+        return pool[best].pop(0) if best else None
+
+    starters = [
+        ("QB", take("QB")),
+        ("RB", take("RB")), ("RB", take("RB")),
+        ("WR", take("WR")), ("WR", take("WR")), ("WR", take("WR")),
+        ("TE", take("TE")),
+        ("W/R/T", take_best(["WR", "RB", "TE"])),
+        ("Q/W/R/T", take_best(["QB", "WR", "RB", "TE"])),
+        ("K", take("K")),
+        ("DEF", take("DEF")),
+    ]
+    bench = sorted(
+        pool["QB"] + pool["RB"] + pool["WR"] + pool["TE"] + pool["K"]
+        + pool["DEF"] + other,
+        key=lambda p: (adp_val(p), -pts25(p)))
+    return starters, bench
+
+
+def render_empty_slot_row(slot_label):
+    return f"""
+        <tr class="slot-empty">
+          <td class="meta slot-col">{html.escape(slot_label)}</td>
+          <td class="player-name empty-slot" colspan="7">open &mdash; filled at the draft</td>
+          <td class="expand-col"></td>
+        </tr>"""
 
 
 def _fmt_pts(v):
@@ -821,7 +967,7 @@ def _event_date_display(iso_date, is_trade, display=None):
     try:
         if (is_trade and int(str(iso_date)[5:7]) < 9
                 and int(str(iso_date)[:4]) < 2026):
-            return "OFF-SEASON TRADE"
+            return f"{str(iso_date)[:4]} OFF-SEASON TRADE"
     except (ValueError, IndexError, TypeError):
         pass
     return shown
@@ -1136,10 +1282,24 @@ def render_drafts_tab(draft_history, slug):
 
 def render_team_section(data, slug):
     pcount = data["player_count"]
-    expensive = data["expensive_count"]
-    cheap = data["cheap_count"]
-    total = data["total_drc_dollars"]
-    rows = "".join(render_player_row(p) for p in data["players"])
+    total = data["committed_total"]
+    kcount = data["keeper_count"]
+    premium_kept = data["premium_kept"]
+
+    # Roster tab (Pete's request 2026-08-30): the CURRENT pre-draft roster
+    # laid out in Yahoo's lineup structure — best 2026 ADP fills each
+    # starting slot, the rest sit on the bench. Keepers carry a K pill.
+    starters, bench = _lineup_assign(data["players"])
+    starter_rows = "".join(
+        render_player_row(pl, slot_label=lbl) if pl is not None
+        else render_empty_slot_row(lbl)
+        for lbl, pl in starters)
+    bench_rows = "".join(render_player_row(pl, slot_label="BN")
+                         for pl in bench)
+    rows = (f'<tr class="group-h"><td colspan="9">Starting lineup</td></tr>'
+            f'{starter_rows}'
+            f'<tr class="group-h"><td colspan="9">Bench</td></tr>'
+            f'{bench_rows}')
     drafts_html = render_drafts_tab(data.get("draft_history", {}), slug)
     trades_html = render_trades_tab(data.get("trade_history", []), slug)
 
@@ -1151,20 +1311,20 @@ def render_team_section(data, slug):
 
       <div class="kpis">
         <div class="kpi">
-          <div class="k">Total 2026 keeper cost</div>
+          <div class="k">2026 committed keeper cost</div>
           <div class="v">${total:,}</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Keepers locked in</div>
+          <div class="v">{kcount}</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">{premium_kept}</div>
         </div>
         <div class="kpi">
           <div class="k">Players on roster</div>
           <div class="v">{pcount}</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">{expensive}</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Cheap keepers (DRC ≥ 10)</div>
-          <div class="v">{cheap}</div>
         </div>
       </div>
 
@@ -1175,9 +1335,11 @@ def render_team_section(data, slug):
       </div>
 
       <div class="tab-panel active" id="{slug}-roster">
+        <p class="roster-note">Pre-draft roster in the {TARGET_SEASON} lineup shape &mdash; best {TARGET_SEASON} ADP fills each starting slot, the rest ride the bench. <span class="pill kept-pill">K</span> marks a locked {TARGET_SEASON} keeper; everyone else heads to the draft pool.</p>
         <table class="roster team-roster">
           <thead>
             <tr>
+              <th>Slot</th>
               <th>Player</th>
               <th>Pos</th>
               <th>NFL</th>
@@ -1190,7 +1352,8 @@ def render_team_section(data, slug):
           </thead>
           <tbody>{rows}</tbody>
           <tr class="total">
-            <td>Total committed</td>
+            <td class="meta"></td>
+            <td>Total committed ({kcount} keepers)</td>
             <td class="meta"></td>
             <td class="meta"></td>
             <td class="num"></td>
@@ -1245,10 +1408,14 @@ def _render_updated_widget(generated_at, meta):
 
 
 def render_summary_section(by_manager, generated_at, meta=None):
-    teams = sorted(by_manager.values(), key=lambda d: -d["total_drc_dollars"])
-    league_total = sum(d["total_drc_dollars"] for d in teams)
+    # Keepers are FINAL (locked 2026-08; keeper_selections is the record),
+    # so the league home ranks teams by what they actually committed.
+    teams = sorted(by_manager.values(),
+                   key=lambda d: (-d["committed_total"], d["team_name"]))
+    league_total = sum(d["committed_total"] for d in teams)
     avg = league_total // max(len(teams), 1)
-    premium_total = sum(d["expensive_count"] for d in teams)
+    premium_total = sum(d["premium_kept"] for d in teams)
+    keeper_total = sum(d["keeper_count"] for d in teams)
 
     rows = ""
     for idx, t in enumerate(teams, 1):
@@ -1258,46 +1425,46 @@ def render_summary_section(by_manager, generated_at, meta=None):
             <td class="rank">{idx}</td>
             <td class="player-name"><a href="#" data-target="team-{slug}">{html.escape(t['team_name'])}</a><span class="sub-line">{html.escape(t['manager'])}</span></td>
             <td class="meta">{html.escape(t['manager'])}</td>
-            <td class="num">{t['player_count']}</td>
-            <td class="num">{t['expensive_count']}</td>
-            <td class="num cost">${t['total_drc_dollars']:,}</td>
+            <td class="num">{t['keeper_count']}</td>
+            <td class="num">{t['premium_kept']}</td>
+            <td class="num cost">${t['committed_total']:,}</td>
           </tr>"""
 
     return f"""
     <section class="team-section" id="summary">
-      <div class="eyebrow">{TARGET_SEASON} keeper window</div>
-      <h1 class="team-name">League cap commitment</h1>
-      <p class="manager-name">Dollars each team will spend to keep their {TARGET_SEASON} keepers.</p>
+      <div class="eyebrow">{TARGET_SEASON} keepers locked</div>
+      <h1 class="team-name">League keeper commitments</h1>
+      <p class="manager-name">Keepers are final. This is what each team locked in and what it owes the pot.</p>
 
       <div class="kpis">
         <div class="kpi">
-          <div class="k">Total league cap committed</div>
+          <div class="k">Total owed to the pot</div>
           <div class="v">${league_total:,}</div>
         </div>
         <div class="kpi">
-          <div class="k">Average team cap</div>
+          <div class="k">Average per team</div>
           <div class="v">${avg:,}</div>
         </div>
         <div class="kpi">
-          <div class="k">Premium keepers leaguewide</div>
-          <div class="v">{premium_total}</div>
+          <div class="k">Keepers league-wide</div>
+          <div class="v">{keeper_total}</div>
         </div>
         <div class="kpi">
-          <div class="k">Teams</div>
-          <div class="v">{len(teams)}</div>
+          <div class="k">Premium keepers (DRC ≤ 2)</div>
+          <div class="v">{premium_total}</div>
         </div>
       </div>
 
-      <h2>Teams ranked by {TARGET_SEASON} cap commitment</h2>
+      <h2>Teams ranked by {TARGET_SEASON} keeper commitment</h2>
       <table class="roster standings">
         <thead>
           <tr>
             <th>#</th>
             <th>Team</th>
             <th>Manager</th>
-            <th class="num">Players</th>
+            <th class="num">Keepers</th>
             <th class="num">Premium</th>
-            <th class="num">Total cap</th>
+            <th class="num">Owed</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
@@ -3925,6 +4092,20 @@ table.ta-table tr.ta-total td {
 .db26-kp { font-size: 12px; font-weight: 600; }
 .db26-kp-sub { font-weight: 400; color: #606C71; font-size: 11px; }
 .db26-none { font-size: 11px; color: #98a0ad; font-style: italic; }
+.db26-used { background: #f2f8f4; }
+.db26-seat { flex-basis: 100%; padding: 2px 0 2px 52px; font-size: 12.5px; font-weight: 700; color: #116b3f; }
+.db26-seat .db26-kp-sub { font-weight: 400; }
+.db26-await { background: #fffaf0; border: 1px solid #f0e3c0; border-radius: 8px; padding: 10px 14px; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; }
+.db26-await-h { flex-basis: 100%; font-weight: 700; color: #8C6E10; font-size: 12px; letter-spacing: .02em; }
+.db26-await-item.db26-chasm { color: #b42318; font-weight: 600; }
+.slot-col { font-weight: 700; color: #022479; white-space: nowrap; width: 64px; }
+tr.slot-empty td.empty-slot { color: #98a0ad; font-style: italic; font-weight: 400; }
+tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #606C71; padding: 6px 12px; border-top: 1px solid #ebebed; }
+.pill.kept-pill { background: #e8f5ee; color: #116b3f; font-weight: 700; }
+.year-card-2026 { border-color: #c9dfd2; }
+.m-val.kept-yes { color: #116b3f; font-weight: 700; }
+.m-val.kept-no { color: #98a0ad; }
+.roster-note { font-size: 12.5px; color: #606C71; margin: 0 0 10px; }
 
 /* Keeper board: slot-occupancy banner */
 .kb-slotbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
@@ -5690,6 +5871,11 @@ JS = r"""
   const playersBy = {}; D.players.forEach(p => { (playersBy[p.m] = playersBy[p.m] || []).push(p); });
   const DPOS = D.draft_pos || {};
   const firstName = s => (s || '').split(' ')[0];
+  const pById = {}; D.players.forEach(p => pById[p.i] = p);
+  const SEATS = D.seats || {}, AWAIT = D.awaiting || {}, CHASM = D.chasm || {};
+  const seatKey = {};
+  Object.keys(SEATS).forEach(h => SEATS[h].forEach(st =>
+    seatKey[h + '|' + st.r + '|' + st.o] = st));
 
   /* League-wide pick map from the per-team inventories the analyzer and
      keeper board already embed: D.picks[holder] lists {r, o, lp}. A pick
@@ -5725,6 +5911,16 @@ JS = r"""
         let note = '';
         if (acq) note = 'via trade from ' + esc(firstName((teamBy[pk.o] || {}).mgr));
         if (pk.lp) note = (note ? note + ' &middot; ' : '') + 'last-pick convention';
+        const seatSt = seatKey[pk.h + '|' + r + '|' + pk.o];
+        let seatHtml = '';
+        if (seatSt && pById[seatSt.pid]) {
+          const sp = pById[seatSt.pid];
+          seatHtml = '<span class="db26-seat">&#10004; ' + esc(sp.n) +
+            ' <span class="db26-kp-sub">' + esc(sp.p || '') +
+            ' &middot; DRC ' + sp.d6 + ' &middot; ' + money(sp.c6) +
+            (seatSt.up ? ' &middot; slid up from R' + sp.d6 : '') +
+            '</span></span>';
+        }
         let stack = '';
         if (showKeep && !stacked[pk.h]) {
           stacked[pk.h] = 1;
@@ -5735,18 +5931,35 @@ JS = r"""
                 (p.pr != null && p.p ? ' &middot; ' + esc(p.p) + p.pr + ' in 2025' : '') + '</span></span>').join('')
             : '<span class="db26-none">no roster player at DRC ' + r + '</span>') + '</div>';
         }
-        return '<div class="db26-pick' + (acq ? ' db26-acq' : '') + '">' +
+        return '<div class="db26-pick' + (acq ? ' db26-acq' : '') + (seatHtml ? ' db26-used' : '') + '">' +
           '<span class="db26-num">' + (num || 'LP') + '</span>' +
           '<span class="db26-team">' + esc(t.team || pk.h) +
           '<span class="db26-mgr">' + esc(t.mgr || '') + (note ? ' &middot; ' + note : '') + '</span></span>' +
-          stack + '</div>';
+          seatHtml + stack + '</div>';
       }).join('');
       cards.push('<div class="db26-round"><div class="db26-round-h">Round ' + r +
         '<span class="db26-cost">keeper cost ' + money(roundCost(r)) + '</span></div>' + rows + '</div>');
     }
+    const awaitBits = [];
+    Object.keys(AWAIT).forEach(h => (AWAIT[h] || []).forEach(pid => {
+      const p0 = pById[pid]; if (!p0) return;
+      awaitBits.push('<span class="db26-await-item"><strong>' +
+        esc(firstName((teamBy[h] || {}).mgr || h)) + ':</strong> ' + esc(p0.n) +
+        ' (DRC ' + p0.d6 + ' &middot; ' + money(p0.c6) + ')</span>');
+    }));
+    Object.keys(CHASM).forEach(h => (CHASM[h] || []).forEach(pid => {
+      const p0 = pById[pid]; if (!p0) return;
+      awaitBits.push('<span class="db26-await-item db26-chasm"><strong>' +
+        esc(firstName((teamBy[h] || {}).mgr || h)) + ':</strong> ' + esc(p0.n) +
+        ' (DRC ' + p0.d6 + ' &mdash; no legal slot)</span>');
+    }));
+    const awaitHtml = awaitBits.length
+      ? '<div class="db26-await"><div class="db26-await-h">Awaiting placement &mdash; keeper needs a manual slot call (traded-in keepers and acquired-pick landings are never seated automatically)</div>' + awaitBits.join('') + '</div>'
+      : '';
     app.innerHTML =
       '<div class="db26-top"><label class="db26-toggle"><input type="checkbox"' + (showKeep ? ' checked' : '') +
       ' data-role="db26keep"> Show potential keepers<span class="db26-toggle-sub">each pick lists the holder&#39;s roster players whose DRC lands in that round &mdash; who could sit there, not who will</span></label></div>' +
+      awaitHtml +
       '<div class="db26-grid">' + cards.join('') + '</div>';
   }
 
@@ -6390,7 +6603,7 @@ def render_rules_history_section():
       <table class="rh-ov">
         <thead><tr><th>Rule</th><th>Status</th><th class="rh-r">Last action</th></tr></thead>
         <tbody>
-          <tr><td>Fill the open 12th seat ("The Lady Boys")</td><td><span class="rh-chip rh-dock">On docket</span></td><td class="rh-r">Open since '25</td></tr>
+          <tr><td>Fill the open 12th seat ("The Lady Boys")</td><td><span class="rh-chip rh-live">Resolved</span></td><td class="rh-r">Bill K. joined 8/26</td></tr>
           <tr><td>Proxy voting banned; mail-in ballots allowed</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed 6/27/26</td></tr>
           <tr><td>1.01 free-keeper loophole &mdash; ban</td><td><span class="rh-chip rh-live">In effect</span></td><td class="rh-r">Passed 6/27/26</td></tr>
           <tr><td>Keepers to the back of the draft (Tom)</td><td><span class="rh-chip rh-fail">Failed again</span></td><td class="rh-r">Voted down 6/27/26</td></tr>
@@ -6415,7 +6628,7 @@ def render_rules_history_section():
 
       <div class="rh-rule">
         <div class="rh-rhead"><span class="rh-rname">1 &middot; Fill the open 12th seat</span> <span class="rh-chip rh-dock">On docket</span></div>
-        <p class="rh-sum">"The Lady Boys" seat is open (Manager TBD). The 12th chair has been contested since day one.</p>
+        <p class="rh-sum">RESOLVED: Bill K. takes over "The Lady Boys" for 2026. The 12th chair had been contested since day one.</p>
         <ul class="rh-rec">
           <li><span class="rh-date">2023-09-04</span><span class="rh-who">Pete:</span> "Who do we want as our 12th and final manager? A. Jon  B. Other Dan."</li>
           <li><span class="rh-date">2023-09-04</span><span class="rh-who">Paul:</span> "Jon didn't get six votes&hellip; other Dan gets right of first refusal."</li>
@@ -7171,6 +7384,7 @@ def render_trade_analyzer(by_manager):
                 "pts": round(pts, 1) if isinstance(pts, (int, float)) else None,
                 "pr": pr,
                 "adp": p.get("adp_2026"),
+                **({"k": 1} if p.get("kept_2026") else {}),
             })
 
     # --- 2026 pick inventory per team -----------------------------------
@@ -7325,9 +7539,99 @@ def render_trade_analyzer(by_manager):
     for slug in held:
         held[slug].sort(key=lambda p: (p["r"], draft_pos.get(p["o"], 99), p["o"]))
 
+    # --- Seat the FINAL keepers onto each team's pick inventory ----------
+    # Keepers are locked (keeper_selections), so the draft board can show
+    # which picks the keeper process consumes. Auto-seat follows the
+    # keeper-board physics: seat order is higher 2025 scorer first; a
+    # keeper takes his own native-round pick if free, else slides DOWN the
+    # consecutive-held chain (acquired picks keep the chain alive but are
+    # NEVER auto-consumed) to the first free OWN pick. No auto up-moves.
+    # Anyone unseated is "awaiting placement" (legal slots exist — the
+    # manager/commish chooses, e.g. an acquired pick or an up-move) or a
+    # chasm (no legal slot at all). Every traded-in keeper lands in
+    # awaiting by construction (his native round belongs to his old team's
+    # slot only if he holds a pick there).
+    seats, awaiting, chasm = {}, {}, {}
+    for _name, _data in by_manager.items():
+        _slug = manager_slug(_data["manager_actual"])
+        _picks = [dict(pk) for pk in held.get(_slug, [])]
+        _rounds = {}
+        for pk in _picks:
+            pk["taken"] = False
+            _rounds.setdefault(pk["r"], []).append(pk)
+
+        def _pts25(pl):
+            h = (pl.get("history") or {}).get(2025) or {}
+            v = h.get("pts")
+            return v if isinstance(v, (int, float)) else -1.0
+        _keepers = sorted((pl for pl in _data["players"] if pl.get("kept_2026")),
+                          key=_pts25, reverse=True)
+        _seated, _await, _chasm = [], [], []
+        for kp in _keepers:
+            native = max(1, min(16, int(kp["drc"])))
+            seat = None
+            if native in _rounds:
+                r = native
+                while r <= 16 and r in _rounds:
+                    own_free = [pk for pk in _rounds[r]
+                                if pk["o"] == _slug and not pk["taken"]]
+                    if own_free:
+                        seat = own_free[0]
+                        break
+                    r += 1
+            if seat is not None:
+                seat["taken"] = True
+                _seated.append({"r": seat["r"], "o": seat["o"],
+                                "pid": kp["player_id"]})
+                continue
+            # Bottom-tier up-slide (league ruling 2026-05-29, auto-apply
+            # ratified by Pete 2026-08-30): at the $10 tier (DRC >= 10)
+            # there is no round 17 to slide into, so overflow slides UP —
+            # the highest unused OWN round below native. Acquired picks
+            # stay protected. Mid/premium tiers never auto up-slide;
+            # those stay manual calls.
+            if kp["drc"] >= 10:
+                for r in range(native - 1, 0, -1):
+                    own_free = [pk for pk in _rounds.get(r, [])
+                                if pk["o"] == _slug and not pk["taken"]]
+                    if own_free:
+                        seat = own_free[0]
+                        break
+                if seat is not None:
+                    seat["taken"] = True
+                    _seated.append({"r": seat["r"], "o": seat["o"],
+                                    "pid": kp["player_id"], "up": 1})
+                    continue
+            # No auto seat — is there ANY legal landing (free held pick at
+            # native-or-earlier, or the activated slide destination)?
+            legal = any(not pk["taken"]
+                        for r in range(1, native + 1)
+                        for pk in _rounds.get(r, []))
+            if not legal and native in _rounds:
+                r = native
+                while r <= 16 and r in _rounds:
+                    if any(not pk["taken"] for pk in _rounds[r]):
+                        legal = True
+                        break
+                    r += 1
+            (_await if legal else _chasm).append(kp["player_id"])
+        if _seated:
+            seats[_slug] = _seated
+        if _await:
+            awaiting[_slug] = _await
+        if _chasm:
+            chasm[_slug] = _chasm
+    n_seated = sum(len(v) for v in seats.values())
+    n_await = sum(len(v) for v in awaiting.values())
+    n_chasm = sum(len(v) for v in chasm.values())
+    print(f"  keeper seating: {n_seated} auto-seated, {n_await} awaiting "
+          f"placement, {n_chasm} chasm")
+
     data_json = json.dumps({"teams": teams, "players": players,
                             "picks": held, "picks_lost": lost,
                             "draft_pos": draft_pos,
+                            "seats": seats, "awaiting": awaiting,
+                            "chasm": chasm,
                             "season": TARGET_SEASON}, separators=(",", ":"))
 
     return f"""
@@ -7424,7 +7728,7 @@ def render_draft_board():
     <section class="team-section" id="draft-board" hidden>
       <header class="section-header">
         <h1 class="section-title">{TARGET_SEASON} draft board</h1>
-        <p class="section-sub">Every pick in the {TARGET_SEASON} draft, laid out the way the draft will actually run: linear order from the published lottery, one card per round, traded picks sitting where they&rsquo;ll be made with a note on where they came from. Flip on the keeper lens to see which of the holder&rsquo;s roster players carry a DRC that lands in each round &mdash; the players who could occupy that pick as keepers, not a call on who will. Whittling possibilities down to an actual slate is what the Keeper board tab is for.</p>
+        <p class="section-sub">Every pick in the {TARGET_SEASON} draft, laid out the way the draft will actually run: linear order from the published lottery, one card per round, traded picks sitting where they&rsquo;ll be made with a note on where they came from. Keepers are locked, so picks consumed by the keeper process show their keeper in green &mdash; auto-seated by the slide rules (own native pick, else the first free own pick down the held chain). The amber strip lists keepers still needing a manual slot call; check the final arrangement against Yahoo&rsquo;s keeper assignment screen before the draft.</p>
       </header>
       <div class="db26-app"></div>
       <p class="ta-foot">The draft is linear, no snake: a pick number like 3.07 reads round 3, 7th draft slot, and the slot follows the pick&rsquo;s ORIGINAL owner &mdash; a traded pick keeps its number and changes hands. Gold rows are picks that have moved. Each round&rsquo;s keeper cost is the DRC dollar figure a keeper seated in that round contributes to the pot. Trades of &ldquo;my last pick&rdquo; convey the giver&rsquo;s actual final selection &mdash; their highest remaining pick after all other trades settle &mdash; so those picks appear here under their real round and number.</p>
