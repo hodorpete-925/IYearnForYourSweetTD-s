@@ -133,6 +133,49 @@ TRADES = [
                 "from George (4.03). Entered manually post-API; date = "
                 "trade date per Pete (8/22).",
     },
+    {
+        # Henderson <-> Jacobs (+ $10 FAAB to Paul). Came in at the 2026
+        # off-season trade deadline 8/29; Pete confirmed FINAL 2026-08-30.
+        # DRC (freeze rule): TreVeyon Henderson's anchor is Tom's fresh
+        # 2025 R2 draft (rookie, no transactions since) -> trade-time
+        # DRC 2 ($100) frozen for Paul in 2026; decrement resumes 2027.
+        # (Keep-path for Tom would have been DRC 1 / $200.)
+        # Josh Jacobs: fresh 2025 R1 draft by Dan MacNulty, then two
+        # in-season 2025 trades (-> Monty 9/2/25, -> Paul 11/2/25), so
+        # 2026 was already a freeze year at DRC 1; trade-time DRC 1
+        # ($200) frozen for Tom in 2026. DRC 1 is the floor.
+        # FAAB: Tom also sends Paul $10 FAAB — NOT recorded in the DB;
+        # Pete adjusts balances manually on Yahoo (see FAAB bookmark).
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Paul Lewis", ["TreVeyon Henderson"]),
+        "side_b": ("Tom Watson", ["Josh Jacobs"]),
+        "note": "Deadline trade 8/29: Lewis gets TreVeyon Henderson, "
+                "Watson gets Josh Jacobs; Watson also sends $10 FAAB "
+                "(tracked manually on Yahoo, not in DB). Entered "
+                "manually post-API.",
+    },
+    {
+        # Brian's own R11 <-> Alex's own R12 (+ $3 FAAB to Alex). Came in
+        # at the deadline 8/29; Pete confirmed FINAL 2026-08-30.
+        # PICK IDENTITY (Pete confirmed 8/30): Alex sends his OWN R12
+        # (12.08) — he retains the ex-Tom 12.09 acquired via the Dan V.
+        # last-pick IOU settlement. Brian sends his OWN R11 (11.12);
+        # Brian's own R12 already went to Dan V. in the McMillan trade.
+        # No players, no DRC impact.
+        # FAAB: Brian also sends Alex $3 FAAB — NOT recorded in the DB;
+        # Pete adjusts balances manually on Yahoo (see FAAB bookmark).
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Brian Malconian", []),
+        "picks_a": [{"round": 12, "original": "Alex Schlosberg"}],
+        "side_b": ("Alex Schlosberg", []),
+        "picks_b": [{"round": 11, "original": "Brian Malconian"}],
+        "note": "Deadline trade 8/29: Malconian gets Schlosberg's own "
+                "R12 (12.08); Schlosberg gets Malconian's own R11 "
+                "(11.12) plus $3 FAAB (tracked manually on Yahoo, not "
+                "in DB). Entered manually post-API.",
+    },
 ]
 
 

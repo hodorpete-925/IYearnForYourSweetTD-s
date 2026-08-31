@@ -778,30 +778,20 @@ def render_history_subrow(player_id, history, colspan, player=None):
 
 
 def render_player_row(p, slot_label=None):
-    adp = p.get("adp_2026")
-    adp_display = f"{adp:.1f}" if adp is not None else "—"
-    value_tag = _adp_value_class(p["drc"], adp)
-    value_pill = ""
-    if value_tag:
-        labels = {"steal": "Steal", "fair": "Fair", "overpriced": "Overpriced"}
-        value_pill = f'<span class="pill value-{value_tag}">{labels[value_tag]}</span>'
     kept_pill = ('<span class="pill kept-pill">K</span>'
                  if p.get("kept_2026") else "")
 
     slot_cell = ("" if slot_label is None else
                  f'<td class="meta slot-col">{html.escape(slot_label)}</td>')
     pid = p.get("player_id", id(p))
-    ncols = 8 + (1 if slot_label is not None else 0)
+    ncols = 5 + (1 if slot_label is not None else 0)
     main_row = f"""
         <tr>
           {slot_cell}
           <td class="player-name">{html.escape(p['name'])} {kept_pill}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
           <td class="meta">{html.escape(p['position'])}</td>
-          <td class="meta">{html.escape(p['nfl_team'])}</td>
           <td class="num"><span class="pill {drc_tier_class(p['drc'])}">{p['drc']}</span></td>
           <td class="num cost">${p['drc_dollars']}</td>
-          <td class="num">{adp_display}</td>
-          <td class="num">{value_pill}</td>
           <td class="expand-col">
             <button class="expand-btn" data-target="hist-{pid}" aria-label="Show prior years">›</button>
           </td>
@@ -863,7 +853,7 @@ def render_empty_slot_row(slot_label):
     return f"""
         <tr class="slot-empty">
           <td class="meta slot-col">{html.escape(slot_label)}</td>
-          <td class="player-name empty-slot" colspan="7">open &mdash; filled at the draft</td>
+          <td class="player-name empty-slot" colspan="4">open &mdash; filled at the draft</td>
           <td class="expand-col"></td>
         </tr>"""
 
@@ -1269,18 +1259,114 @@ def render_year_drafts(year, picks, is_default_open, slug):
         </div>"""
 
 
-def render_drafts_tab(draft_history, slug):
-    """Render the Drafts tab content: collapsible year blocks 2025 / 2024 / 2023."""
+def render_drafts_tab(draft_history, slug, none_open=False):
+    """Render the Drafts tab content: collapsible year blocks 2025 / 2024 / 2023.
+    none_open=True when a 2026 keeper block sits above these and takes the
+    default-open spot."""
     years_desc = sorted(draft_history.keys(), reverse=True)
     # Default the most recent year open
     blocks = "".join(
-        render_year_drafts(y, draft_history.get(y, []), is_default_open=(i == 0), slug=slug)
+        render_year_drafts(y, draft_history.get(y, []),
+                           is_default_open=(i == 0 and not none_open), slug=slug)
         for i, y in enumerate(years_desc)
     )
     return blocks or '<p class="empty-note">No draft history found.</p>'
 
 
-def render_team_section(data, slug):
+def render_2026_draft_block(slug, data, pick_data):
+    """The team's 2026 draft, pre-populated by the keeper process: every
+    pick the team holds, in round order, with the seated keeper on the
+    pick that seating consumes and "open" on the picks the team will
+    actually make on draft day. Mirrors the league-wide draft board's
+    seating (same TRADE_DATA computation)."""
+    held = sorted(pick_data["held"].get(slug, []),
+                  key=lambda pk: (pk["r"], pick_data["draft_pos"].get(pk["o"], 99)))
+    seat_by_pick = {(st["r"], st["o"]): st
+                    for st in pick_data["seats"].get(slug, [])}
+    chasm_pids = pick_data["chasm"].get(slug, [])
+    mgr_by_slug = {t["slug"]: t["mgr"] for t in pick_data["teams"]}
+    pby = {pl["player_id"]: pl for pl in data["players"]}
+    draft_pos = pick_data["draft_pos"]
+
+    by_round = {}
+    for pk in held:
+        by_round.setdefault(pk["r"], []).append(pk)
+
+    rows_parts = []
+    seated_n = 0
+    for rnd in range(1, 17):
+        picks = by_round.get(rnd)
+        if not picks:
+            rows_parts.append(f"""
+        <tr class="round-empty round-{rnd}">
+          <td class="round-cell">R{rnd}</td>
+          <td colspan="3" class="meta">No pick &mdash; traded away</td>
+        </tr>""")
+            continue
+        for pk in picks:
+            slot = draft_pos.get(pk["o"])
+            num = f"{rnd}.{slot:02d}" if slot else "&mdash;"
+            acq_note = ""
+            if pk["o"] != slug:
+                first = html.escape((mgr_by_slug.get(pk["o"]) or "").split(" ")[0])
+                acq_note = f' <span class="draft-tag tag-traded">via {first}</span>'
+            st = seat_by_pick.get((pk["r"], pk["o"]))
+            if st and st["pid"] in pby:
+                pl = pby[st["pid"]]
+                seated_n += 1
+                up_note = (f' <span class="k26-up">slid up from R{pl["drc"]}</span>'
+                           if st.get("up") else "")
+                player_cell = (f'<span class="k26-name">{html.escape(pl["name"])}</span>'
+                               f' <span class="draft-pos">{html.escape(pl["position"])}</span>'
+                               f'<span class="draft-tag tag-kept">Kept</span>{up_note}{acq_note}')
+                cost_cell = f'<span class="pill {drc_tier_class(pl["drc"])}">DRC {pl["drc"]}</span> ${pl["drc_dollars"]}'
+            else:
+                player_cell = f'<span class="k26-open">open &mdash; filled on draft day</span>{acq_note}'
+                cost_cell = ""
+            rows_parts.append(f"""
+        <tr class="round-{rnd}">
+          <td class="round-cell">R{rnd}</td>
+          <td class="num">{num}</td>
+          <td>{player_cell}</td>
+          <td class="num">{cost_cell}</td>
+        </tr>""")
+
+    chasm_html = ""
+    for pid in chasm_pids:
+        pl = pby.get(pid)
+        if pl:
+            chasm_html += (f'<p class="k26-chasm">&#9888; {html.escape(pl["name"])} '
+                           f'(DRC {pl["drc"]}) is kept but has NO legal pick to '
+                           f'occupy &mdash; resolve with the commissioner before '
+                           f'the draft.</p>')
+
+    body = f"""
+            <table class="draft-table">
+              <thead>
+                <tr>
+                  <th>Rd</th>
+                  <th class="num">Pick</th>
+                  <th>Player</th>
+                  <th class="num">Cost</th>
+                </tr>
+              </thead>
+              <tbody>{rows_parts and "".join(rows_parts)}</tbody>
+            </table>{chasm_html}"""
+
+    return f"""
+        <div class="year-collapsible open" id="year-{slug}-2026">
+          <button class="year-collapsible-header" data-target="year-{slug}-2026">
+            <span class="year-title">2026</span>
+            <span class="year-meta">{seated_n} keepers seated &middot; {len(held)} picks held</span>
+            <span class="year-chev">&rsaquo;</span>
+          </button>
+          <div class="year-collapsible-body">
+            {body}
+          </div>
+        </div>"""
+
+
+def render_team_section(data, slug, pick_data=None):
     pcount = data["player_count"]
     total = data["committed_total"]
     kcount = data["keeper_count"]
@@ -1296,11 +1382,14 @@ def render_team_section(data, slug):
         for lbl, pl in starters)
     bench_rows = "".join(render_player_row(pl, slot_label="BN")
                          for pl in bench)
-    rows = (f'<tr class="group-h"><td colspan="9">Starting lineup</td></tr>'
+    rows = (f'<tr class="group-h"><td colspan="6">Starting lineup</td></tr>'
             f'{starter_rows}'
-            f'<tr class="group-h"><td colspan="9">Bench</td></tr>'
+            f'<tr class="group-h"><td colspan="6">Bench</td></tr>'
             f'{bench_rows}')
-    drafts_html = render_drafts_tab(data.get("draft_history", {}), slug)
+    drafts_html = render_drafts_tab(data.get("draft_history", {}), slug,
+                                    none_open=pick_data is not None)
+    if pick_data is not None:
+        drafts_html = render_2026_draft_block(slug, data, pick_data) + drafts_html
     trades_html = render_trades_tab(data.get("trade_history", []), slug)
 
     return f"""
@@ -1335,18 +1424,15 @@ def render_team_section(data, slug):
       </div>
 
       <div class="tab-panel active" id="{slug}-roster">
-        <p class="roster-note">Pre-draft roster in the {TARGET_SEASON} lineup shape &mdash; best {TARGET_SEASON} ADP fills each starting slot, the rest ride the bench. <span class="pill kept-pill">K</span> marks a locked {TARGET_SEASON} keeper; everyone else heads to the draft pool.</p>
+        <p class="roster-note">Pre-draft roster in the {TARGET_SEASON} lineup shape &mdash; the best player fills each starting slot, the rest ride the bench. <span class="pill kept-pill">K</span> marks a locked {TARGET_SEASON} keeper; everyone else heads to the draft pool.</p>
         <table class="roster team-roster">
           <thead>
             <tr>
               <th>Slot</th>
               <th>Player</th>
               <th>Pos</th>
-              <th>NFL</th>
               <th class="num">DRC</th>
               <th class="num">Cost</th>
-              <th class="num">2026 ADP</th>
-              <th class="num">Value</th>
               <th class="expand-col"></th>
             </tr>
           </thead>
@@ -1355,11 +1441,8 @@ def render_team_section(data, slug):
             <td class="meta"></td>
             <td>Total committed ({kcount} keepers)</td>
             <td class="meta"></td>
-            <td class="meta"></td>
             <td class="num"></td>
             <td class="num cost">${total:,}</td>
-            <td class="num"></td>
-            <td class="num"></td>
             <td class="expand-col"></td>
           </tr>
         </table>
@@ -3904,9 +3987,9 @@ table.ta-table tr.ta-total td {
   table.standings th:nth-child(5), table.standings td:nth-child(5) { display: none; }
   /* Team rosters: hide Pos, NFL, ADP → KEEP DRC, Cost, Value (the data
      that matters on a keeper dashboard). Pos · NFL shows as a sub-line. */
-  table.team-roster th:nth-child(2), table.team-roster td:nth-child(2),
-  table.team-roster th:nth-child(3), table.team-roster td:nth-child(3),
-  table.team-roster th:nth-child(6), table.team-roster td:nth-child(6) { display: none; }
+  /* Compact roster (2026-08-30): Slot, Player, Pos, DRC, Cost. On small
+     screens hide only Pos (3) — the player sub-line carries pos/team. */
+  table.team-roster th:nth-child(3), table.team-roster td:nth-child(3) { display: none; }
   .sub-line {
     display: block;
     font-size: 10.5px;
@@ -4106,6 +4189,10 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .m-val.kept-yes { color: #116b3f; font-weight: 700; }
 .m-val.kept-no { color: #98a0ad; }
 .roster-note { font-size: 12.5px; color: #606C71; margin: 0 0 10px; }
+.k26-name { font-weight: 600; }
+.k26-open { color: #98a0ad; font-style: italic; }
+.k26-up { font-size: 11px; color: #8C6E10; font-weight: 600; }
+.k26-chasm { color: #b42318; font-weight: 600; font-size: 12.5px; padding: 8px 12px; }
 
 /* Keeper board: slot-occupancy banner */
 .kb-slotbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
@@ -7634,7 +7721,12 @@ def render_trade_analyzer(by_manager):
                             "chasm": chasm,
                             "season": TARGET_SEASON}, separators=(",", ":"))
 
-    return f"""
+    # Shared with the team pages (2026 draft block in the Drafts tab).
+    pick_data = {"held": held, "lost": lost, "draft_pos": draft_pos,
+                 "seats": seats, "awaiting": awaiting, "chasm": chasm,
+                 "teams": teams}
+
+    section = f"""
     <section class="team-section" id="trade-analyzer" hidden>
       <header class="section-header">
         <h1 class="section-title">Trade analyzer</h1>
@@ -7646,6 +7738,7 @@ def render_trade_analyzer(by_manager):
       <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The boards are an inventory view, not an arrangement: each round shows the picks you'd hold there (numbered by the lottery order; green means acquired) and every player whose DRC lands in that round &mdash; two players stacked under one round means more keepers than that round has picks, and sorting out who sits where is what the Keeper board tab is for. The chasm counter flags only STRUCTURAL impossibility: a DRC group bigger than the seats its slide chain and earlier picks can ever reach (a missing round is the wall). Having more players than picks overall is not flagged &mdash; nobody keeps a whole roster, and choosing who stays is the manager's call. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
     </section>
     <script>window.TRADE_DATA = {data_json};</script>"""
+    return section, pick_data
 
 
 def render_player_compare(search_players):
@@ -7742,7 +7835,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     summary = render_summary_section(by_manager, generated_at, meta)
     player_search = render_player_search_section(search_players)
     player_compare = render_player_compare(search_players)
-    trade_analyzer = render_trade_analyzer(by_manager)
+    trade_analyzer, pick_data = render_trade_analyzer(by_manager)
     keeper_board = render_keeper_board()
     draft_board = render_draft_board()
     desk = render_commissioners_desk_section(comms_posts)
@@ -7751,7 +7844,8 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     about = render_about_section()
     feedback = render_feedback_widget()
     team_sections = "\n".join(
-        render_team_section(data, manager_slug(data["manager_actual"]))
+        render_team_section(data, manager_slug(data["manager_actual"]),
+                            pick_data=pick_data)
         for name, data in sorted(by_manager.items())
     )
     return f"""<!doctype html>
