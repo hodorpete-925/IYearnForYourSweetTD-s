@@ -134,6 +134,26 @@ TRADES = [
                 "trade date per Pete (8/22).",
     },
     {
+        # A.J. Brown <-> Lamb + Addison. Processed 2026-08-27 (pre-
+        # deadline); reported by Pete 2026-08-31 (initially missed).
+        # DRC (freeze rule): A.J. Brown's 2025 anchor is Alex's fresh
+        # 2025 R2 draft -> trade-time DRC 2 ($100) frozen for Tom in
+        # 2026. CeeDee Lamb: Greg 2023 R1 -> Pete (2024 off-season
+        # trade, Excel K flags 2024+2025 = keeper slot placements, not
+        # fresh drafts) -> Tom (Nov 2025 mid-season trade) -> DRC 1
+        # throughout (floor); trade-time DRC 1 ($200) frozen for Alex.
+        # Jordan Addison: Brian 2023 R8 -> Alex (2024 off-season) ->
+        # Tom (2025 off-season), frozen 8 both times -> trade-time
+        # DRC 8 ($30) frozen for Alex in 2026. Decrements resume 2027.
+        "date": "2026-08-27",
+        "season": 2026,
+        "side_a": ("Tom Watson", ["A.J. Brown"]),
+        "side_b": ("Alex Schlosberg", ["CeeDee Lamb", "Jordan Addison"]),
+        "note": "Off-season 2026 (processed 8/27, pre-deadline): Watson "
+                "gets A.J. Brown; Schlosberg gets CeeDee Lamb + Jordan "
+                "Addison. Entered manually post-API; reported 8/31.",
+    },
+    {
         # Henderson <-> Jacobs (+ $10 FAAB to Paul). Came in at the 2026
         # off-season trade deadline 8/29; Pete confirmed FINAL 2026-08-30.
         # DRC (freeze rule): TreVeyon Henderson's anchor is Tom's fresh

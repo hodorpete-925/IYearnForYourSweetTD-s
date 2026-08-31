@@ -113,13 +113,17 @@ SOURCE_TRADE = "trade_addendum_2026-08-30"
 TRADED_IN_KEEPERS = {
     "Pete Hodor": ["Terry McLaurin"],
     "Paul Lewis": ["TreVeyon Henderson"],
-    "Tom Watson": ["Josh Jacobs"],
+    # Josh Jacobs NOT kept by Tom (Pete 2026-08-31) — removed from the
+    # addendum; fix_remove_jacobs_keeper.py deletes the committed row.
+    "Tom Watson": ["A.J. Brown"],
     "George Mensing": ["Chris Olave"],
     "Dan Vescuso": ["Jaylen Waddle", "Tetairoa McMillan"],
     "Brian Malconian": ["Ashton Jeanty", "Blake Corum"],
     "Aric Tao": ["Jonathan Taylor"],
     "Scott Montgomery": ["Bhayshul Tuten"],
     "Greg Pearson": ["Woody Marks"],
+    # 8/27 trade (reported 8/31): Lamb + Addison to Alex, Brown to Tom
+    "Alex Schlosberg": ["CeeDee Lamb", "Jordan Addison"],
 }
 
 DDL = """
