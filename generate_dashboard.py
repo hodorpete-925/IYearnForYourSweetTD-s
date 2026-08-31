@@ -778,9 +778,6 @@ def render_history_subrow(player_id, history, colspan, player=None):
 
 
 def render_player_row(p, slot_label=None):
-    kept_pill = ('<span class="pill kept-pill">K</span>'
-                 if p.get("kept_2026") else "")
-
     slot_cell = ("" if slot_label is None else
                  f'<td class="meta slot-col">{html.escape(slot_label)}</td>')
     pid = p.get("player_id", id(p))
@@ -788,7 +785,7 @@ def render_player_row(p, slot_label=None):
     main_row = f"""
         <tr>
           {slot_cell}
-          <td class="player-name">{html.escape(p['name'])} {kept_pill}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
+          <td class="player-name">{html.escape(p['name'])}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
           <td class="meta">{html.escape(p['position'])}</td>
           <td class="num"><span class="pill {drc_tier_class(p['drc'])}">{p['drc']}</span></td>
           <td class="num cost">${p['drc_dollars']}</td>
@@ -1367,21 +1364,29 @@ def render_2026_draft_block(slug, data, pick_data):
 
 
 def render_team_section(data, slug, pick_data=None):
-    pcount = data["player_count"]
     total = data["committed_total"]
     kcount = data["keeper_count"]
     premium_kept = data["premium_kept"]
+    if pick_data is not None:
+        _slug_picks = pick_data["held"].get(slug, [])
+        _seated = pick_data["seats"].get(slug, [])
+        picks_to_make = len(_slug_picks) - len(_seated)
+    else:
+        picks_to_make = None
 
-    # Roster tab (Pete's request 2026-08-30): the CURRENT pre-draft roster
-    # laid out in Yahoo's lineup structure — best 2026 ADP fills each
-    # starting slot, the rest sit on the bench. Keepers carry a K pill.
-    starters, bench = _lineup_assign(data["players"])
+    # Roster tab (Pete's rulings 2026-08-30): keepers ONLY — a player who
+    # wasn't kept is no longer on the roster. Laid out in Yahoo's lineup
+    # structure: the best player fills each starting slot, kept overflow
+    # rides the bench, everything else is an open slot for draft day.
+    kept_players = [pl for pl in data["players"] if pl.get("kept_2026")]
+    starters, bench = _lineup_assign(kept_players)
     starter_rows = "".join(
         render_player_row(pl, slot_label=lbl) if pl is not None
         else render_empty_slot_row(lbl)
         for lbl, pl in starters)
-    bench_rows = "".join(render_player_row(pl, slot_label="BN")
-                         for pl in bench)
+    bench_rows = ("".join(render_player_row(pl, slot_label="BN")
+                          for pl in bench)
+                  or render_empty_slot_row("BN"))
     rows = (f'<tr class="group-h"><td colspan="6">Starting lineup</td></tr>'
             f'{starter_rows}'
             f'<tr class="group-h"><td colspan="6">Bench</td></tr>'
@@ -1412,8 +1417,8 @@ def render_team_section(data, slug, pick_data=None):
           <div class="v">{premium_kept}</div>
         </div>
         <div class="kpi">
-          <div class="k">Players on roster</div>
-          <div class="v">{pcount}</div>
+          <div class="k">Picks to make on draft day</div>
+          <div class="v">{picks_to_make if picks_to_make is not None else "&mdash;"}</div>
         </div>
       </div>
 
@@ -1424,7 +1429,7 @@ def render_team_section(data, slug, pick_data=None):
       </div>
 
       <div class="tab-panel active" id="{slug}-roster">
-        <p class="roster-note">Pre-draft roster in the {TARGET_SEASON} lineup shape &mdash; the best player fills each starting slot, the rest ride the bench. <span class="pill kept-pill">K</span> marks a locked {TARGET_SEASON} keeper; everyone else heads to the draft pool.</p>
+        <p class="roster-note">The {TARGET_SEASON} roster heading into the draft &mdash; keepers only, since everyone else is back in the draft pool. The best player fills each starting slot, kept overflow rides the bench, and open slots get filled on draft day.</p>
         <table class="roster team-roster">
           <thead>
             <tr>
