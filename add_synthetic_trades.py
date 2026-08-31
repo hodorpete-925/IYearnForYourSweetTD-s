@@ -205,14 +205,44 @@ TRADES = [
         # KEEPER RIPPLE: Johnston was in Greg's committed keeper set -
         # fix_remove_johnston_keeper.py deletes that row; Scott keeps him
         # per the every-traded-in-player-kept ruling.
+        # 16-PICK BALANCE RULE (Pete, 2026-08-31): every team must hold
+        # exactly 16 picks (16 keepable roster spots), so a player-for-
+        # pick trade includes a balancing pick back - Greg's own R16
+        # (16.10) goes to Scott. Greg's bottom-tier keepers re-cascade
+        # up a round automatically. APPLY THIS RULE TO ALL FUTURE
+        # PLAYER-FOR-PICK TRADES.
         "date": "2026-08-29",
         "season": 2026,
         "side_a": ("Scott Montgomery", ["Quentin Johnston"]),
+        "picks_a": [{"round": 16, "original": "Greg Pearson"}],
         "side_b": ("Greg Pearson", []),
         "picks_b": [{"round": 7, "original": "Scott Montgomery"}],
         "note": "Deadline trade 8/29 (reported 8/31): Montgomery gets "
-                "Quentin Johnston; Pearson gets Montgomery's own R7 "
+                "Quentin Johnston + Pearson's own R16 (16.10, the "
+                "16-pick balance); Pearson gets Montgomery's own R7 "
                 "(7.05). Entered manually post-API.",
+    },
+    {
+        # DeVonta Smith <-> Rome Odunze. Reported by Pete 2026-08-31;
+        # date assumed 8/29 (deadline) - correct if it differs.
+        # DRC (freeze rule): Smith's 2025 anchor is George's fresh 2025
+        # R3 draft (the 2024 Scott row is Excel-flagged NOT-kept, Conner
+        # pattern) -> trade-time DRC 3 ($80) frozen for Alex in 2026
+        # (George's keep-path was 2/$100). Odunze: Alex's fresh 2025 R5
+        # draft (2024 was BRick's rookie draft; roster passed to Dan V)
+        # -> trade-time DRC 5 ($50) frozen for George in 2026 (Alex's
+        # keep-path was 4/$60). Decrements resume 2027.
+        # KEEPER RIPPLE: Odunze was in Alex's committed keeper set -
+        # remove_keeper_row.py deletes that row; both players kept by
+        # their acquirers per the every-traded-in-player-kept ruling.
+        # Player-for-player: 16-pick rule untouched.
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Alex Schlosberg", ["DeVonta Smith"]),
+        "side_b": ("George Mensing", ["Rome Odunze"]),
+        "note": "Deadline trade 8/29 (reported 8/31): Schlosberg gets "
+                "DeVonta Smith; Mensing gets Rome Odunze (player-for-"
+                "player). Entered manually post-API.",
     },
     {
         # Brian's own R11 <-> Alex's own R12 (+ $3 FAAB to Alex). Came in

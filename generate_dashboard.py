@@ -7627,6 +7627,14 @@ def render_trade_analyzer(by_manager):
         print(f"WARNING: pick ledger out of balance — {total_picks} picks "
               f"across {len(teams)} teams (expected {16 * len(teams)}). "
               f"Check PICK_TXNS_IGNORED / last-pick settlements.")
+    # 16-PICK RULE (Pete, 2026-08-31): every team must hold exactly 16
+    # picks (16 keepable roster spots). A player-for-pick trade must
+    # include a balancing pick — this catches the one that doesn't.
+    for t in teams:
+        n = len(held.get(t["slug"], []))
+        if n != 16:
+            print(f"WARNING: {t['mgr']} holds {n} picks (16-pick rule) — "
+                  f"a player-for-pick trade is missing its balancing pick")
 
     for slug in held:
         held[slug].sort(key=lambda p: (p["r"], draft_pos.get(p["o"], 99), p["o"]))

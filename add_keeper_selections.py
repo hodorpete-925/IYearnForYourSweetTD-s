@@ -93,10 +93,12 @@ KEEPERS = {
         "Harrison Butker",
     ],
     "Alex Schlosberg": [
+        # Rome Odunze removed - traded to George 8/29 (reported 8/31);
+        # remove_keeper_row.py deletes his committed row.
         "Jacoby Brissett", "Michael Pittman Jr.", "Jalen Coker",
         "Jahmyr Gibbs", "Jaylen Warren", "Harold Fannin Jr.",
         "Christian McCaffrey", "C.J. Stroud", "Aaron Rodgers",
-        "Jalen McMillan", "Rome Odunze",
+        "Jalen McMillan",
     ],
     "Bill Keenan": [
         "Trevor Lawrence", "Nico Collins", "Courtland Sutton",
@@ -118,14 +120,15 @@ TRADED_IN_KEEPERS = {
     # Josh Jacobs NOT kept by Tom (Pete 2026-08-31) — removed from the
     # addendum; fix_remove_jacobs_keeper.py deletes the committed row.
     "Tom Watson": ["A.J. Brown"],
-    "George Mensing": ["Chris Olave"],
+    "George Mensing": ["Chris Olave", "Rome Odunze"],
     "Dan Vescuso": ["Jaylen Waddle", "Tetairoa McMillan"],
     "Brian Malconian": ["Ashton Jeanty", "Blake Corum"],
     "Aric Tao": ["Jonathan Taylor"],
     "Scott Montgomery": ["Bhayshul Tuten", "Quentin Johnston"],
     "Greg Pearson": ["Woody Marks"],
-    # 8/27 trade (reported 8/31): Lamb + Addison to Alex, Brown to Tom
-    "Alex Schlosberg": ["CeeDee Lamb", "Jordan Addison"],
+    # 8/27 trade (reported 8/31): Lamb + Addison to Alex, Brown to Tom;
+    # 8/29 Odunze deal adds DeVonta Smith
+    "Alex Schlosberg": ["CeeDee Lamb", "Jordan Addison", "DeVonta Smith"],
 }
 
 DDL = """
