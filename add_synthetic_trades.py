@@ -176,6 +176,45 @@ TRADES = [
                 "manually post-API.",
     },
     {
+        # Scott's acquired 7.11 <-> Tom's own R6. Deadline trade 8/29,
+        # reported by Pete 2026-08-31 (initially missed). Picks only.
+        # PICK IDENTITY: Scott sends the R7 ORIGINALLY Paul Lewis's
+        # (7.11, acquired in the Nov-2025 Judkins trade, txn 1226);
+        # Scott keeps his own 7.05. Tom sends his OWN R6 (6.09).
+        # SEATING NOTE (flagged to Pete 2026-08-31, entered on his
+        # confirmation): losing R6 breaks Tom's premium slide chain at
+        # round 6 - his chasm count goes from 1 to 2, and the 7.11 is
+        # only hand-reachable for his bottom-tier keepers.
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Tom Watson", []),
+        "picks_a": [{"round": 7, "original": "Paul Lewis"}],
+        "side_b": ("Scott Montgomery", []),
+        "picks_b": [{"round": 6, "original": "Tom Watson"}],
+        "note": "Deadline trade 8/29 (reported 8/31): Watson gets the R7 "
+                "orig Paul Lewis (7.11); Montgomery gets Watson's own R6 "
+                "(6.09). Entered manually post-API.",
+    },
+    {
+        # Scott's own 7.05 <-> Quentin Johnston. Deadline trade 8/29,
+        # reported by Pete 2026-08-31 as "Quinton Johnson" - resolved to
+        # DB player Quentin Johnston (WR, LAC), Greg's roster.
+        # DRC (freeze rule): Johnston's 2025 anchor DRC is 15 (keep-path
+        # for Greg in 2026 was 14) -> trade-time DRC 15 ($10) frozen for
+        # Scott in 2026; decrement resumes 2027.
+        # KEEPER RIPPLE: Johnston was in Greg's committed keeper set -
+        # fix_remove_johnston_keeper.py deletes that row; Scott keeps him
+        # per the every-traded-in-player-kept ruling.
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Scott Montgomery", ["Quentin Johnston"]),
+        "side_b": ("Greg Pearson", []),
+        "picks_b": [{"round": 7, "original": "Scott Montgomery"}],
+        "note": "Deadline trade 8/29 (reported 8/31): Montgomery gets "
+                "Quentin Johnston; Pearson gets Montgomery's own R7 "
+                "(7.05). Entered manually post-API.",
+    },
+    {
         # Brian's own R11 <-> Alex's own R12 (+ $3 FAAB to Alex). Came in
         # at the deadline 8/29; Pete confirmed FINAL 2026-08-30.
         # PICK IDENTITY (Pete confirmed 8/30): Alex sends his OWN R12

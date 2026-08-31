@@ -75,7 +75,9 @@ KEEPERS = {
         "De'Von Achane", "George Pickens", "Jaxon Smith-Njigba",
     ],
     "Greg Pearson": [
-        "Matthew Stafford", "Quentin Johnston", "Dalton Kincaid",
+        # Quentin Johnston removed - traded to Scott 8/29 (reported 8/31);
+        # fix_remove_johnston_keeper.py deletes his committed row.
+        "Matthew Stafford", "Dalton Kincaid",
         "Justin Herbert", "Chuba Hubbard", "Tyler Allgeier", "Brock Purdy",
         "Michael Wilson", "Rico Dowdle", "Rhamondre Stevenson",
         "Christian Watson", "Chase McLaughlin", "Seahawks",
@@ -120,7 +122,7 @@ TRADED_IN_KEEPERS = {
     "Dan Vescuso": ["Jaylen Waddle", "Tetairoa McMillan"],
     "Brian Malconian": ["Ashton Jeanty", "Blake Corum"],
     "Aric Tao": ["Jonathan Taylor"],
-    "Scott Montgomery": ["Bhayshul Tuten"],
+    "Scott Montgomery": ["Bhayshul Tuten", "Quentin Johnston"],
     "Greg Pearson": ["Woody Marks"],
     # 8/27 trade (reported 8/31): Lamb + Addison to Alex, Brown to Tom
     "Alex Schlosberg": ["CeeDee Lamb", "Jordan Addison"],
