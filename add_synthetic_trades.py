@@ -175,25 +175,34 @@ TRADES = [
                 "(tracked manually on Yahoo, not in DB). Entered "
                 "manually post-API.",
     },
+    # (A Scott<->Tom version entered 8/31 in error - "7.11 for Tom's own
+    # R6", synths 42-43 - was undone by undo_scott_tom_pick_trade.py.
+    # The REAL trade, confirmed by Pete 2026-08-31, is the entry below.)
     {
-        # Scott's acquired 7.11 <-> Tom's own R6. Deadline trade 8/29,
-        # reported by Pete 2026-08-31 (initially missed). Picks only.
-        # PICK IDENTITY: Scott sends the R7 ORIGINALLY Paul Lewis's
-        # (7.11, acquired in the Nov-2025 Judkins trade, txn 1226);
-        # Scott keeps his own 7.05. Tom sends his OWN R6 (6.09).
-        # SEATING NOTE (flagged to Pete 2026-08-31, entered on his
-        # confirmation): losing R6 breaks Tom's premium slide chain at
-        # round 6 - his chasm count goes from 1 to 2, and the 7.11 is
-        # only hand-reachable for his bottom-tier keepers.
+        # Scott's 7.11 <-> Tom's last 2026 pick. CORRECTED terms.
+        # 2026 LEG (entered here): Tom acquires the R7 originally Paul
+        # Lewis's (7.11) from Scott; Tom sends his LAST available 2026
+        # pick - per the last-pick convention that's his highest
+        # remaining pick, the R16 originally Pete Hodor's (16.02,
+        # settled to Tom via Pete's Nov-2025 last-pick IOU).
+        # SEATING: this keeps Tom's own R6 (chain 1-6 intact) and
+        # extends his held chain to round 7 - Hampton's chasm resolves
+        # to a manual placement on the acquired 7.11.
+        # 2027 LEG (NOT entered - no 2027 pick plumbing yet): Scott
+        # acquires Tom's 2027 R6 for Scott's last 2027 pick. Enter as a
+        # season-2027 trade when the 2027 pick boards exist; reminder
+        # set to have both managers log the trade in Yahoo next week.
         "date": "2026-08-29",
         "season": 2026,
         "side_a": ("Tom Watson", []),
         "picks_a": [{"round": 7, "original": "Paul Lewis"}],
         "side_b": ("Scott Montgomery", []),
-        "picks_b": [{"round": 6, "original": "Tom Watson"}],
-        "note": "Deadline trade 8/29 (reported 8/31): Watson gets the R7 "
-                "orig Paul Lewis (7.11); Montgomery gets Watson's own R6 "
-                "(6.09). Entered manually post-API.",
+        "picks_b": [{"round": 16, "original": "Pete Hodor"}],
+        "note": "Deadline trade 8/29 (corrected 8/31): Watson gets the R7 "
+                "orig Paul Lewis (7.11); Montgomery gets Watson's last "
+                "2026 pick, the R16 orig Pete Hodor (16.02). 2027 leg "
+                "(Tom's 2027 R6 for Scott's 2027 last pick) recorded "
+                "separately when 2027 boards exist.",
     },
     {
         # Scott's own 7.05 <-> Quentin Johnston. Deadline trade 8/29,
@@ -264,6 +273,31 @@ TRADES = [
                 "R12 (12.08); Schlosberg gets Malconian's own R11 "
                 "(11.12) plus $3 FAAB (tracked manually on Yahoo, not "
                 "in DB). Entered manually post-API.",
+    },
+    {
+        # Dan V's own 7.01 <-> Aric's last 2026 pick (+ 2027 leg + FAAB).
+        # Reported by Pete 2026-08-31; date assumed 8/29 (deadline).
+        # 2026 LEG (entered here): Aric receives Dan V's OWN R7 (7.01 -
+        # Pete confirmed which of Dan's three sevens); per the 16-pick
+        # balance rule Aric sends his LAST available 2026 pick - his own
+        # R15 (15.06; his own R16 went to Alex in the Nov 2025 trade).
+        # FAAB: Aric also sends Dan V $10 FAAB - NOT in the DB; Pete
+        # adjusts manually on Yahoo (see FAAB bookmark).
+        # 2027 LEG (NOT entered - no 2027 pick plumbing yet): Dan V
+        # acquires Aric's 2027 R6; Dan V sends his last 2027 pick back
+        # as the balance. Enter as a season-2027 trade when 2027 boards
+        # exist (same bucket as the Tom/Scott 2027 leg).
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Aric Tao", []),
+        "picks_a": [{"round": 7, "original": "Dan Vescuso"}],
+        "side_b": ("Dan Vescuso", []),
+        "picks_b": [{"round": 15, "original": "Aric Tao"}],
+        "note": "Deadline trade 8/29 (reported 8/31): Tao gets Dan V's "
+                "own R7 (7.01); Vescuso gets Tao's last 2026 pick, his "
+                "own R15 (15.06), plus $10 FAAB (manual on Yahoo). 2027 "
+                "leg (Aric's 2027 R6 for Dan V's 2027 last pick) "
+                "recorded separately when 2027 boards exist.",
     },
 ]
 
