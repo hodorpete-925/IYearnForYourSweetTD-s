@@ -1,5 +1,5 @@
 {
- "_meta": "Yahoo keeper placements captured 2026-09-02 from the draft-results page; used as minimal-churn preference by the efficiency seater",
+ "_meta": "Yahoo keeper placements re-captured 2026-09-02 after Pete applied the finalization checklist",
  "Lamar Jackson": [
   1,
   2
@@ -100,13 +100,13 @@
   4,
   1
  ],
- "Terry McLaurin": [
-  4,
-  2
- ],
  "Bo Nix": [
   4,
   4
+ ],
+ "Terry McLaurin": [
+  4,
+  5
  ],
  "Jaxson Dart": [
   4,
@@ -152,10 +152,6 @@
   5,
   9
  ],
- "Seahawks": [
-  5,
-  10
- ],
  "Jared Goff": [
   5,
   11
@@ -192,10 +188,6 @@
   6,
   12
  ],
- "Jordan Love": [
-  7,
-  1
- ],
  "Chris Olave": [
   7,
   3
@@ -203,6 +195,18 @@
  "Tyler Warren": [
   7,
   4
+ ],
+ "Seahawks": [
+  7,
+  5
+ ],
+ "D'Andre Swift": [
+  7,
+  8
+ ],
+ "Jordan Love": [
+  7,
+  9
  ],
  "Chase McLaughlin": [
   7,
@@ -240,17 +244,9 @@
   8,
   12
  ],
- "D'Andre Swift": [
-  9,
-  1
- ],
  "David Montgomery": [
   9,
   3
- ],
- "Jayden Reed": [
-  9,
-  5
  ],
  "Jameson Williams": [
   9,
@@ -284,10 +280,6 @@
   10,
   7
  ],
- "Jalen McMillan": [
-  10,
-  8
- ],
  "Christian Watson": [
   10,
   10
@@ -295,10 +287,6 @@
  "Kyle Williams": [
   11,
   2
- ],
- "Bhayshul Tuten": [
-  11,
-  5
  ],
  "Deshaun Watson": [
   11,
@@ -308,21 +296,17 @@
   11,
   7
  ],
- "Aaron Rodgers": [
-  11,
-  8
- ],
  "Rhamondre Stevenson": [
   11,
   10
  ],
+ "Aaron Rodgers": [
+  11,
+  12
+ ],
  "Isaac TeSlaa": [
   12,
   2
- ],
- "Quentin Johnston": [
-  12,
-  5
  ],
  "Braelon Allen": [
   12,
@@ -344,17 +328,9 @@
   12,
   10
  ],
- "Chris Rodriguez Jr.": [
-  12,
-  11
- ],
  "Kyren Williams": [
   13,
   2
- ],
- "Tyjae Spears": [
-  13,
-  3
  ],
  "Chase Brown": [
   13,
@@ -367,6 +343,10 @@
  "Bucky Irving": [
   13,
   7
+ ],
+ "Bryce Young": [
+  13,
+  8
  ],
  "Kyle Monangai": [
   13,
@@ -452,10 +432,6 @@
   15,
   5
  ],
- "Bryce Young": [
-  15,
-  6
- ],
  "Harrison Butker": [
   15,
   7
@@ -480,6 +456,14 @@
   15,
   12
  ],
+ "Bhayshul Tuten": [
+  16,
+  1
+ ],
+ "Quentin Johnston": [
+  16,
+  2
+ ],
  "Tyler Shough": [
   16,
   3
@@ -488,6 +472,14 @@
   16,
   4
  ],
+ "Chris Rodriguez Jr.": [
+  16,
+  5
+ ],
+ "Jalen McMillan": [
+  16,
+  6
+ ],
  "Alec Pierce": [
   16,
   7
@@ -495,6 +487,14 @@
  "Jacoby Brissett": [
   16,
   8
+ ],
+ "Tyjae Spears": [
+  16,
+  9
+ ],
+ "Jayden Reed": [
+  16,
+  10
  ],
  "Wan'Dale Robinson": [
   16,
