@@ -1311,8 +1311,13 @@ def render_2026_draft_block(slug, data, pick_data):
             if st and st["pid"] in pby:
                 pl = pby[st["pid"]]
                 seated_n += 1
-                up_note = (f' <span class="k26-up">slid up from R{pl["drc"]}</span>'
-                           if st.get("up") else "")
+                nat = st.get("n") or pl["drc"]
+                if pk["r"] < nat:
+                    up_note = f' <span class="k26-up">moved up from R{nat}</span>'
+                elif pk["r"] > nat:
+                    up_note = f' <span class="k26-up">slid down from R{nat}</span>'
+                else:
+                    up_note = ""
                 player_cell = (f'<span class="k26-name">{html.escape(pl["name"])}</span>'
                                f' <span class="draft-pos">{html.escape(pl["position"])}</span>'
                                f'<span class="draft-tag tag-kept">Kept</span>{up_note}{acq_note}')
@@ -6010,7 +6015,8 @@ JS = r"""
           seatHtml = '<span class="db26-seat">&#10004; ' + esc(sp.n) +
             ' <span class="db26-kp-sub">' + esc(sp.p || '') +
             ' &middot; DRC ' + sp.d6 + ' &middot; ' + money(sp.c6) +
-            (seatSt.up ? ' &middot; slid up from R' + sp.d6 : '') +
+            (seatSt.n && r < seatSt.n ? ' &middot; moved up from R' + seatSt.n :
+             seatSt.n && r > seatSt.n ? ' &middot; slid down from R' + seatSt.n : '') +
             '</span></span>';
         }
         let stack = '';
@@ -7640,92 +7646,159 @@ def render_trade_analyzer(by_manager):
         held[slug].sort(key=lambda p: (p["r"], draft_pos.get(p["o"], 99), p["o"]))
 
     # --- Seat the FINAL keepers onto each team's pick inventory ----------
-    # Keepers are locked (keeper_selections), so the draft board can show
-    # which picks the keeper process consumes. Auto-seat follows the
-    # keeper-board physics: seat order is higher 2025 scorer first; a
-    # keeper takes his own native-round pick if free, else slides DOWN the
-    # consecutive-held chain (acquired picks keep the chain alive but are
-    # NEVER auto-consumed) to the first free OWN pick. No auto up-moves.
-    # Anyone unseated is "awaiting placement" (legal slots exist — the
-    # manager/commish chooses, e.g. an acquired pick or an up-move) or a
-    # chasm (no legal slot at all). Every traded-in keeper lands in
-    # awaiting by construction (his native round belongs to his old team's
-    # slot only if he holds a pick there).
+    # EFFICIENCY MODE (Pete's ruling 2026-09-02, supersedes the protected-
+    # acquired-picks auto-seat): the published board is the FINAL Yahoo
+    # arrangement, seated for the most efficient draft — every keeper
+    # consumes the LEAST valuable pick legally available (latest overall
+    # pick first), leaving each manager's best picks open for live
+    # drafting. Acquired picks are fair game here: Pete, as commissioner,
+    # makes the conscious-usage call on the managers' behalf (the keeper-
+    # board sandbox keeps the protection for what-if play). Legality
+    # still follows league physics: native or any earlier held pick, or
+    # below native only via the slide chain (every held round from native
+    # to the landing must be full).
+    # Minimal-churn preference: Yahoo's current keeper placements
+    # (yahoo_keeper_placements_2026.json, captured from the draft-results
+    # page). Within the efficient consumed-pick set, a keeper stays where
+    # Yahoo already has him when that seat is legal — so the change list
+    # Pete works through in Yahoo only contains moves that matter.
+    import unicodedata as _ud
+    def _pnorm(x):
+        return "".join(c for c in _ud.normalize("NFKD", x or "").lower()
+                       if c.isalnum())
+    _ypref = {}
+    _ypath = Path(__file__).parent / "yahoo_keeper_placements_2026.json"
+    if _ypath.exists():
+        try:
+            _yraw = json.loads(_ypath.read_text(encoding="utf-8"))
+            _ypref = {_pnorm(k): tuple(v) for k, v in _yraw.items()
+                      if not k.startswith("_") and isinstance(v, list)}
+        except (json.JSONDecodeError, OSError):
+            print("WARNING: yahoo_keeper_placements_2026.json unreadable")
+
     seats, awaiting, chasm = {}, {}, {}
     for _name, _data in by_manager.items():
         _slug = manager_slug(_data["manager_actual"])
         _picks = [dict(pk) for pk in held.get(_slug, [])]
-        _rounds = {}
         for pk in _picks:
             pk["taken"] = False
+            pk["val"] = (pk["r"] - 1) * 12 + (draft_pos.get(pk["o"]) or 12)
+        _rounds = {}
+        for pk in _picks:
             _rounds.setdefault(pk["r"], []).append(pk)
 
-        def _pts25(pl):
-            h = (pl.get("history") or {}).get(2025) or {}
-            v = h.get("pts")
-            return v if isinstance(v, (int, float)) else -1.0
-        _keepers = sorted((pl for pl in _data["players"] if pl.get("kept_2026")),
-                          key=_pts25, reverse=True)
-        _seated, _await, _chasm = [], [], []
-        for kp in _keepers:
-            native = max(1, min(16, int(kp["drc"])))
-            seat = None
-            if native in _rounds:
-                r = native
+        def _full(r):
+            return all(pk["taken"] for pk in _rounds.get(r, []))
+
+        _keepers = [(pl, max(1, min(16, int(pl["drc"]))))
+                    for pl in _data["players"] if pl.get("kept_2026")]
+        assigned = {}   # player_id -> (player, native, pick)
+        _chasm = []
+        # Pass 1: most-constrained natives first; each takes the LATEST
+        # held pick at native-or-earlier (up-moves are always legal).
+        pend = []
+        for kp, native in sorted(_keepers, key=lambda x: x[1]):
+            cands = [pk for pk in _picks if not pk["taken"] and pk["r"] <= native]
+            if cands:
+                pick = max(cands, key=lambda pk: pk["val"])
+                pick["taken"] = True
+                assigned[kp["player_id"]] = (kp, native, pick)
+            else:
+                pend.append((kp, native))
+        # Pass 2: forced slide-downs for premium overflow (native round
+        # unavailable, chain full to the first held round with a seat).
+        for kp, native in pend:
+            placed = False
+            r = native
+            while r <= 16 and r in _rounds:
+                if not _full(r):
+                    free = [pk for pk in _rounds[r] if not pk["taken"]]
+                    pick = min(free, key=lambda pk: pk["val"])
+                    pick["taken"] = True
+                    assigned[kp["player_id"]] = (kp, native, pick)
+                    placed = True
+                    break
+                r += 1
+            if not placed:
+                _chasm.append(kp["player_id"])
+        # Pass 3: efficiency polish — push every keeper to the least
+        # valuable pick still legal for them, iterating until stable.
+        changed = True
+        while changed:
+            changed = False
+            for pid, (kp, native, cur) in list(assigned.items()):
+                cur["taken"] = False
+                best = cur
+                for pk in _picks:   # up/native candidates
+                    if (not pk["taken"] and pk["r"] <= native
+                            and pk["val"] > best["val"]):
+                        best = pk
+                r = native          # slide landing below native
                 while r <= 16 and r in _rounds:
-                    own_free = [pk for pk in _rounds[r]
-                                if pk["o"] == _slug and not pk["taken"]]
-                    if own_free:
-                        seat = own_free[0]
+                    if not _full(r):
+                        for pk in _rounds[r]:
+                            if (not pk["taken"] and pk["r"] > native
+                                    and pk["val"] > best["val"]):
+                                best = pk
                         break
                     r += 1
-            if seat is not None:
-                seat["taken"] = True
-                _seated.append({"r": seat["r"], "o": seat["o"],
-                                "pid": kp["player_id"]})
-                continue
-            # Bottom-tier up-slide (league ruling 2026-05-29, auto-apply
-            # ratified by Pete 2026-08-30): at the $10 tier (DRC >= 10)
-            # there is no round 17 to slide into, so overflow slides UP —
-            # the highest unused OWN round below native. Acquired picks
-            # stay protected. Mid/premium tiers never auto up-slide;
-            # those stay manual calls.
-            if kp["drc"] >= 10:
-                for r in range(native - 1, 0, -1):
-                    own_free = [pk for pk in _rounds.get(r, [])
-                                if pk["o"] == _slug and not pk["taken"]]
-                    if own_free:
-                        seat = own_free[0]
-                        break
-                if seat is not None:
-                    seat["taken"] = True
-                    _seated.append({"r": seat["r"], "o": seat["o"],
-                                    "pid": kp["player_id"], "up": 1})
+                best["taken"] = True
+                if best is not cur:
+                    assigned[pid] = (kp, native, best)
+                    changed = True
+        # Pass 4: minimal-churn naming. The efficient consumed-pick SET
+        # is now fixed; re-deal WHO sits on WHICH pick within it,
+        # preferring Yahoo's existing placement wherever legal, then
+        # seating the rest most-constrained-first. Falls back to the
+        # pass-1-3 assignment if the preference deal can't seat everyone.
+        if _ypref and assigned:
+            S = [pk for _kp, _n, pk in assigned.values()]
+            in_S_rounds = {}
+            for pk in S:
+                in_S_rounds.setdefault(pk["r"], []).append(pk)
+            def _round_all_consumed(r):
+                return (r in _rounds and
+                        all(any(pk is q for q in S) for pk in _rounds[r]))
+            def _legal(native, r):
+                if r <= native:
+                    return True
+                return all(_round_all_consumed(q) for q in range(native, r))
+            claim = {}
+            left = dict(assigned)
+            spare = list(S)
+            for pid, (kp, native, _old) in list(left.items()):
+                ypos = _ypref.get(_pnorm(kp["name"]))
+                if not ypos:
                     continue
-            # No auto seat — is there ANY legal landing (free held pick at
-            # native-or-earlier, or the activated slide destination)?
-            legal = any(not pk["taken"]
-                        for r in range(1, native + 1)
-                        for pk in _rounds.get(r, []))
-            if not legal and native in _rounds:
-                r = native
-                while r <= 16 and r in _rounds:
-                    if any(not pk["taken"] for pk in _rounds[r]):
-                        legal = True
-                        break
-                    r += 1
-            (_await if legal else _chasm).append(kp["player_id"])
+                hit = next((pk for pk in spare
+                            if (pk["r"], draft_pos.get(pk["o"])) == ypos), None)
+                if hit is not None and _legal(native, hit["r"]):
+                    claim[pid] = (kp, native, hit)
+                    spare.remove(hit)
+                    del left[pid]
+            ok = True
+            for pid, (kp, native, _old) in sorted(
+                    left.items(), key=lambda kv: kv[1][1]):
+                cands = [pk for pk in spare if _legal(native, pk["r"])]
+                if not cands:
+                    ok = False
+                    break
+                pick = max(cands, key=lambda pk: pk["val"])
+                claim[pid] = (kp, native, pick)
+                spare.remove(pick)
+            if ok and not spare:
+                assigned = claim
+
+        _seated = [{"r": pk["r"], "o": pk["o"], "pid": pid, "n": native}
+                   for pid, (kp, native, pk) in assigned.items()]
         if _seated:
             seats[_slug] = _seated
-        if _await:
-            awaiting[_slug] = _await
         if _chasm:
             chasm[_slug] = _chasm
     n_seated = sum(len(v) for v in seats.values())
-    n_await = sum(len(v) for v in awaiting.values())
     n_chasm = sum(len(v) for v in chasm.values())
-    print(f"  keeper seating: {n_seated} auto-seated, {n_await} awaiting "
-          f"placement, {n_chasm} chasm")
+    print(f"  keeper seating (efficiency mode): {n_seated} seated, "
+          f"{n_chasm} chasm")
 
     data_json = json.dumps({"teams": teams, "players": players,
                             "picks": held, "picks_lost": lost,

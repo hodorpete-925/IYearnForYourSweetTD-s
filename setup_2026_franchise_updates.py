@@ -26,6 +26,7 @@ from pathlib import Path
 DB = Path(__file__).parent / "fantasy.db"
 
 NEW_TOM_NAME = "Alice in First Down Chains"
+NEW_BRIAN_NAME = "Malco In The High Castle"   # spotted on Yahoo 2026-08-31
 KEENAN_GUID = "MANUAL-BILL-KEENAN"   # placeholder until the API returns
 KEENAN_NICK = "Bill"
 KEENAN_FULL = "Bill Keenan"
@@ -59,6 +60,23 @@ def main():
                         f"Tom Watson 2026 team: {row[1]!r} -> {NEW_TOM_NAME!r}",
                         ("UPDATE teams SET team_name = ? WHERE team_season_id = ?",
                          (NEW_TOM_NAME, row[0]))))
+
+    # --- 1b. Brian rename (2026-08-31, from Yahoo draft-results page) ----
+    row_b = conn.execute("""
+        SELECT t.team_season_id, t.team_name FROM teams t
+        JOIN managers m ON m.manager_id = t.manager_id
+        WHERE m.full_name = 'Brian Malconian' AND t.season = 2026
+    """).fetchone()
+    if row_b is None:
+        print("ERROR: no 2026 team found for Brian Malconian")
+        return
+    if row_b[1] == NEW_BRIAN_NAME:
+        print(f"skip (already renamed): Brian Malconian 2026 = {row_b[1]!r}")
+    else:
+        actions.append(("rename",
+                        f"Brian Malconian 2026 team: {row_b[1]!r} -> {NEW_BRIAN_NAME!r}",
+                        ("UPDATE teams SET team_name = ? WHERE team_season_id = ?",
+                         (NEW_BRIAN_NAME, row_b[0]))))
 
     # --- 2. Bill Keenan manager row -------------------------------------
     mgr = conn.execute("SELECT manager_id FROM managers WHERE yahoo_guid = ?",
