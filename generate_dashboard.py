@@ -4199,6 +4199,20 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .m-val.kept-yes { color: #116b3f; font-weight: 700; }
 .m-val.kept-no { color: #98a0ad; }
 .roster-note { font-size: 12.5px; color: #606C71; margin: 0 0 10px; }
+.bp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; align-items: start; }
+.bp-card { background: #fff; border: 1px solid #ebebed; border-radius: 8px; padding: 14px 16px; }
+.bp-card.bp-empty { background: #fafbfc; }
+.bp-mgr { margin: 0 0 8px; font-size: 15px; color: #022479; }
+.bp-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
+.bp-none { color: #98a0ad; font-style: italic; font-size: 13px; margin: 0; }
+.bp-bold { font-size: 11px; font-weight: 700; border-radius: 10px; padding: 1px 8px; white-space: nowrap; }
+.bp-tbd { background: #f2f2f4; color: #606C71; }
+.bp-b1 { background: #eef2fb; color: #022479; }
+.bp-b2 { background: #fdf6e3; color: #8C6E10; }
+.bp-b3 { background: #fdeeee; color: #b42318; }
+.bp-oc { font-size: 11px; font-weight: 700; }
+.bp-right { color: #116b3f; }
+.bp-wrong { color: #b42318; }
 .k26-name { font-weight: 600; }
 .k26-open { color: #98a0ad; font-style: italic; }
 .k26-up { font-size: 11px; color: #8C6E10; font-weight: 600; }
@@ -4791,8 +4805,11 @@ JS = r"""
   }
 
   function effRoster(slug) {
+    /* eff = the round the keeper is actually SEATED in (final 2026
+       arrangement); falls back to DRC for anyone unseated. Costs stay
+       DRC-based via c. */
     return (playersBy[slug] || []).map(p =>
-      ({i: p.i, n: p.n, pos: p.p, eff: p.d6, pts: p.pts, c: p.c6}));
+      ({i: p.i, n: p.n, pos: p.p, eff: (p.sr != null ? p.sr : p.d6), pts: p.pts, c: p.c6}));
   }
   const tierOf = d => d <= 2 ? 1 : d <= 5 ? 2 : d <= 9 ? 3 : 4;
   const first = m => String(m || '').split(' ')[0];
@@ -6055,15 +6072,10 @@ JS = r"""
       ? '<div class="db26-await"><div class="db26-await-h">Awaiting placement &mdash; keeper needs a manual slot call (traded-in keepers and acquired-pick landings are never seated automatically)</div>' + awaitBits.join('') + '</div>'
       : '';
     app.innerHTML =
-      '<div class="db26-top"><label class="db26-toggle"><input type="checkbox"' + (showKeep ? ' checked' : '') +
-      ' data-role="db26keep"> Show potential keepers<span class="db26-toggle-sub">each pick lists the holder&#39;s roster players whose DRC lands in that round &mdash; who could sit there, not who will</span></label></div>' +
       awaitHtml +
       '<div class="db26-grid">' + cards.join('') + '</div>';
   }
 
-  app.addEventListener('change', e => {
-    if (e.target.dataset.role === 'db26keep') { showKeep = e.target.checked; render(); }
-  });
   render();
 })();
 
@@ -6985,6 +6997,8 @@ def render_rules_section():
           <p>The slide rule has a hard limit: a keeper can only slide into a draft slot that the manager <em>still owns</em>. If a manager has traded away the round their keeper would need to slide to, they have created a chasm the player cannot span &mdash; and <strong>that player becomes ineligible to keep</strong>.</p>
           <p>Example: a manager has two DRC 1 keepers, both wanting the Round 1 slot. Normally the slide rule would push the second keeper into the Round 2 slot. But if that manager has traded away their Round 2 pick, there is no slot for the second keeper to occupy. The second keeper becomes un-keepable and must be released back to the draft pool.</p>
           <p class="rules-note">This is a strategic constraint at keeper-designation time, not a runtime cost computation. Trade pick activity should be planned with the keeper roster in mind.</p>
+          <p><strong>The chasm rule applies to sliding DOWN only <span class="rule-new-pill" style="display:inline-block;margin-left:6px;">Clarified 9/2/26</span></strong></p>
+          <p>Moving a keeper <em>up</em> &mdash; seating them on a higher (earlier) draft pick than their DRC round &mdash; is never restricted and never creates a chasm. You are spending a better pick than the player&rsquo;s cost requires, and overpaying in draft capital is discouragement enough; no rule needs to add to it. Chasm checks only bite on the way down, where sliding requires the native round and every round between to be completely full of your own held picks.</p>
         </section>
 
         <section class="rule-block rule-block-new">
@@ -7408,6 +7422,7 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="commissioners-desk">Commissioner's Desk</a>
           <a class="nav-link" data-target="league-rules">League rules</a>
           <a class="nav-link" data-target="rules-history">Rules History</a>
+          <a class="nav-link" data-target="bold-predictions">2026/27 Bold Predictions</a>
           <a class="nav-link" data-target="about">About this dashboard</a>
         </div>
       </details>
@@ -7431,7 +7446,6 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="player-search">Player search</a>
           <a class="nav-link" data-target="player-compare">Player comparison</a>
           <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
-          <a class="nav-link" data-target="keeper-board">Keeper board</a>
           <a class="nav-link" data-target="draft-board">2026 draft board</a>
         </div>
       </details>
@@ -7467,6 +7481,11 @@ def render_trade_analyzer(by_manager):
             "cap": data["total_drc_dollars"],
         })
         for p in data["players"]:
+            # Keepers are FINAL (Pete 2026-09-02): non-kept players are
+            # off the rosters and out of the tradeable-asset pool, so the
+            # analyzer/board embeds carry keepers only.
+            if not p.get("kept_2026"):
+                continue
             h25 = (p.get("history") or {}).get(2025) or {}
             pts = h25.get("pts")
             pr = h25.get("pos_rank")
@@ -7800,6 +7819,17 @@ def render_trade_analyzer(by_manager):
     print(f"  keeper seating (efficiency mode): {n_seated} seated, "
           f"{n_chasm} chasm")
 
+    # Stamp each embedded player with his seated round so the trade
+    # analyzer boards show WHERE everyone was kept (Pete 2026-09-02),
+    # not the old could-sit-here inventory.
+    _seat_round = {}
+    for _sl, _st in seats.items():
+        for _x in _st:
+            _seat_round[_x["pid"]] = _x["r"]
+    for _pl in players:
+        if _pl["i"] in _seat_round:
+            _pl["sr"] = _seat_round[_pl["i"]]
+
     data_json = json.dumps({"teams": teams, "players": players,
                             "picks": held, "picks_lost": lost,
                             "draft_pos": draft_pos,
@@ -7895,6 +7925,67 @@ def render_keeper_board():
     </section>"""
 
 
+def render_bold_predictions(by_manager):
+    """2026/27 Bold Predictions (Pete's feature 2026-09-02): each manager's
+    season predictions from the `bold_predictions` table, with Pete's 1-3
+    boldness rating and (eventually) the right/wrong call. Reviewed at the
+    season-end summit; the boldest CORRECT take wins the award. Managers
+    who haven't submitted show as awaiting, so Pete can chase them."""
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    preds = {}
+    if conn.execute("SELECT 1 FROM sqlite_master "
+                    "WHERE name='bold_predictions'").fetchone():
+        for r in conn.execute("""
+                SELECT manager_id, pred_no, prediction, boldness, outcome
+                FROM bold_predictions WHERE season = 2026
+                ORDER BY manager_id, pred_no"""):
+            preds.setdefault(r["manager_id"], []).append(r)
+    conn.close()
+
+    entries = sorted(
+        ((data["manager"], data["manager_id"]) for data in by_manager.values()),
+        key=lambda x: x[0])
+    cards = ""
+    n_in = 0
+    for disp, mid in entries:
+        rows = preds.get(mid)
+        if rows:
+            n_in += 1
+            items = ""
+            for r in rows:
+                if r["boldness"]:
+                    chip = ('<span class="bp-bold bp-b%d">boldness %d/3</span>'
+                            % (r["boldness"], r["boldness"]))
+                else:
+                    chip = '<span class="bp-bold bp-tbd">boldness TBD</span>'
+                oc = ""
+                if r["outcome"] == "right":
+                    oc = ' <span class="bp-oc bp-right">&#10004; called it</span>'
+                elif r["outcome"] == "wrong":
+                    oc = ' <span class="bp-oc bp-wrong">&#10008; missed</span>'
+                items += (f'<li>{html.escape(r["prediction"])} {chip}{oc}</li>')
+            body = f'<ol class="bp-list">{items}</ol>'
+        else:
+            body = ('<p class="bp-none">No predictions submitted yet &mdash; '
+                    'the commissioner is waiting.</p>')
+        cards += f"""
+        <div class="bp-card{' bp-empty' if not rows else ''}">
+          <h3 class="bp-mgr">{html.escape(disp)}</h3>
+          {body}
+        </div>"""
+
+    return f"""
+    <section class="team-section" id="bold-predictions" hidden>
+      <header class="section-header">
+        <h1 class="section-title">2026/27 Bold Predictions</h1>
+        <p class="section-sub">Every manager's boldest calls for the season, on the record before Week 1. Each gets a 1&ndash;3 boldness rating from the commissioner. We review the lot at the summit, laugh at the misses, and crown the boldest take that actually hit. {n_in} of {len(entries)} managers are in &mdash; if your card is empty, you know what to do.</p>
+      </header>
+      <div class="bp-grid">{cards}</div>
+      <p class="kb-hint">Predictions are logged as submitted (light edits for the public record). Boldness ratings and season-end verdicts come from the commissioner. Want yours in or amended? Message Pete before Week 1 kicks off.</p>
+    </section>"""
+
+
 def render_draft_board():
     """League-wide 2026 draft board (Manager Tools): every pick of the
     linear draft in lottery order, round by round, naming the current
@@ -7922,8 +8013,11 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     player_search = render_player_search_section(search_players)
     player_compare = render_player_compare(search_players)
     trade_analyzer, pick_data = render_trade_analyzer(by_manager)
-    keeper_board = render_keeper_board()
+    # Keeper board tab removed 2026-09-02 (Pete): designation is final;
+    # the draft board shows the final keepers. render_keeper_board kept
+    # in source for next off-season.
     draft_board = render_draft_board()
+    bold_preds = render_bold_predictions(by_manager)
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
     rules_history = render_rules_history_section()
@@ -7958,8 +8052,8 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {player_search}
 {player_compare}
 {trade_analyzer}
-{keeper_board}
 {draft_board}
+{bold_preds}
 {desk}
 {offseason}
 {rules}
