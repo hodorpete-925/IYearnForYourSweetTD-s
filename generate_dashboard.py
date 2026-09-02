@@ -4191,6 +4191,7 @@ table.ta-table tr.ta-total td {
 .db26-await { background: #fffaf0; border: 1px solid #f0e3c0; border-radius: 8px; padding: 10px 14px; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; }
 .db26-await-h { flex-basis: 100%; font-weight: 700; color: #8C6E10; font-size: 12px; letter-spacing: .02em; }
 .db26-await-item.db26-chasm { color: #b42318; font-weight: 600; }
+.db26-teamsel { font: inherit; font-size: 13px; padding: 3px 8px; border: 1px solid #d9d9de; border-radius: 6px; background: #fff; color: #2b2b2e; margin: 0 2px; }
 .slot-col { font-weight: 700; color: #022479; white-space: nowrap; width: 64px; }
 tr.slot-empty td.empty-slot { color: #98a0ad; font-style: italic; font-weight: 400; }
 tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #606C71; padding: 6px 12px; border-top: 1px solid #ebebed; }
@@ -6001,6 +6002,7 @@ JS = r"""
   }));
 
   let showKeep = false;
+  let filterTeam = '';   /* '' = whole league; slug = one team's picks */
 
   /* The keeper lens is an INVENTORY view, same principle as the trade
      analyzer: players whose DRC natively lands in this round for the
@@ -6013,8 +6015,16 @@ JS = r"""
   function render() {
     const cards = [];
     for (let r = 1; r <= 16; r++) {
-      const picks = (byRound[r] || []).slice()
+      const picks = (byRound[r] || [])
+        .filter(pk => !filterTeam || pk.h === filterTeam)
+        .slice()
         .sort((a, b) => ((a.lp ? 98 : DPOS[a.o] || 97) - (b.lp ? 98 : DPOS[b.o] || 97)));
+      if (filterTeam && !picks.length) {
+        cards.push('<div class="db26-round"><div class="db26-round-h">Round ' + r +
+          '<span class="db26-cost">keeper cost ' + money(roundCost(r)) + '</span></div>' +
+          '<div class="db26-pick"><span class="db26-none">no pick &mdash; traded away</span></div></div>');
+        continue;
+      }
       const stacked = {};   // holder -> already stacked this round (a team
                             // with two picks here gets its players listed once)
       const rows = picks.map(pk => {
@@ -6057,12 +6067,14 @@ JS = r"""
     }
     const awaitBits = [];
     Object.keys(AWAIT).forEach(h => (AWAIT[h] || []).forEach(pid => {
+      if (filterTeam && h !== filterTeam) return;
       const p0 = pById[pid]; if (!p0) return;
       awaitBits.push('<span class="db26-await-item"><strong>' +
         esc(firstName((teamBy[h] || {}).mgr || h)) + ':</strong> ' + esc(p0.n) +
         ' (DRC ' + p0.d6 + ' &middot; ' + money(p0.c6) + ')</span>');
     }));
     Object.keys(CHASM).forEach(h => (CHASM[h] || []).forEach(pid => {
+      if (filterTeam && h !== filterTeam) return;
       const p0 = pById[pid]; if (!p0) return;
       awaitBits.push('<span class="db26-await-item db26-chasm"><strong>' +
         esc(firstName((teamBy[h] || {}).mgr || h)) + ':</strong> ' + esc(p0.n) +
@@ -6071,11 +6083,23 @@ JS = r"""
     const awaitHtml = awaitBits.length
       ? '<div class="db26-await"><div class="db26-await-h">Awaiting placement &mdash; keeper needs a manual slot call (traded-in keepers and acquired-pick landings are never seated automatically)</div>' + awaitBits.join('') + '</div>'
       : '';
+    const opts = ['<option value="">Whole league</option>'].concat(
+      D.teams.slice()
+        .sort((a, b) => (DPOS[a.slug] || 99) - (DPOS[b.slug] || 99))
+        .map(t => '<option value="' + esc(t.slug) + '"' +
+          (filterTeam === t.slug ? ' selected' : '') + '>' +
+          esc(t.team) + ' (' + esc(t.mgr) + ')</option>'));
     app.innerHTML =
+      '<div class="db26-top"><label class="db26-toggle">Show board for ' +
+      '<select class="db26-teamsel" data-role="db26team">' + opts.join('') + '</select>' +
+      '<span class="db26-toggle-sub">pick a team to see just their 16 rounds &mdash; keepers seated, open picks, and rounds traded away</span></label></div>' +
       awaitHtml +
       '<div class="db26-grid">' + cards.join('') + '</div>';
   }
 
+  app.addEventListener('change', e => {
+    if (e.target.dataset.role === 'db26team') { filterTeam = e.target.value; render(); }
+  });
   render();
 })();
 
