@@ -56,6 +56,50 @@ _ALIAS_MISSING_WARNED = set()
 # keep the historical manager's name so the record reads true.
 CURRENT_HANDOFFS = {"Jon Lewitus": "Bill Keenan"}
 
+# The season the keeper board / trade analyzer now plan FOR. The 2026 draft
+# is done (2026-09-03), so those tools look ahead: every rostered player
+# carries his 2027 keep price (decrement-by-one from his 2026 DRC, floor 1).
+NEXT_SEASON = 2027
+
+# 2027 pick legs agreed in the 2026 off-season that the DB can't hold yet
+# (transaction_picks has no for_season column - see add_synthetic_trades.py,
+# the two "2027 LEG (NOT entered)" comments). Applied to the NEXT_SEASON
+# pick inventory here so the 2027 keeper board is right; delete these once
+# the for_season plumbing lands and the legs live in the DB.
+#   (round, from manager, to manager) - "last pick" legs are round 16.
+PENDING_2027_PICK_LEGS = [
+    (6, "Tom Watson", "Scott Montgomery"),      # Scott gets Tom's 2027 R6
+    (16, "Scott Montgomery", "Tom Watson"),     # for Scott's 2027 last pick
+    (6, "Aric Tao", "Dan Vescuso"),             # Dan V gets Aric's 2027 R6
+    (16, "Dan Vescuso", "Aric Tao"),            # for Dan V's 2027 last pick
+]
+
+
+def _load_json_sidecar(name, warn=True):
+    path = Path(__file__).parent / name
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+        if warn:
+            print(f"  WARNING: {name} unreadable ({e})")
+        return None
+
+
+def load_yahoo_draft_day():
+    """Yahoo's draft-day projected standings / power rankings / grades
+    (yahoo_draft_day_2026.json, transcribed from Pete's screenshots).
+    Returns {team_name: row} or {} when the file is missing."""
+    doc = _load_json_sidecar("yahoo_draft_day_2026.json")
+    if not doc:
+        return {}
+    return {row["team"]: row for row in doc.get("teams", [])}
+
+
+def load_draft_results_meta():
+    """_meta block of draft_results_2026.json (draft date, amendments)."""
+    doc = _load_json_sidecar("draft_results_2026.json", warn=False)
+    return (doc or {}).get("_meta", {})
+
 
 def current_face(name):
     """Map a franchise's historical manager to its current (2026) manager
@@ -342,6 +386,86 @@ def build_data():
         data["committed_total"] = sum(p["drc_dollars"] for p in kept)
         data["premium_kept"] = sum(1 for p in kept if p["drc"] <= 2)
 
+    # ---- 2026 rosters: the draft is done (2026-09-03) --------------------
+    # draft_picks season 2026 (add_draft_2026.py) is the roster of record:
+    # 126 keepers seated on their picks + 66 live picks. Keepers reuse the
+    # board dicts above (engine DRC / $ / history); live picks are built
+    # fresh with DRC = draft round and nothing owed to the pot (only
+    # keepers pay). Every row also carries the NEXT_SEASON keep price
+    # (decrement-by-one, floor 1) for the 2027 keeper board and analyzer.
+    draft_rows = conn.execute("""
+        SELECT dp.overall_pick, dp.draft_round, dp.pick_in_round, dp.is_keeper,
+               dp.player_id, dp.team_season_id,
+               p.player_name, p.position, p.nfl_team,
+               m.full_name AS mgr
+        FROM draft_picks dp
+        JOIN players p  ON p.player_id = dp.player_id
+        JOIN teams t    ON t.team_season_id = dp.team_season_id
+        JOIN managers m ON m.manager_id = t.manager_id
+        WHERE dp.season = ?
+        ORDER BY dp.overall_pick""", (TARGET_SEASON,)).fetchall()
+    draft_done = len(draft_rows) > 0
+    for data in by_manager.values():
+        data["roster_2026"] = []
+        data["draft_done"] = draft_done
+    if not draft_done:
+        print(f"  WARNING: no season-{TARGET_SEASON} draft_picks rows "
+              f"(run add_draft_2026.py --commit) - rosters fall back to keepers only")
+
+    def _next_drc(d):
+        return max(int(d) - 1, 1)
+
+    for r in draft_rows:
+        board_mgr = handoff_back.get(r["mgr"], r["mgr"])
+        data = by_manager.get(board_mgr)
+        if data is None:
+            print(f"  WARNING: {TARGET_SEASON} draft pick for unknown manager {r['mgr']!r}")
+            continue
+        pick_label = f"{r['draft_round']}.{r['pick_in_round']:02d}"
+        base = None
+        if r["is_keeper"]:
+            base = next((p for p in data["players"]
+                         if p["player_id"] == r["player_id"] and p.get("kept_2026")), None)
+            if base is None:
+                print(f"  WARNING: keeper pick {pick_label} {r['player_name']} "
+                      f"is not a kept player on {r['mgr']}'s board")
+        if base is not None:
+            entry = dict(base)
+            entry["acq"] = "kept"
+            entry["owed_2026"] = base["drc_dollars"]
+        else:
+            history = hist.build_history_for_player(
+                conn, r["player_id"], r["team_season_id"],
+                adp_by_year, pts_by_year, pos_rank_by_year,
+                player_position=r["position"],
+            )
+            entry = {
+                "player_id": r["player_id"],
+                "name": r["player_name"],
+                "position": r["position"] or "—",
+                "nfl_team": r["nfl_team"] or "—",
+                "drc": r["draft_round"],
+                "drc_dollars": dollar.get(r["draft_round"], 10),
+                "adp_2026": adp_2026.get(r["player_id"]),
+                "chain": f"drafted round {r['draft_round']} in {TARGET_SEASON}",
+                "history": history,
+                "acq": "drafted",
+                "owed_2026": 0,
+            }
+        entry["pick"] = pick_label
+        entry["round"] = r["draft_round"]
+        entry["overall"] = r["overall_pick"]
+        entry["drc_next"] = _next_drc(entry["drc"])
+        entry["cost_next"] = dollar.get(entry["drc_next"], 10)
+        data["roster_2026"].append(entry)
+
+    for data in by_manager.values():
+        ro = data["roster_2026"]
+        data["roster_count"] = len(ro)
+        data["live_pick_count"] = sum(1 for p in ro if p["acq"] == "drafted")
+        data["roster_owed_2026"] = sum(p["owed_2026"] for p in ro)
+        data["roster_cost_next"] = sum(p["cost_next"] for p in ro)
+
     # League-wide player search dataset: every player that's touched a roster,
     # a draft, or a transaction in our data. Each entry is enriched with a
     # full transaction log, a per-year DRC trajectory, a 2025 fantasy summary,
@@ -578,9 +702,33 @@ def build_data():
         for bp in data["players"]:
             board_truth[bp["player_id"]] = (
                 data["manager"], bp["drc"], bp["drc_dollars"])
+    # Once the 2026 draft is in, the drafted rosters are the truth: a
+    # player who wasn't kept and wasn't drafted is out of the league
+    # (free agent) and his 2026 cost line goes blank.
+    if draft_done:
+        drafted_truth = {}
+        drafted_meta = {}
+        for data in by_manager.values():
+            for rp in data["roster_2026"]:
+                drafted_truth[rp["player_id"]] = (
+                    data["manager"], rp["drc"], rp["owed_2026"])
+                drafted_meta[rp["player_id"]] = (rp["acq"], rp["pick"])
+        undrafted = set(board_truth) - set(drafted_truth)
+        board_truth = drafted_truth
+    else:
+        undrafted = set()
+        drafted_meta = {}
     for sp in search_players:
         hit = board_truth.get(sp["player_id"])
         if not hit:
+            if sp["player_id"] in undrafted:
+                sp["current_owner"] = None
+                sp["undrafted_2026"] = True
+                for y in sp["per_year"]:
+                    if y["year"] == TARGET_SEASON:
+                        y["drc"] = None
+                        y["dollars"] = None
+                        y["owner"] = None
             continue
         owner_disp, drc_now, dollars_now = hit
         sp["current_owner"] = owner_disp
@@ -589,6 +737,8 @@ def build_data():
                 y["drc"] = drc_now
                 y["dollars"] = dollars_now
                 y["owner"] = owner_disp
+                if sp["player_id"] in drafted_meta:
+                    y["acq"], y["pick"] = drafted_meta[sp["player_id"]]
 
     conn.close()
     return by_manager, failures, search_players, offseason_trades
@@ -736,8 +886,19 @@ def render_year_card_2026(p):
     the year strip leads with it. Kept players show the committed DRC/$;
     everyone else is headed to the draft pool."""
     kept = p.get("kept_2026")
-    status = "Kept" if kept else "Not kept"
-    status_cls = " kept-yes" if kept else " kept-no"
+    acq = p.get("acq")
+    if acq == "drafted":
+        status = f"Drafted {p.get('pick', '')}".strip()
+        status_cls = " kept-yes"
+        dollars = "$0"
+    elif kept:
+        status = f"Kept {p['pick']}" if p.get("pick") else "Kept"
+        status_cls = " kept-yes"
+        dollars = f"${p['drc_dollars']}"
+    else:
+        status = "Not kept"
+        status_cls = " kept-no"
+        dollars = f"${p['drc_dollars']}"
     adp_str = _fmt(p.get("adp_2026"), 1)
     return f"""
         <div class="year-card year-card-2026">
@@ -752,7 +913,7 @@ def render_year_card_2026(p):
           </div>
           <div class="year-metric">
             <span class="m-label">$</span>
-            <span class="m-val">${p['drc_dollars']}</span>
+            <span class="m-val">{dollars}</span>
           </div>
           <div class="year-metric">
             <span class="m-label">ADP</span>
@@ -797,6 +958,32 @@ def render_player_row(p, slot_label=None):
     sub_row = render_history_subrow(pid, p.get("history", {}), colspan=ncols,
                                     player=p)
     return main_row + sub_row
+
+
+def render_roster26_row(p, slot_label):
+    """Post-draft roster row: how the player got here (kept at his DRC,
+    or the pick he was drafted with) and what he cost the pot in 2026."""
+    pid = p.get("player_id", id(p))
+    if p.get("acq") == "kept":
+        acq = (f'<span class="pill {drc_tier_class(p["drc"])}">DRC {p["drc"]}</span>'
+               f'<span class="acq-note">kept &middot; pick {html.escape(p["pick"])}</span>')
+        cost = f"${p['owed_2026']}"
+    else:
+        acq = (f'<span class="pill pill-draft">R{p["round"]}</span>'
+               f'<span class="acq-note">drafted &middot; pick {html.escape(p["pick"])}</span>')
+        cost = '<span class="muted">&mdash;</span>'
+    main_row = f"""
+        <tr>
+          <td class="meta slot-col">{html.escape(slot_label)}</td>
+          <td class="player-name">{html.escape(p['name'])}<span class="sub-line">{html.escape(p['position'])} &middot; {html.escape(p['nfl_team'])}</span></td>
+          <td class="meta">{html.escape(p['position'])}</td>
+          <td class="acq-cell">{acq}</td>
+          <td class="num cost">{cost}</td>
+          <td class="expand-col">
+            <button class="expand-btn" data-target="hist-{pid}" aria-label="Show prior years">›</button>
+          </td>
+        </tr>"""
+    return main_row + render_history_subrow(pid, p.get("history", {}), colspan=6, player=p)
 
 
 def _lineup_assign(players):
@@ -1383,24 +1570,52 @@ def render_team_section(data, slug, pick_data=None):
     # wasn't kept is no longer on the roster. Laid out in Yahoo's lineup
     # structure: the best player fills each starting slot, kept overflow
     # rides the bench, everything else is an open slot for draft day.
-    kept_players = [pl for pl in data["players"] if pl.get("kept_2026")]
-    starters, bench = _lineup_assign(kept_players)
-    starter_rows = "".join(
-        render_player_row(pl, slot_label=lbl) if pl is not None
-        else render_empty_slot_row(lbl)
-        for lbl, pl in starters)
-    bench_rows = ("".join(render_player_row(pl, slot_label="BN")
-                          for pl in bench)
-                  or render_empty_slot_row("BN"))
+    draft_done = data.get("draft_done")
+    if draft_done:
+        # Post-draft (2026-09-03): the roster is the 16 drafted players -
+        # keepers on the picks that seated them plus the live picks - in
+        # Yahoo's lineup structure (best 2026 ADP fills each slot).
+        starters, bench = _lineup_assign(data["roster_2026"])
+        starter_rows = "".join(
+            render_roster26_row(pl, slot_label=lbl) if pl is not None
+            else render_empty_slot_row(lbl)
+            for lbl, pl in starters)
+        bench_rows = ("".join(render_roster26_row(pl, slot_label="BN")
+                              for pl in bench)
+                      or render_empty_slot_row("BN"))
+    else:
+        kept_players = [pl for pl in data["players"] if pl.get("kept_2026")]
+        starters, bench = _lineup_assign(kept_players)
+        starter_rows = "".join(
+            render_player_row(pl, slot_label=lbl) if pl is not None
+            else render_empty_slot_row(lbl)
+            for lbl, pl in starters)
+        bench_rows = ("".join(render_player_row(pl, slot_label="BN")
+                              for pl in bench)
+                      or render_empty_slot_row("BN"))
     rows = (f'<tr class="group-h"><td colspan="6">Starting lineup</td></tr>'
             f'{starter_rows}'
             f'<tr class="group-h"><td colspan="6">Bench</td></tr>'
             f'{bench_rows}')
+    # Drafts tab: once the real 2026 draft is in draft_picks it renders
+    # through draft_history like every other year (open by default); the
+    # pre-draft seating preview (render_2026_draft_block) is retired.
     drafts_html = render_drafts_tab(data.get("draft_history", {}), slug,
-                                    none_open=pick_data is not None)
-    if pick_data is not None:
+                                    none_open=(pick_data is not None and not draft_done))
+    if pick_data is not None and not draft_done:
         drafts_html = render_2026_draft_block(slug, data, pick_data) + drafts_html
     trades_html = render_trades_tab(data.get("trade_history", []), slug)
+    yd = (load_yahoo_draft_day() or {}).get(data["team_name"]) if draft_done else None
+    if draft_done:
+        roster_note = (f"The {TARGET_SEASON} roster as drafted on Sep 3 &mdash; {kcount} keepers on the picks that "
+                       f"seated them plus {data.get('live_pick_count', 0)} live picks, laid out in Yahoo&rsquo;s lineup "
+                       f"structure (best 2026 ADP fills each slot). Keepers show the DRC they were kept at and what "
+                       f"that owes the pot; drafted players show their round, which is where their own cost cycle "
+                       f"starts. In-season adds, drops and trades are not reflected yet.")
+    else:
+        roster_note = (f"The {TARGET_SEASON} roster heading into the draft &mdash; keepers only, since everyone else "
+                       f"is back in the draft pool. The best player fills each starting slot, kept overflow rides the "
+                       f"bench, and open slots get filled on draft day.")
 
     return f"""
     <section class="team-section" id="team-{slug}" hidden>
@@ -1410,20 +1625,20 @@ def render_team_section(data, slug, pick_data=None):
 
       <div class="kpis">
         <div class="kpi">
-          <div class="k">2026 committed keeper cost</div>
+          <div class="k">2026 keeper cost (to the pot)</div>
           <div class="v">${total:,}</div>
         </div>
         <div class="kpi">
-          <div class="k">Keepers locked in</div>
+          <div class="k">Keepers</div>
           <div class="v">{kcount}</div>
         </div>
         <div class="kpi">
-          <div class="k">Premium keepers (DRC ≤ 2)</div>
-          <div class="v">{premium_kept}</div>
+          <div class="k">{"Live picks made" if draft_done else "Picks to make on draft day"}</div>
+          <div class="v">{(data.get("live_pick_count") if draft_done else picks_to_make) if (draft_done or picks_to_make is not None) else "&mdash;"}</div>
         </div>
         <div class="kpi">
-          <div class="k">Picks to make on draft day</div>
-          <div class="v">{picks_to_make if picks_to_make is not None else "&mdash;"}</div>
+          <div class="k">{"Yahoo draft grade" if draft_done else "Premium keepers (DRC ≤ 2)"}</div>
+          <div class="v">{(html.escape(yd["yahoo_grade"]) if yd else "&mdash;") if draft_done else premium_kept}</div>
         </div>
       </div>
 
@@ -1434,22 +1649,22 @@ def render_team_section(data, slug, pick_data=None):
       </div>
 
       <div class="tab-panel active" id="{slug}-roster">
-        <p class="roster-note">The {TARGET_SEASON} roster heading into the draft &mdash; keepers only, since everyone else is back in the draft pool. The best player fills each starting slot, kept overflow rides the bench, and open slots get filled on draft day.</p>
+        <p class="roster-note">{roster_note}</p>
         <table class="roster team-roster">
           <thead>
             <tr>
               <th>Slot</th>
               <th>Player</th>
               <th>Pos</th>
-              <th class="num">DRC</th>
-              <th class="num">Cost</th>
+              {"<th>Acquired</th>" if draft_done else '<th class="num">DRC</th>'}
+              <th class="num">{"2026 $" if draft_done else "Cost"}</th>
               <th class="expand-col"></th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>
           <tr class="total">
             <td class="meta"></td>
-            <td>Total committed ({kcount} keepers)</td>
+            <td>{"Owed to the pot" if draft_done else "Total committed"} ({kcount} keepers)</td>
             <td class="meta"></td>
             <td class="num"></td>
             <td class="num cost">${total:,}</td>
@@ -1500,7 +1715,17 @@ def _render_updated_widget(generated_at, meta):
       </div>"""
 
 
+def _grade_class(g):
+    """CSS tier for a letter grade chip."""
+    if not g:
+        return "grade-none"
+    return {"A": "grade-a", "B": "grade-b", "C": "grade-c", "D": "grade-d"}.get(g[0].upper(), "grade-f")
+
+
 def render_summary_section(by_manager, generated_at, meta=None):
+    draft_done = any(d.get("draft_done") for d in by_manager.values())
+    if draft_done:
+        return render_summary_post_draft(by_manager, generated_at, meta)
     # Keepers are FINAL (locked 2026-08; keeper_selections is the record),
     # so the league home ranks teams by what they actually committed.
     teams = sorted(by_manager.values(),
@@ -1564,6 +1789,107 @@ def render_summary_section(by_manager, generated_at, meta=None):
       </table>
 
       <p class="footnote">Source: fantasy.db &middot; DRC algorithm: compute_drc.py</p>
+      {_render_updated_widget(generated_at, meta)}
+    </section>"""
+
+
+def render_summary_post_draft(by_manager, generated_at, meta=None):
+    """League home after the 2026 draft (Pete 2026-09-04): Yahoo's draft-day
+    power rankings, projected records and draft grades side by side, with
+    a column reserved for the commissioner's own grades (his rebuttal post
+    is coming; until then the column reads pending). Yahoo's numbers come
+    from yahoo_draft_day_2026.json; the keeper-commitment table this
+    replaces lives on in each team page."""
+    yd = load_yahoo_draft_day()
+    dmeta = load_draft_results_meta()
+    teams = list(by_manager.values())
+    by_team_name = {d["team_name"]: d for d in teams}
+    missing = [t for t in by_team_name if t not in yd]
+    if missing:
+        print(f"  WARNING: no Yahoo draft-day row for {missing} (team renamed? update yahoo_draft_day_2026.json)")
+
+    def _row(d):
+        y = yd.get(d["team_name"]) or {}
+        return (y.get("power_rank") or 99, d["team_name"].lower())
+    ordered = sorted(teams, key=_row)
+
+    league_owed = sum(d["committed_total"] for d in teams)
+    keeper_total = sum(d["keeper_count"] for d in teams)
+    live_total = sum(d.get("live_pick_count", 0) for d in teams)
+    any_commish = any((yd.get(d["team_name"]) or {}).get("commissioner_grade") for d in teams)
+
+    rows = ""
+    for d in ordered:
+        slug = manager_slug(d["manager_actual"])
+        y = yd.get(d["team_name"]) or {}
+        pr = y.get("power_rank")
+        pts = y.get("proj_points")
+        rec = y.get("proj_record")
+        prj = y.get("proj_rank")
+        yg = y.get("yahoo_grade")
+        cg = y.get("commissioner_grade")
+        rows += f"""
+          <tr>
+            <td class="rank">{pr if pr else "&mdash;"}</td>
+            <td class="player-name"><a href="#" data-target="team-{slug}">{html.escape(d['team_name'])}</a><span class="sub-line">{html.escape(d['manager'])}</span></td>
+            <td class="num">{f"{pts:,.1f}" if isinstance(pts, (int, float)) else "&mdash;"}</td>
+            <td class="num">{html.escape(rec) if rec else "&mdash;"}<span class="sub-line">{f"#{prj}" if prj else ""}</span></td>
+            <td class="num">{d['keeper_count']}<span class="sub-line">${d['committed_total']:,}</span></td>
+            <td class="grade-cell"><span class="grade {_grade_class(yg)}">{html.escape(yg) if yg else "&mdash;"}</span></td>
+            <td class="grade-cell"><span class="grade {_grade_class(cg) if cg else 'grade-pending'}">{html.escape(cg) if cg else "pending"}</span></td>
+          </tr>"""
+
+    amend = ""
+    for a in (dmeta.get("amendments") or []):
+        amend += f'<p class="footnote">Draft amendment {html.escape(a.get("date", ""))[:10]}: {html.escape(a.get("note", ""))}</p>'
+
+    top = ordered[0] if ordered else None
+    top_y = (yd.get(top["team_name"]) if top else None) or {}
+    top_name = html.escape(top["team_name"]) if top else "&mdash;"
+
+    return f"""
+    <section class="team-section" id="summary">
+      <div class="eyebrow">{TARGET_SEASON} draft complete</div>
+      <h1 class="team-name">Draft-day power rankings</h1>
+      <p class="manager-name">The draft ran Thursday, Sep 3. Below is how Yahoo sized up the twelve rosters the moment it ended: projected points, projected record and its draft grade for each team. The commissioner&rsquo;s own grades land with his draft write-up.</p>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="k">Yahoo&rsquo;s #1</div>
+          <div class="v kpi-text">{top_name}</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Keepers / live picks</div>
+          <div class="v">{keeper_total} / {live_total}</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Owed to the pot</div>
+          <div class="v">${league_owed:,}</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Top projected points</div>
+          <div class="v">{f"{top_y['proj_points']:,.0f}" if isinstance(top_y.get('proj_points'), (int, float)) else "&mdash;"}</div>
+        </div>
+      </div>
+
+      <h2>Yahoo draft-day view vs. the commissioner</h2>
+      <table class="roster standings power">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th class="num">Proj. pts</th>
+            <th class="num">Proj. record</th>
+            <th class="num">Keepers</th>
+            <th class="grade-cell">Yahoo grade</th>
+            <th class="grade-cell">Commish grade</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+      <p class="footnote">Rank = Yahoo&rsquo;s draft-day power ranking, which it bases on projected points for the season; the projected record ranks separately (small number under it). Keepers shows each team&rsquo;s keeper count and what it owes the pot. Yahoo graded the rosters as they stood at the final pick.{"" if any_commish else " Commissioner grades are pending."}</p>
+      {amend}
+      <p class="footnote">Source: Yahoo draft-day standings, power rankings and league draft grades (yahoo_draft_day_2026.json) &middot; keepers and pot from fantasy.db</p>
       {_render_updated_widget(generated_at, meta)}
     </section>"""
 
@@ -1865,6 +2191,50 @@ table.roster tr.total td {
 .pill.tier-mid     { background: var(--blue-200); color: var(--blue-800); }
 .pill.tier-value   { background: #fff8e1; color: #8a6a1a; }
 .pill.tier-cheap   { background: var(--gray-100); color: var(--gray-600); }
+.pill.pill-draft   { background: #e6f6ee; color: #1c7a4a; }
+.kpi .v.kpi-text { font-size: 18px; line-height: 1.2; word-break: break-word; }
+/* 2026 draft results board */
+.drb-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 0 0 12px; font-size: 12px; color: var(--gray-600); }
+.drb-key { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid #e3e3e6; background: #fff; font-weight: 600; color: #2b2b2e; }
+.drb-key-kept { background: #eaf7ef; border-color: #cdeedb; color: #116b3f; }
+.drb-scroll { overflow-x: auto; border: 1px solid #ebebed; border-radius: 8px; background: #fff; }
+table.drb { border-collapse: separate; border-spacing: 0; min-width: 1500px; width: 100%; font-size: 12px; }
+table.drb th { position: sticky; top: 0; z-index: 2; background: #f7f8fa; border-bottom: 1px solid #ebebed; border-right: 1px solid #f2f2f4; padding: 8px 8px; text-align: left; font-weight: 700; font-size: 12px; color: #022479; vertical-align: top; }
+table.drb th a { color: inherit; text-decoration: none; display: block; }
+table.drb th a:hover { text-decoration: underline; }
+table.drb .drb-slot { display: inline-block; min-width: 18px; margin-right: 6px; color: #606C71; font-weight: 600; font-variant-numeric: tabular-nums; }
+table.drb .drb-mgr { display: block; font-weight: 400; color: #606C71; font-size: 11px; margin-top: 1px; }
+table.drb td { border-bottom: 1px solid #f2f2f4; border-right: 1px solid #f2f2f4; vertical-align: top; padding: 0; }
+table.drb td.drb-round, table.drb th.drb-round { position: sticky; left: 0; z-index: 3; background: #f7f8fa; width: 40px; min-width: 40px; padding: 8px; font-weight: 700; color: #606C71; text-align: center; border-right: 1px solid #ebebed; }
+table.drb th.drb-round { z-index: 4; }
+table.drb td.drb-cell { min-width: 118px; }
+.drb-pick { padding: 6px 8px; display: flex; flex-direction: column; gap: 1px; border-bottom: 1px dashed #eee; }
+.drb-pick:last-child { border-bottom: none; }
+.drb-pick.drb-kept { background: #eaf7ef; }
+.drb-num { font-variant-numeric: tabular-nums; font-size: 10.5px; font-weight: 600; color: #606C71; }
+.drb-name { font-weight: 600; color: #000; }
+.drb-sub { color: #606C71; font-size: 11px; }
+.drb-tag { font-size: 10.5px; font-weight: 600; color: #116b3f; margin-top: 2px; }
+.drb-tag-live { color: #98a0ad; font-weight: 500; }
+.drb-empty { background: #fafafa; }
+.drb-none { display: block; padding: 8px; color: #b3b8c2; font-style: italic; font-size: 11px; }
+table.roster.power td.rank { font-weight: 600; color: var(--gray-600); }
+table.roster.power td.num .sub-line { display: block; color: var(--gray-500); font-size: 11px; font-weight: 400; margin-top: 1px; }
+table.roster th.grade-cell, table.roster td.grade-cell { text-align: center; width: 92px; }
+.grade {
+  display: inline-block; min-width: 34px; padding: 3px 9px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; text-align: center;
+}
+.grade.grade-a { background: #022479; color: #fff; }
+.grade.grade-b { background: #0038FF; color: #fff; }
+.grade.grade-c { background: var(--blue-200); color: var(--blue-800); }
+.grade.grade-d { background: #fff8e1; color: #8a6a1a; }
+.grade.grade-f { background: #fbe9e3; color: #982B09; }
+.grade.grade-none { background: var(--gray-100); color: var(--gray-600); }
+.grade.grade-pending { background: transparent; color: var(--gray-500); font-weight: 500; font-size: 11.5px; border: 1px dashed #d9d9de; }
+table.roster td.acq-cell { white-space: nowrap; }
+.acq-note { display: block; color: var(--gray-600); font-size: 11.5px; margin-top: 2px; }
+table.roster td .muted { color: var(--gray-500); }
 
 .pill.value-major-steal { background: #cdedd9; color: #0e5730; }
 .pill.value-steal       { background: #e6f6ee; color: #1c7a4a; }
@@ -4464,7 +4834,7 @@ JS = r"""
     bar.classList.toggle('at-home', targetId === 'summary');
     const link = document.querySelector('.nav-link[data-target="' + targetId + '"]');
     let label = '';
-    if (link) label = ((link.childNodes[0] && link.childNodes[0].textContent) || link.textContent || '').trim();
+    if (link) { const c = link.cloneNode(true); c.querySelectorAll('.draft-slot, .manager').forEach(n => n.remove()); label = (c.textContent || '').trim(); }
     const cur = bar.querySelector('.crumb-current');
     if (cur) cur.textContent = label;
   }
@@ -4965,7 +5335,7 @@ JS = r"""
   }
 
   function taPickChip(h, side) {
-    const num = h.num ? '<b style="font-variant-numeric:tabular-nums;">' + h.num + '</b>' : (h.lp ? '<b>last pick</b>' : '<b>R?</b>');
+    const num = h.num ? '<b style="font-variant-numeric:tabular-nums;">' + h.num + '</b>' : (h.lp ? '<b>last pick</b>' : '<b>R' + h.r + '</b>');
     if (h.hypo) {
       // Incoming via this trade: click removes it (mirrors the sender's send list)
       const other = side === 'L' ? 'R' : 'L';
@@ -5744,7 +6114,7 @@ JS = r"""
       '<div class="kb-cols">' +
       '<div class="kb-panel"><div class="kb-panel-h">Roster <span class="kb-sub">tap to keep (seats at your open native pick) &middot; drag anywhere lit to place by hand</span></div>' +
       '<div class="kb-roster">' + cards + '</div></div>' +
-      '<div class="kb-panel"><div class="kb-panel-h">2026 draft board <span class="kb-sub">' +
+      '<div class="kb-panel"><div class="kb-panel-h">' + D.season + ' draft board <span class="kb-sub">' +
       (st.pick != null ? 'lit slots are legal for the picked-up player, tap one to place' : 'one row per pick &middot; tap an open pick to fill it') +
       '</span></div><div class="kb-board">' + rows + '</div>' + chasmStrip + '</div></div>' +
       lineupHtml +
@@ -5852,7 +6222,7 @@ JS = r"""
     }
 
     root.querySelector('.kb-print').innerHTML =
-      '<h2>' + esc(t.team || '') + ' &middot; 2026 keeper board</h2>' +
+      '<h2>' + esc(t.team || '') + ' &middot; ' + D.season + ' keeper board</h2>' +
       '<p class="kb-print-sub">' + esc(t.mgr || '') + ' &middot; ' + keepers().length +
       ' keepers &middot; ' + money(capTotal()) + ' committed &middot; ' +
       '<span class="kb-print-legend"><span class="kb-print-legend-item"><span class="kb-print-legend-key">R#</span> keeper slot</span> &middot; ' +
@@ -5977,6 +6347,7 @@ JS = r"""
   const root = document.getElementById('draft-board');
   if (!D || !root) return;
   const app = root.querySelector('.db26-app');
+  if (!app) return;   // post-draft: the results board is server-rendered
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const money = n => '$' + n.toLocaleString();
   const DOLLARS = {1:200, 2:100, 3:80, 4:60, 5:50, 6:30, 7:30, 8:30, 9:30};
@@ -6166,7 +6537,7 @@ JS = r"""
         const p = byId[id];
         const adp = p.a != null ? ' &middot; ADP ' + (p.a % 1 === 0 ? p.a : p.a.toFixed(1)) : '';
         const own = (p.o
-          ? ('Currently: <b>' + esc(p.o) + '</b>' + (p.k ? ' &middot; DRC ' + p.k.d + ' &middot; $' + (p.k.c || 0).toLocaleString() + ' to keep' : ''))
+          ? ('Currently: <b>' + esc(p.o) + '</b>' + (p.k ? ' &middot; 2026 DRC ' + p.k.d + (p.k.c ? ' &middot; $' + p.k.c.toLocaleString() + ' to the pot' : ' &middot; live pick') : ''))
           : 'No current owner') + adp;
         return '<div class="pc-card"><div class="pc-head"><span class="pc-name">' + esc(p.n) + '</span>' +
           '<button class="pc-x" data-pcrm="' + p.i + '" title="Remove" type="button">&#10005;</button></div>' +
@@ -6630,7 +7001,7 @@ def render_about_section():
           <p>The sidebar on the left has two groups:</p>
           <ul class="about-list">
             <li><strong>IYFYSTD Resources</strong> &mdash; everything that's leaguewide. Summary, player search, commissioner's writeups, and the rules.</li>
-            <li><strong>Teams</strong> &mdash; click any team to see its 2026 keepers, draft history, and trades. Tap the "+" to expand the team list.</li>
+            <li><strong>Teams</strong> &mdash; click any team to see its 2026 roster as drafted, draft history, and trades. Tap the "+" to expand the team list.</li>
           </ul>
           <p>On mobile, the sidebar lives behind a small "MENU" tab on the left edge of the screen &mdash; tap it any time to open the menu, tap outside it to close.</p>
         </section>
@@ -6639,13 +7010,13 @@ def render_about_section():
           <h2 class="about-h2">Sections you'll find</h2>
 
           <h3 class="about-h3">Summary &amp; standings</h3>
-          <p>The opening view. Total league cap committed, average keeper spend per team, premium-tier keepers leaguewide, and a ranked table of who's spent what for 2026.</p>
+          <p>The opening view. With the 2026 draft done it shows Yahoo's draft-day power rankings, projected records and draft grades for all twelve rosters, with a column for the commissioner's own grades, plus what the league owes the pot in keeper dollars.</p>
 
           <h3 class="about-h3">Player search</h3>
           <p>Type any player's name and a dropdown of matches appears. Click one (or hit Enter) to open that player's full profile: DRC cost over time, season-by-season fantasy production, weekly bar charts, ownership lineage, and where they rank against the players above and below them at their position.</p>
 
           <h3 class="about-h3">Trade analyzer</h3>
-          <p>Pick two teams, check the players (and draft picks) going each way, and the tool lays out what's actually exchanged: 2025 production, market value, and &mdash; the part Yahoo can't show you &mdash; what each player costs to keep in 2026 and the out-years under the trade-freeze rule. It states facts and totals only; it will never tell you whether to do the trade.</p>
+          <p>Pick two teams, check the players (and draft picks) going each way, and the tool lays out what's actually exchanged: 2025 production, market value, and &mdash; the part Yahoo can't show you &mdash; what each player costs to keep in 2027 and the out-years under the trade-freeze rule. It states facts and totals only; it will never tell you whether to do the trade.</p>
 
           <h3 class="about-h3">Commissioner's Desk</h3>
           <p>Pete's writeups &mdash; draft grades, season recaps, weekly previews, draft-day announcements. The left rail is the index; the most recent entry opens by default.</p>
@@ -6654,7 +7025,7 @@ def render_about_section():
           <p>The DRC cost table, decrement rules, trade-freeze logic, the slide rule (including the new pick chasm constraint), draft order, the FAAB washing rule, and the amended 2026-27 lottery weights.</p>
 
           <h3 class="about-h3">Per-team pages</h3>
-          <p>Each team has three tabs: <strong>Roster</strong> (every player on the 2025 end-of-season roster with their 2026 keeper cost), <strong>Drafts</strong> (every draft pick this manager has made, year by year, with the trajectory of each keeper), and <strong>Trades</strong> (every trade event with weekly fantasy points on both sides so we can see who really won).</p>
+          <p>Each team has three tabs: <strong>Roster</strong> (the 2026 roster as drafted: keepers with the DRC they were kept at and what that owes the pot, live picks with their round), <strong>Drafts</strong> (every draft pick this manager has made, year by year, with the trajectory of each keeper), and <strong>Trades</strong> (every trade event with weekly fantasy points on both sides so we can see who really won).</p>
         </section>
 
         <section class="about-block">
@@ -7115,7 +7486,9 @@ def render_player_search_section(search_players):
         owner_chip = (
             f'<span class="ps-owner">Currently: {html.escape(p["current_owner"])}</span>'
             if p["current_owner"] else
-            '<span class="ps-owner ps-owner-none">No current owner</span>'
+            ('<span class="ps-owner ps-owner-none">Free agent &mdash; not kept, not drafted in 2026</span>'
+             if p.get("undrafted_2026") else
+             '<span class="ps-owner ps-owner-none">No current owner</span>')
         )
 
         SPARK_YEARS = (2025, 2024, 2023)  # Design: newest-first (weekly columns + neighbors)
@@ -7210,9 +7583,15 @@ def render_player_search_section(search_players):
             card_trajectory = '<div class="ps-spark-empty">No weekly data ingested for this player.</div>'
 
         cur = next((y for y in p["per_year"] if y["year"] == 2026), None)
-        if cur and cur["drc"] is not None:
+        if cur and cur["drc"] is not None and cur.get("acq") == "drafted":
+            drc_hero_big = f"R{cur['drc']}"
+            drc_hero_sub = f"Drafted {cur.get('pick') or ''} in 2026 &middot; no keeper cost, new cost cycle".replace("  ", " ")
+        elif cur and cur["drc"] is not None:
             drc_hero_big = f"${cur['dollars']}"
             drc_hero_sub = f"DRC {cur['drc']} &middot; 2026 keeper cost"
+        elif p.get("undrafted_2026"):
+            drc_hero_big = "—"
+            drc_hero_sub = "Free agent &mdash; not kept, not drafted in 2026"
         else:
             drc_hero_big = "—"
             drc_hero_sub = "Not owned in 2026"
@@ -7317,14 +7696,17 @@ def render_player_search_section(search_players):
         # Terminal node: what this chain costs for 2026
         cur_ln = next((y for y in p["per_year"] if y["year"] == 2026), None)
         if lineage_nodes and cur_ln and cur_ln.get("drc") is not None:
+            _drafted = cur_ln.get("acq") == "drafted"
             lineage_nodes.append('<div class="lineage-arrow">&rarr;</div>')
             lineage_nodes.append(
                 '<div class="lineage-node lineage-now">'
                 '<div class="lineage-date">2026</div>'
                 f'<div class="lineage-manager">{html.escape(cur_ln.get("owner") or "&#8212;")}</div>'
-                '<div class="lineage-method">Keeper cost</div>'
-                f'<div class="lineage-cost lineage-cost-now">DRC {cur_ln["drc"]} &middot; ${cur_ln["dollars"]}</div>'
-                '</div>'
+                f'<div class="lineage-method">{"Drafted" if _drafted else "Keeper cost"}</div>'
+                + (f'<div class="lineage-cost lineage-cost-now">R{cur_ln["drc"]} &middot; pick {html.escape(cur_ln.get("pick") or "")}</div>'
+                   if _drafted else
+                   f'<div class="lineage-cost lineage-cost-now">DRC {cur_ln["drc"]} &middot; ${cur_ln["dollars"]}</div>')
+                + '</div>'
             )
         lineage_html = (
             '<div class="lineage-flow">' + "".join(lineage_nodes) + '</div>'
@@ -7461,7 +7843,7 @@ def build_sidebar(by_manager):
       <details class="sidebar-teams">
         <summary>League Standings and Records</summary>
         <div class="sidebar-team-list">
-          <a class="nav-link" data-target="summary">Summary &amp; standings</a>
+          <a class="nav-link" data-target="summary">Draft-day power rankings</a>
         </div>
       </details>
       <details class="sidebar-teams">
@@ -7470,7 +7852,8 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="player-search">Player search</a>
           <a class="nav-link" data-target="player-compare">Player comparison</a>
           <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
-          <a class="nav-link" data-target="draft-board">2026 draft board</a>
+          <a class="nav-link" data-target="draft-board">{TARGET_SEASON} draft results</a>
+          <a class="nav-link" data-target="keeper-board">{NEXT_SEASON} keeper board</a>
         </div>
       </details>
 
@@ -7496,14 +7879,40 @@ def render_trade_analyzer(by_manager):
     """
     teams = []
     players = []
+    # Post-draft (2026-09-04, Pete): the analyzer and keeper board now plan
+    # for NEXT_SEASON. Every player on a drafted 2026 roster is embedded
+    # with his 2027 keep price (d6/c6), his 2026 DRC as the trade-time
+    # anchor (d5), and the pick inventory is next year's.
+    draft_done = any(d.get("draft_done") for d in by_manager.values())
+    board_season = NEXT_SEASON if draft_done else TARGET_SEASON
     for name, data in sorted(by_manager.items()):
         slug = manager_slug(data["manager_actual"])
         teams.append({
             "slug": slug,
             "team": data["team_name"],
             "mgr": data["manager"],
-            "cap": data["total_drc_dollars"],
+            "cap": data["roster_cost_next"] if draft_done else data["total_drc_dollars"],
         })
+        if draft_done:
+            for p in data["roster_2026"]:
+                h25 = (p.get("history") or {}).get(2025) or {}
+                pts = h25.get("pts")
+                players.append({
+                    "i": p["player_id"],
+                    "n": p["name"],
+                    "p": p["position"],
+                    "t": p["nfl_team"],
+                    "m": slug,
+                    "d6": p["drc_next"],            # 2027 DRC on current owner's keep path
+                    "c6": p["cost_next"],           # 2027 $ on current owner's keep path
+                    "d5": p["drc"],                 # trade-time DRC anchor (2026)
+                    "pts": round(pts, 1) if isinstance(pts, (int, float)) else None,
+                    "pr": h25.get("pos_rank"),
+                    "adp": p.get("adp_2026"),
+                    "acq": p.get("acq"),
+                    "pk": p.get("pick"),
+                })
+            continue
         for p in data["players"]:
             # Keepers are FINAL (Pete 2026-09-02): non-kept players are
             # off the rosters and out of the tradeable-asset pool, so the
@@ -7573,102 +7982,130 @@ def render_trade_analyzer(by_manager):
         if dst in held:
             held[dst].append({"r": rnd, "o": orig, **({"lp": 1} if last_pick else {})})
 
-    # --- 2026 draft order (lottery result) -> per-team draft slot -------
-    # The draft is LINEAR (verified against 2023-25 draft_picks: rounds run
-    # in the same order, no snake), so a team's round-N pick is N.<slot>,
-    # e.g. slot 2 in round 10 = 10.02. Keyed by manager slug from
-    # lottery_result.json; unmatched entries warn and render without
-    # numbers rather than guessing.
     draft_pos = {}
-    lottery_path = Path(__file__).parent / "lottery_result.json"
-    if lottery_path.exists():
-        with open(lottery_path, encoding="utf-8") as f:
-            _lot = json.load(f)
-        _known = {t["slug"] for t in teams}
-        _slug_by_team_name = {t["team"]: t["slug"] for t in teams}
-        for entry in (_lot.get("lottery") or []) + (_lot.get("playoff") or []):
-            s = manager_slug(entry.get("manager") or "")
-            if s not in _known:
-                s = _slug_by_team_name.get(entry.get("team") or "")
-            if s in _known:
-                draft_pos[s] = entry["pick"]
-            else:
-                print(f"WARNING: lottery entry unmatched to a team: "
-                      f"{entry.get('manager')!r} / {entry.get('team')!r}")
-        _missing = _known - set(draft_pos)
-        if _missing:
-            print(f"WARNING: no draft slot for {sorted(_missing)} — "
-                  f"their picks render without numbers")
-    else:
-        print("WARNING: lottery_result.json not found — pick numbers omitted")
-
-    # "My last pick" IOUs: Yahoo recorded these as Round 17 in a 16-round
-    # draft (three real ones from the Nov 2025 deadline window — txns
-    # 1226, 1206, 1201; three more R17 rows in raw `transactions` are
-    # status='vetoed' and the all_transactions view already drops them).
-    # League convention (Pete, 2026-08-24): the giver conveys their
-    # actual final selection — the highest-round pick they still hold,
-    # cascading up (no 16th left -> the 15th, and so on).
-    last_pick_ious = []
-
-    def _settle_last_picks():
-        """Drain pending last-pick IOUs. ERA-ORDER RULING (Pete,
-        2026-08-24): an IOU settles after every concrete trade of its own
-        era but BEFORE the next era's trades apply — Alex's November
-        claim on Dan's last pick resolves against Dan's end-of-2025
-        holdings, so the 12.12 Dan acquired in Aug 2026 stays with Dan.
-        (Within an era it still settles last, so e.g. Dan's 11/14 R13+R14
-        trade is applied before his R17 IOU.) Highest round wins; within
-        a round the latest draft slot is the literal last pick. The
-        conveyed pick keeps its real identity, so it renders with its
-        true number and a "via trade from" note downstream."""
-        for src, dst in last_pick_ious:
-            pool = held.get(src)
-            if not pool:
-                print(f"WARNING: last-pick settlement: {src!r} holds no "
-                      f"picks to convey to {dst!r} — IOU dropped")
+    if draft_done:
+        # NEXT_SEASON inventory: the 2026 picks were all spent on Sep 3.
+        # Every team holds its native 16 for 2027; the draft order comes
+        # from next August's lottery, so no pick numbers yet. The two
+        # 2027 legs already agreed (PENDING_2027_PICK_LEGS) move here.
+        _slug_by_mgr = {manager_slug(d["manager_actual"]): manager_slug(d["manager_actual"])
+                        for d in by_manager.values()}
+        _slug_by_face = {}
+        for d in by_manager.values():
+            _sl = manager_slug(d["manager_actual"])
+            _slug_by_face[d["manager_actual"]] = _sl
+            _slug_by_face[current_face(d["manager_actual"])] = _sl
+            _slug_by_face[CURRENT_HANDOFFS.get(d["manager_actual"], d["manager_actual"])] = _sl
+        for rnd, frm, to in PENDING_2027_PICK_LEGS:
+            src, dst = _slug_by_face.get(frm), _slug_by_face.get(to)
+            if src not in held or dst not in held:
+                print(f"WARNING: 2027 pick leg {frm} -> {to} R{rnd} unmatched; skipped")
                 continue
-            hit = max(pool, key=lambda p: (p["r"], draft_pos.get(p["o"], 0)))
-            pool.remove(hit)
-            if dst in held:
-                held[dst].append(hit)
-            print(f"  last-pick IOU settled: {src} -> {dst} conveys "
-                  f"R{hit['r']} (orig {hit['o']})")
-        last_pick_ious.clear()
-
-    # Real Yahoo pick trades: season-2025 transactions deal 2026-draft picks
-    for mv in conn.execute(
-            "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
-            " tp.destination_team_season_id d, tp.original_team_season_id o "
-            "FROM transaction_picks tp "
-            "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
-            "WHERE t.season = 2025 ORDER BY t.timestamp"):
-        if mv["rnd"] > 16:
-            last_pick_ious.append((slug_by_tsid.get(mv["s"]),
-                                   slug_by_tsid.get(mv["d"])))
+            hit = next((pk for pk in held[src] if pk["r"] == rnd and pk["o"] == src), None)
+            if hit is None:
+                print(f"WARNING: 2027 pick leg: {frm} no longer holds own R{rnd}; skipped")
+                continue
+            held[src].remove(hit)
+            lost[src].append({"r": rnd, "to": dst})
+            held[dst].append(hit)
+        conn.close()
+    else:
+        # --- 2026 draft order (lottery result) -> per-team draft slot -------
+        # The draft is LINEAR (verified against 2023-25 draft_picks: rounds run
+        # in the same order, no snake), so a team's round-N pick is N.<slot>,
+        # e.g. slot 2 in round 10 = 10.02. Keyed by manager slug from
+        # lottery_result.json; unmatched entries warn and render without
+        # numbers rather than guessing.
+        draft_pos = {}
+        lottery_path = Path(__file__).parent / "lottery_result.json"
+        if lottery_path.exists():
+            with open(lottery_path, encoding="utf-8") as f:
+                _lot = json.load(f)
+            _known = {t["slug"] for t in teams}
+            _slug_by_team_name = {t["team"]: t["slug"] for t in teams}
+            for entry in (_lot.get("lottery") or []) + (_lot.get("playoff") or []):
+                s = manager_slug(entry.get("manager") or "")
+                if s not in _known:
+                    s = _slug_by_team_name.get(entry.get("team") or "")
+                if s in _known:
+                    draft_pos[s] = entry["pick"]
+                else:
+                    print(f"WARNING: lottery entry unmatched to a team: "
+                          f"{entry.get('manager')!r} / {entry.get('team')!r}")
+            _missing = _known - set(draft_pos)
+            if _missing:
+                print(f"WARNING: no draft slot for {sorted(_missing)} — "
+                      f"their picks render without numbers")
         else:
-            _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
+            print("WARNING: lottery_result.json not found — pick numbers omitted")
 
-    _settle_last_picks()   # 2025-era IOUs resolve before 2026 trades apply
+        # "My last pick" IOUs: Yahoo recorded these as Round 17 in a 16-round
+        # draft (three real ones from the Nov 2025 deadline window — txns
+        # 1226, 1206, 1201; three more R17 rows in raw `transactions` are
+        # status='vetoed' and the all_transactions view already drops them).
+        # League convention (Pete, 2026-08-24): the giver conveys their
+        # actual final selection — the highest-round pick they still hold,
+        # cascading up (no 16th left -> the 15th, and so on).
+        last_pick_ious = []
 
-    # Synthetic pick trades (post-API-outage, commissioner-entered):
-    # 2026 off-season trades deal 2026-draft picks. Table appears once
-    # add_synthetic_trades.py has run its migration; absent = no moves yet.
-    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
-                    "AND name='synthetic_transaction_picks'").fetchone():
+        def _settle_last_picks():
+            """Drain pending last-pick IOUs. ERA-ORDER RULING (Pete,
+            2026-08-24): an IOU settles after every concrete trade of its own
+            era but BEFORE the next era's trades apply — Alex's November
+            claim on Dan's last pick resolves against Dan's end-of-2025
+            holdings, so the 12.12 Dan acquired in Aug 2026 stays with Dan.
+            (Within an era it still settles last, so e.g. Dan's 11/14 R13+R14
+            trade is applied before his R17 IOU.) Highest round wins; within
+            a round the latest draft slot is the literal last pick. The
+            conveyed pick keeps its real identity, so it renders with its
+            true number and a "via trade from" note downstream."""
+            for src, dst in last_pick_ious:
+                pool = held.get(src)
+                if not pool:
+                    print(f"WARNING: last-pick settlement: {src!r} holds no "
+                          f"picks to convey to {dst!r} — IOU dropped")
+                    continue
+                hit = max(pool, key=lambda p: (p["r"], draft_pos.get(p["o"], 0)))
+                pool.remove(hit)
+                if dst in held:
+                    held[dst].append(hit)
+                print(f"  last-pick IOU settled: {src} -> {dst} conveys "
+                      f"R{hit['r']} (orig {hit['o']})")
+            last_pick_ious.clear()
+
+        # Real Yahoo pick trades: season-2025 transactions deal 2026-draft picks
         for mv in conn.execute(
-                "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
-                " sp.destination_team_season_id d, sp.original_team_season_id o "
-                "FROM synthetic_transaction_picks sp "
-                "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
-                "WHERE st.season = 2026 ORDER BY st.timestamp"):
+                "SELECT tp.draft_round rnd, tp.source_team_season_id s, "
+                " tp.destination_team_season_id d, tp.original_team_season_id o "
+                "FROM transaction_picks tp "
+                "JOIN all_transactions t ON t.transaction_id = tp.transaction_id "
+                "WHERE t.season = 2025 ORDER BY t.timestamp"):
             if mv["rnd"] > 16:
                 last_pick_ious.append((slug_by_tsid.get(mv["s"]),
                                        slug_by_tsid.get(mv["d"])))
             else:
                 _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
-        _settle_last_picks()   # any synthetic-era IOU settles after its own era
-    conn.close()
+
+        _settle_last_picks()   # 2025-era IOUs resolve before 2026 trades apply
+
+        # Synthetic pick trades (post-API-outage, commissioner-entered):
+        # 2026 off-season trades deal 2026-draft picks. Table appears once
+        # add_synthetic_trades.py has run its migration; absent = no moves yet.
+        if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
+                        "AND name='synthetic_transaction_picks'").fetchone():
+            for mv in conn.execute(
+                    "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
+                    " sp.destination_team_season_id d, sp.original_team_season_id o "
+                    "FROM synthetic_transaction_picks sp "
+                    "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
+                    "WHERE st.season = 2026 ORDER BY st.timestamp"):
+                if mv["rnd"] > 16:
+                    last_pick_ious.append((slug_by_tsid.get(mv["s"]),
+                                           slug_by_tsid.get(mv["d"])))
+                else:
+                    _apply_pick_move(mv["rnd"], mv["s"], mv["d"], mv["o"])
+            _settle_last_picks()   # any synthetic-era IOU settles after its own era
+        conn.close()
 
 
     total_picks = sum(len(v) for v in held.values())
@@ -7709,6 +8146,7 @@ def render_trade_analyzer(by_manager):
     def _pnorm(x):
         return "".join(c for c in _ud.normalize("NFKD", x or "").lower()
                        if c.isalnum())
+    seats, awaiting, chasm = {}, {}, {}
     _ypref = {}
     _ypath = Path(__file__).parent / "yahoo_keeper_placements_2026.json"
     if _ypath.exists():
@@ -7719,8 +8157,8 @@ def render_trade_analyzer(by_manager):
         except (json.JSONDecodeError, OSError):
             print("WARNING: yahoo_keeper_placements_2026.json unreadable")
 
-    seats, awaiting, chasm = {}, {}, {}
-    for _name, _data in by_manager.items():
+    # Sandbox mode for NEXT_SEASON (nothing is kept yet): no seating.
+    for _name, _data in ([] if draft_done else by_manager.items()):
         _slug = manager_slug(_data["manager_actual"])
         _picks = [dict(pk) for pk in held.get(_slug, [])]
         for pk in _picks:
@@ -7840,8 +8278,9 @@ def render_trade_analyzer(by_manager):
             chasm[_slug] = _chasm
     n_seated = sum(len(v) for v in seats.values())
     n_chasm = sum(len(v) for v in chasm.values())
-    print(f"  keeper seating (efficiency mode): {n_seated} seated, "
-          f"{n_chasm} chasm")
+    if not draft_done:
+        print(f"  keeper seating (efficiency mode): {n_seated} seated, "
+              f"{n_chasm} chasm")
 
     # Stamp each embedded player with his seated round so the trade
     # analyzer boards show WHERE everyone was kept (Pete 2026-09-02),
@@ -7859,23 +8298,38 @@ def render_trade_analyzer(by_manager):
                             "draft_pos": draft_pos,
                             "seats": seats, "awaiting": awaiting,
                             "chasm": chasm,
-                            "season": TARGET_SEASON}, separators=(",", ":"))
+                            "season": board_season,
+                            "post_draft": 1 if draft_done else 0}, separators=(",", ":"))
 
     # Shared with the team pages (2026 draft block in the Drafts tab).
     pick_data = {"held": held, "lost": lost, "draft_pos": draft_pos,
                  "seats": seats, "awaiting": awaiting, "chasm": chasm,
                  "teams": teams}
 
+    if draft_done:
+        ta_sub = (f"Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out "
+                  f"each player's keeper cost for {board_season} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.")
+        ta_foot = (f"Rosters are as drafted on Sep 3 (in-season adds and drops are not reflected yet). Every player carries his {board_season} keep price: "
+                   f"his 2026 DRC less one, floor 1. A trade made during the 2026 season freezes the player at his 2026 DRC for {board_season} "
+                   f"(the acquirer pays that, not the decremented price), with the normal decrement resuming the year after. "
+                   f"The boards are an inventory view, not an arrangement: each round shows the {board_season} picks you'd hold there (every team holds its "
+                   f"native sixteen; the two 2027 pick legs already agreed are applied; numbers arrive with next August's lottery) and every player whose "
+                   f"{board_season} DRC lands in that round. The chasm counter flags only STRUCTURAL impossibility. Nobody keeps a whole roster, so having more "
+                   f"players than picks is not flagged. In-season trades run through Yahoo; the commissioner settles the DRC once a trade is final.")
+    else:
+        ta_sub = (f"Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out each player's keeper cost "
+                  f"for {TARGET_SEASON} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.")
+        ta_foot = (f"Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The boards are an inventory view, not an arrangement: each round shows the picks you'd hold there (numbered by the lottery order; green means acquired) and every player whose DRC lands in that round &mdash; two players stacked under one round means more keepers than that round has picks, and sorting out who sits where is what the Keeper board tab is for. The chasm counter flags only STRUCTURAL impossibility: a DRC group bigger than the seats its slide chain and earlier picks can ever reach (a missing round is the wall). Having more players than picks overall is not flagged &mdash; nobody keeps a whole roster, and choosing who stays is the manager's call. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.")
     section = f"""
     <section class="team-section" id="trade-analyzer" hidden>
       <header class="section-header">
         <h1 class="section-title">Trade analyzer</h1>
-        <p class="section-sub">Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out each player's keeper cost for {TARGET_SEASON} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.</p>
+        <p class="section-sub">{ta_sub}</p>
       </header>
 
       <div class="ta-app"></div>
 
-      <p class="ta-foot">Cost projections assume the trade completes before the {TARGET_SEASON} draft: the acquiring team inherits each player's trade-time DRC, frozen for {TARGET_SEASON}, with the normal decrement resuming the year after. The boards are an inventory view, not an arrangement: each round shows the picks you'd hold there (numbered by the lottery order; green means acquired) and every player whose DRC lands in that round &mdash; two players stacked under one round means more keepers than that round has picks, and sorting out who sits where is what the Keeper board tab is for. The chasm counter flags only STRUCTURAL impossibility: a DRC group bigger than the seats its slide chain and earlier picks can ever reach (a missing round is the wall). Having more players than picks overall is not flagged &mdash; nobody keeps a whole roster, and choosing who stays is the manager's call. Off-season trades are executed by the commissioner (Yahoo limitation), so loop Pete in to finalize anything you agree on.</p>
+      <p class="ta-foot">{ta_foot}</p>
     </section>
     <script>window.TRADE_DATA = {data_json};</script>"""
     return section, pick_data
@@ -7930,18 +8384,26 @@ def render_player_compare(search_players):
     </section>"""
 
 
-def render_keeper_board():
+def render_keeper_board(season=None):
     """Keeper designation board: a per-team sandbox for the August keeper
     deadline. Toggle keepers on, watch the slide/chasm engine seat them on
-    your actual 2026 pick inventory, drag (or tap) to override seating,
+    your actual pick inventory, drag (or tap) to override seating,
     track the running dollar commitment, and print a side-by-side sheet to
     check against Yahoo's keeper screen. Reads the same TRADE_DATA embed as
-    the trade analyzer; client-side only, no saved state."""
+    the trade analyzer; client-side only, no saved state.
+
+    Post-draft (2026-09-04) it is the NEXT_SEASON board: every drafted
+    player at his 2027 keep price, on next year's pick inventory."""
+    season = season or TARGET_SEASON
+    ahead = (f" Rosters are as drafted on Sep 3 and every price is what that player would cost to keep in {season} "
+             f"if nothing changes: his 2026 DRC less one. Picks are next year&rsquo;s: sixteen native rounds per team "
+             f"with the two 2027 legs already traded applied, numbered once the {season} lottery runs."
+             if season != TARGET_SEASON else "")
     return f"""
     <section class="team-section" id="keeper-board" hidden>
       <header class="section-header">
-        <h1 class="section-title">Keeper board</h1>
-        <p class="section-sub">Build your {TARGET_SEASON} keeper slate against your real pick inventory. The board seats every keeper at their DRC round under the slide rules, flags anyone who can&rsquo;t legally slot (the chasm), and keeps a running total of what you&rsquo;re committing in keeper dollars. Legality and cost are the two things Yahoo&rsquo;s keeper screen won&rsquo;t show you. Nothing here saves or submits; it&rsquo;s a scratchpad.</p>
+        <h1 class="section-title">{season} keeper board</h1>
+        <p class="section-sub">Build your {season} keeper slate against your real pick inventory. The board seats every keeper at their DRC round under the slide rules, flags anyone who can&rsquo;t legally slot (the chasm), and keeps a running total of what you&rsquo;re committing in keeper dollars. Legality and cost are the two things Yahoo&rsquo;s keeper screen won&rsquo;t show you. Nothing here saves or submits; it&rsquo;s a scratchpad.{ahead}</p>
       </header>
       <div class="kb-app"></div>
       <div class="kb-print"></div>
@@ -8010,6 +8472,77 @@ def render_bold_predictions(by_manager):
     </section>"""
 
 
+def render_draft_results_board(by_manager):
+    """League-wide 2026 draft RESULTS (post-draft replacement for the
+    seating board): one column per team in draft-slot order, one row per
+    round, each cell the pick(s) that team made in that round with its
+    number. Keepers are tinted green with the DRC they were kept at; live
+    picks are plain. A traded pick sits in the column of the team that
+    MADE it (Yahoo's convention) and its number tells you whose slot it
+    was. Server-rendered from draft_picks via build_data's roster_2026."""
+    pick_by_mgr, pick_by_team = _load_2026_draft_order()
+    def slot_for(d):
+        return (pick_by_mgr.get(d["manager_actual"]) or pick_by_mgr.get(current_face(d["manager_actual"]))
+                or pick_by_team.get(d["team_name"]) or 99)
+    teams = sorted(by_manager.values(), key=lambda d: (slot_for(d), d["team_name"].lower()))
+    slugs = [manager_slug(d["manager_actual"]) for d in teams]
+    cells = {}   # (round, slug) -> [entries]
+    n_keep = n_live = 0
+    for d in teams:
+        sl = manager_slug(d["manager_actual"])
+        for e in d["roster_2026"]:
+            cells.setdefault((e["round"], sl), []).append(e)
+            if e["acq"] == "kept":
+                n_keep += 1
+            else:
+                n_live += 1
+    head = "".join(
+        f'<th><a href="#" data-target="team-{manager_slug(d["manager_actual"])}">'
+        f'<span class="drb-slot">{slot_for(d) if slot_for(d) != 99 else "&mdash;"}</span>'
+        f'{html.escape(d["team_name"])}<span class="drb-mgr">{html.escape(d["manager"])}</span></a></th>'
+        for d in teams)
+    body = ""
+    for rnd in range(1, 17):
+        row = f'<td class="drb-round">R{rnd}</td>'
+        for sl in slugs:
+            ents = sorted(cells.get((rnd, sl), []), key=lambda e: e["overall"])
+            if not ents:
+                row += '<td class="drb-cell drb-empty"><span class="drb-none">no pick</span></td>'
+                continue
+            inner = ""
+            for e in ents:
+                kept = e["acq"] == "kept"
+                tag = (f'<span class="drb-tag">DRC {e["drc"]} &middot; ${e["owed_2026"]}</span>' if kept
+                       else f'<span class="drb-tag drb-tag-live">live pick</span>')
+                inner += (f'<div class="drb-pick{" drb-kept" if kept else ""}">'
+                          f'<span class="drb-num">{html.escape(e["pick"])}</span>'
+                          f'<span class="drb-name">{html.escape(e["name"])}</span>'
+                          f'<span class="drb-sub">{html.escape(e["position"])} &middot; {html.escape(e["nfl_team"])}</span>'
+                          f'{tag}</div>')
+            row += f'<td class="drb-cell">{inner}</td>'
+        body += f"<tr>{row}</tr>"
+    dmeta = load_draft_results_meta()
+    amend = "".join(
+        f'<p class="ta-foot">Amendment {html.escape((a.get("date") or "")[:10])}: {html.escape(a.get("note", ""))}</p>'
+        for a in (dmeta.get("amendments") or []))
+    return f"""
+    <section class="team-section" id="draft-board" hidden>
+      <header class="section-header">
+        <h1 class="section-title">{TARGET_SEASON} draft results</h1>
+        <p class="section-sub">All 192 picks from Thursday, Sep 3: {n_keep} keepers seated on the picks that held them and {n_live} live picks. Columns run in the lottery order; each cell is what that team did with its turn in that round. Green is a keeper, shown with the DRC he was kept at and what that owes the pot. A pick number that doesn&rsquo;t match the column&rsquo;s slot is a traded pick, sitting with the team that used it.</p>
+      </header>
+      <div class="drb-legend"><span class="drb-key drb-key-kept">Keeper</span><span class="drb-key">Live pick</span><span class="drb-key-note">Click a team name to open its page; the Drafts tab there lists the same picks with ADP value tags.</span></div>
+      <div class="drb-scroll">
+        <table class="drb">
+          <thead><tr><th class="drb-round"></th>{head}</tr></thead>
+          <tbody>{body}</tbody>
+        </table>
+      </div>
+      {amend}
+      <p class="ta-foot">Source: Yahoo draft results page, captured Sep 4 (draft_results_2026.json), loaded to fantasy.db by add_draft_2026.py.</p>
+    </section>"""
+
+
 def render_draft_board():
     """League-wide 2026 draft board (Manager Tools): every pick of the
     linear draft in lottery order, round by round, naming the current
@@ -8037,10 +8570,17 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
     player_search = render_player_search_section(search_players)
     player_compare = render_player_compare(search_players)
     trade_analyzer, pick_data = render_trade_analyzer(by_manager)
-    # Keeper board tab removed 2026-09-02 (Pete): designation is final;
-    # the draft board shows the final keepers. render_keeper_board kept
-    # in source for next off-season.
-    draft_board = render_draft_board()
+    draft_done = any(d.get("draft_done") for d in by_manager.values())
+    if draft_done:
+        # Post-draft (2026-09-04, Pete): the seating board is replaced by
+        # the actual 2026 results, and the keeper board returns as the
+        # NEXT_SEASON board (what every drafted player costs to keep next
+        # year) - sandbox mode, nothing seated.
+        draft_board = render_draft_results_board(by_manager) + render_keeper_board(NEXT_SEASON)
+    else:
+        # Keeper board tab removed 2026-09-02 (Pete): designation is final;
+        # the draft board shows the final keepers.
+        draft_board = render_draft_board()
     bold_preds = render_bold_predictions(by_manager)
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
