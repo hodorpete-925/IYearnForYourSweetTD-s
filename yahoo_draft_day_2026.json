@@ -1,0 +1,21 @@
+{
+ "_meta": {
+  "season": 2026,
+  "source": "Yahoo league pages, screenshots from Pete 2026-09-04 (Draft Day Projected Standings, Draft Day Power Rankings, League Draft Grades)",
+  "note": "Yahoo computed these at draft close (Sep 3, ~11pm), BEFORE the commissioner swap of Kenneth Walker III (Fear the Peel -> TheDarkKnight06) for Jeremiyah Love. Power ranking points = Yahoo's projected points for the season. commissioner_grade is reserved for Pete's own grades (null until his draft-grades post lands)."
+ },
+ "teams": [
+  {"team": "Two Mugs But Zero Hugs",      "power_rank": 1,  "proj_points": 2602.93, "proj_rank": 1,  "proj_record": "14-0-0", "yahoo_grade": "A",  "commissioner_grade": null},
+  {"team": "CeeDeez nuts",                "power_rank": 2,  "proj_points": 2352.59, "proj_rank": 4,  "proj_record": "10-4-0", "yahoo_grade": "B+", "commissioner_grade": null},
+  {"team": "Briguy’s Strange Boutte", "power_rank": 3,  "proj_points": 2330.88, "proj_rank": 2,  "proj_record": "11-3-0", "yahoo_grade": "B-", "commissioner_grade": null},
+  {"team": "Alice in First Down Chains",  "power_rank": 4,  "proj_points": 2321.50, "proj_rank": 3,  "proj_record": "11-3-0", "yahoo_grade": "C+", "commissioner_grade": null},
+  {"team": "Dreorge Bledsoe",             "power_rank": 5,  "proj_points": 2262.10, "proj_rank": 6,  "proj_record": "7-7-0",  "yahoo_grade": "D+", "commissioner_grade": null},
+  {"team": "Are Bonita Fish Big?",        "power_rank": 6,  "proj_points": 2202.34, "proj_rank": 5,  "proj_record": "9-5-0",  "yahoo_grade": "D+", "commissioner_grade": null},
+  {"team": "The Lady Boys",               "power_rank": 7,  "proj_points": 2183.49, "proj_rank": 8,  "proj_record": "5-9-0",  "yahoo_grade": "D",  "commissioner_grade": null},
+  {"team": "Fear the Peel",               "power_rank": 8,  "proj_points": 2175.64, "proj_rank": 7,  "proj_record": "5-9-0",  "yahoo_grade": "D",  "commissioner_grade": null},
+  {"team": "ROOTIN' TUTEN' COWBOY",       "power_rank": 9,  "proj_points": 2132.09, "proj_rank": 10, "proj_record": "3-11-0", "yahoo_grade": "D-", "commissioner_grade": null},
+  {"team": "High Priest Gabagool 🤌🏻", "power_rank": 10, "proj_points": 2119.21, "proj_rank": 11, "proj_record": "3-11-0", "yahoo_grade": "F",  "commissioner_grade": null},
+  {"team": "TheDarkKnight06",             "power_rank": 11, "proj_points": 2087.66, "proj_rank": 9,  "proj_record": "4-10-0", "yahoo_grade": "F",  "commissioner_grade": null},
+  {"team": "Mr. McGibblets",              "power_rank": 12, "proj_points": 2014.27, "proj_rank": 12, "proj_record": "2-12-0", "yahoo_grade": "F",  "commissioner_grade": null}
+ ]
+}

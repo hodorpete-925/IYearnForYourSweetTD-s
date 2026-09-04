@@ -30,6 +30,10 @@ HANDOFF_BRIDGES = {
     "WOCEV3POTYE7XLIJXO3CCNL56I": [11],
     # Vescuso (2025+) inherited BRick's full history (teams 10 in 2023, 16 in 2024)
     "NEIABZUWA773ZR2666V7TNMUNE": [10, 16],
+    # Bill Keenan (2026+) inherited Lewitus's roster (teams 18 in 2024, 33 in
+    # 2025) and, through it, Vescuso's 2023 team 11. Manual manager row
+    # (setup_2026_franchise_updates.py), so the guid is a placeholder.
+    "MANUAL-BILL-KEENAN": [18, 33, 11],
 }
 
 def get_team_year(conn, team_season_id):
@@ -162,6 +166,31 @@ def find_anchor_draft(conn, player_id, team_id_set, max_season=None):
     return rows[-1]
 
 
+def find_fresh_draft_after(conn, player_id, team_id_set, txn_year, txn_month):
+    """Most recent draft_picks row for this manager that is EXPLICITLY
+    flagged fresh (keeper_status_overrides.is_keeper = 0) and comes after
+    the given transaction: a later season, or the same season when the
+    transaction was off-season (before September). Returns
+    (season, draft_round, team_season_id) or None."""
+    if not team_id_set:
+        return None
+    placeholders = ",".join("?" * len(team_id_set))
+    rows = conn.execute(
+        f"SELECT dp.season, dp.draft_round, dp.team_season_id "
+        f"FROM draft_picks dp "
+        f"JOIN keeper_status_overrides ko "
+        f"  ON ko.season = dp.season AND ko.player_id = dp.player_id "
+        f" AND ko.team_season_id = dp.team_season_id AND ko.is_keeper = 0 "
+        f"WHERE dp.player_id = ? AND dp.team_season_id IN ({placeholders}) "
+        f"ORDER BY dp.season DESC",
+        [player_id] + list(team_id_set),
+    ).fetchall()
+    for season, draft_round, ts_id in rows:
+        if season > txn_year or (season == txn_year and txn_month < 9):
+            return (season, draft_round, ts_id)
+    return None
+
+
 def get_override(conn, transaction_id):
     """Returns (override_type, source_team_season_id) or None."""
     return conn.execute(
@@ -202,6 +231,25 @@ def compute_drc(conn, player_id, team_season_id, depth=0):
     manager_team_ids = get_manager_team_ids(conn, manager_id)
 
     txn = find_most_recent_incoming(conn, player_id, manager_team_ids)
+
+    # A FRESH draft that post-dates the most recent incoming transaction is
+    # the anchor (2026-09-04): a manager who picked a player up on waivers
+    # or by trade, let him go back to the pool, and then re-drafted him
+    # starts a new cost cycle at the draft round. Only an explicit
+    # keeper_status_overrides is_keeper=0 row counts (the 2026 draft load
+    # writes one per live pick); inferred rows never override a
+    # transaction. Same-year: the draft wins only over off-season
+    # (pre-September) transactions.
+    if txn:
+        txn_year = int(txn[1][:4])
+        txn_month = int(txn[1][5:7])
+        fresh = find_fresh_draft_after(conn, player_id, manager_team_ids, txn_year, txn_month)
+        if fresh:
+            season, draft_round, _ = fresh
+            drc = compute_drc_for_year(draft_round, season, TARGET_SEASON, is_mid_season=False)
+            label = "drafted" if season == TARGET_SEASON else "kept"
+            return drc, label, f"re-drafted fresh round {draft_round} in {season}"
+
     if txn:
         transaction_id, timestamp, source_type, counterparty_id = txn
         source_type, counterparty_id, overridden = resolve_trade_source(

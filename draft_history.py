@@ -49,6 +49,9 @@ def _value_tag(overall_pick, adp):
     return "fair"
 
 
+OVERRIDE_FROM_SEASON = 2026
+
+
 def is_player_keeper_in_year(conn, player_id, manager_id, year, manager_team_ids_all):
     """Determine if a player was kept (vs newly drafted) in `year`.
 
@@ -57,7 +60,27 @@ def is_player_keeper_in_year(conn, player_id, manager_id, year, manager_team_ids
       - Players the manager kept directly (same team last year)
       - Players the manager acquired in the off-season via trade and kept
 
-    A truly NEW pick is someone who wasn't owned at end of prior season."""
+    A truly NEW pick is someone who wasn't owned at end of prior season.
+
+    keeper_status_overrides wins when a row exists for this year, player
+    and one of the manager's teams (2026-09-04: add_draft_2026.py writes
+    one per 2026 pick, so a player re-drafted fresh by the same manager
+    who had him on a week-17 roster reads as a live pick, not a keeper).
+    Scoped to OVERRIDE_FROM_SEASON onward: the Excel-sourced 2024/2025
+    override rows disagree with the week-17 heuristic on ~36 historical
+    picks (e.g. Chase 2024, Jefferson 2025 flagged fresh in Excel), and
+    the DRC engine already follows Excel there. Lower this to 2024 to
+    make the Drafts tab match the engine on those rows too."""
+    if manager_team_ids_all and year >= OVERRIDE_FROM_SEASON:
+        placeholders = ",".join("?" * len(manager_team_ids_all))
+        ov = conn.execute(
+            f"SELECT is_keeper FROM keeper_status_overrides "
+            f"WHERE season = ? AND player_id = ? "
+            f"  AND team_season_id IN ({placeholders}) LIMIT 1",
+            [year, player_id] + list(manager_team_ids_all),
+        ).fetchone()
+        if ov is not None:
+            return bool(ov[0])
     prev_year = year - 1
     on_any_roster = conn.execute(
         "SELECT 1 FROM player_weekly_stats "
