@@ -2054,13 +2054,6 @@ body {
 }
 .crumb-bar.at-home .crumb-sep,
 .crumb-bar.at-home .crumb-current { display: none; }
-.back-to-top {
-  position: fixed; right: 22px; bottom: 22px; z-index: 40; width: 46px; height: 46px;
-  border-radius: 50%; border: none; background: var(--blue-800); color: #fff; cursor: pointer;
-  box-shadow: 0 6px 20px rgba(2, 36, 121, 0.34); font-size: 19px; line-height: 1;
-  display: none; align-items: center; justify-content: center;
-}
-.back-to-top.visible { display: flex; }
 
 /* --- Main content ------------------------------------------------------ */
 .content {
@@ -4089,27 +4082,25 @@ table.ta-table tr.ta-total td {
 /* Feedback widget: floating trigger + modal                              */
 /* ====================================================================== */
 .fb-trigger {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 80;
+  margin-top: 26px;
+  width: 100%;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: var(--blue-600);
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.10);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  padding: 10px 18px;
+  padding: 10px 16px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(2, 36, 121, 0.30);
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background 0.15s ease;
 }
-.fb-trigger:hover { background: var(--blue-800); transform: translateY(-1px); }
+.fb-trigger:hover { background: rgba(255, 255, 255, 0.18); }
 .fb-icon { font-size: 14px; line-height: 1; }
 .fb-overlay {
   position: fixed;
@@ -4120,8 +4111,9 @@ table.ta-table tr.ta-total td {
 .fb-overlay[hidden], .fb-modal[hidden] { display: none; }
 .fb-modal {
   position: fixed;
-  bottom: 74px;
-  right: 18px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 115;
   width: min(380px, calc(100vw - 36px));
   background: #fff;
@@ -4401,13 +4393,9 @@ table.ta-table tr.ta-total td {
   .ta-pos-swing { padding: 8px 10px 10px; }
   .ta-pos-grid { grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11.5px; }
   .ta-pos-mgr { font-size: 10.5px; }
-  /* Feedback widget: full-width bottom sheet feel on small screens. */
-  .fb-trigger { bottom: 14px; right: 14px; padding: 9px 15px; }
+  /* Feedback modal: bottom sheet feel on small screens. */
   .fb-modal {
-    right: 10px;
-    left: auto;
-    bottom: 64px;
-    width: min(380px, calc(100vw - 52px));
+    width: min(380px, calc(100vw - 28px));
     max-height: 72vh;
     overflow-y: auto;
   }
@@ -4674,23 +4662,10 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
     font-size: 16px;
     line-height: 1;
   }
-  /* Feedback pill and back-to-top button both anchor to the bottom-right
-     and collide on narrow viewports. Stack them: fb-trigger on the bottom,
-     back-to-top above with a comfortable gap and 44x44 tap target. */
-  .back-to-top {
-    right: 14px;
-    bottom: 72px;
-    width: 44px;
-    height: 44px;
-  }
-  .fb-trigger {
-    bottom: 14px;
-    right: 14px;
-  }
 }
 @media print {
   body.kb-printing .sidebar, body.kb-printing .crumb-bar, body.kb-printing .menu-toggle,
-  body.kb-printing .sidebar-tab, body.kb-printing .back-to-top, body.kb-printing .kb-app,
+  body.kb-printing .sidebar-tab, body.kb-printing .kb-app,
   body.kb-printing .section-header, body.kb-printing .kb-foot,
   body.kb-printing .fb-trigger, body.kb-printing .fb-modal { display:none !important; }
   body.kb-printing .kb-print th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -4865,11 +4840,6 @@ JS = r"""
   const brandHome = document.querySelector('.brand-home');
   if (brandHome) brandHome.addEventListener('click', (e) => { e.preventDefault(); show('summary'); });
   document.querySelectorAll('.crumb-back').forEach(b => b.addEventListener('click', (e) => { e.preventDefault(); show('summary'); }));
-  const backTop = document.querySelector('.back-to-top');
-  if (backTop) {
-    window.addEventListener('scroll', () => { backTop.classList.toggle('visible', (window.scrollY || document.documentElement.scrollTop) > 260); }, {passive: true});
-    backTop.addEventListener('click', () => { window.scrollTo({top: 0, behavior: 'smooth'}); });
-  }
 
   document.querySelectorAll('.draft-table tr.has-log').forEach(row => {
     row.addEventListener('click', (e) => {
@@ -5061,6 +5031,7 @@ JS = r"""
   const fbCancel = document.getElementById('fb-cancel');
   const fbForm = document.getElementById('fb-form');
   function fbOpen() {
+    document.body.classList.remove('sidebar-open');   // close the phone drawer first
     if (fbOverlay) fbOverlay.hidden = false;
     if (fbModal) fbModal.hidden = false;
     const nameInput = document.getElementById('fb-name');
@@ -7293,10 +7264,6 @@ def render_feedback_widget():
     Static-friendly (no backend needed). Can be swapped for a form service
     later by changing FEEDBACK_ACTION below."""
     return """
-    <button class="fb-trigger" id="fb-trigger" type="button" aria-label="Open feedback form">
-      <span class="fb-icon">&#9993;</span>
-      <span class="fb-label">Feedback</span>
-    </button>
     <div class="fb-overlay" id="fb-overlay" hidden></div>
     <div class="fb-modal" id="fb-modal" role="dialog" aria-labelledby="fb-title" hidden>
       <header class="fb-modal-header">
@@ -7861,6 +7828,14 @@ def build_sidebar(by_manager):
         <summary>Teams</summary>
         <div class="sidebar-team-list">{items}</div>
       </details>
+
+      <!-- Feedback lives at the foot of the menu (Pete 2026-09-04): the
+           floating corner pill and the back-to-top button were in the way
+           on phones; League home covers the scroll-to-top job. -->
+      <button class="fb-trigger" id="fb-trigger" type="button" aria-label="Open feedback form">
+        <span class="fb-icon">&#9993;</span>
+        <span class="fb-label">Send feedback to Pete</span>
+      </button>
     </aside>"""
 
 
@@ -8625,7 +8600,6 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {team_sections}
 {feedback}
 </main>
-<button class="back-to-top" aria-label="Back to top" type="button">&uarr;</button>
 </div>
 <script>{JS}</script>
 </body>
