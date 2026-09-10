@@ -274,44 +274,76 @@ def _gather_override_trades(conn, manager_team_ids_all):
     return trades
 
 
-def _gather_picks_for_trade(conn, trade_id, manager_team_ids_all):
+def _gather_picks_for_trade(conn, trade_id, manager_team_ids_all,
+                            trade_year=None):
     """Returns (acquired_pick_rows, given_up_pick_rows) for picks moved in
     this trade where the manager was one side. Each row is shaped like a
-    player entry so the renderer treats them uniformly."""
+    player entry so the renderer treats them uniformly.
+
+    DRAFT-YEAR LABELS (Pete 2026-09-08): every pick names the draft it is
+    for. Real Yahoo trades in season N convey N+1 picks (the league's
+    next-draft convention); synthetic (commissioner-entered) trades convey
+    picks for their own season unless the row carries for_season - the
+    2027 legs of the Scott/Tom and Aric/DanV deals are the first."""
     if not manager_team_ids_all:
         return [], []
-    # Synthetic transactions don't have picks in our schema. Skip those.
     if isinstance(trade_id, str) and trade_id.startswith("override-"):
         return [], []
-    if isinstance(trade_id, int) and trade_id > 1000000:
-        return [], []  # synthetic transaction_id range
-
     placeholders = ",".join("?" * len(manager_team_ids_all))
-    acquired = []
+    acquired, given_up = [], []
+
+    if isinstance(trade_id, int) and trade_id > 1000000:
+        # Synthetic trade: picks live in synthetic_transaction_picks
+        # (gap closed 2026-09-08 - these used to be skipped entirely).
+        synth_id = trade_id - 1000000
+        if not conn.execute("SELECT 1 FROM sqlite_master "
+                            "WHERE name='synthetic_transaction_picks'").fetchone():
+            return [], []
+        cols = [r[1] for r in conn.execute(
+            "PRAGMA table_info(synthetic_transaction_picks)")]
+        fs = "for_season" if "for_season" in cols else "NULL"
+        for r in conn.execute(
+            f"SELECT draft_round, {fs} FROM synthetic_transaction_picks "
+            f"WHERE synth_id = ? "
+            f"  AND destination_team_season_id IN ({placeholders})",
+            (synth_id, *manager_team_ids_all),
+        ):
+            acquired.append(_pick_as_player_row(r[0], r[1] or trade_year))
+        for r in conn.execute(
+            f"SELECT draft_round, {fs} FROM synthetic_transaction_picks "
+            f"WHERE synth_id = ? "
+            f"  AND source_team_season_id IN ({placeholders})",
+            (synth_id, *manager_team_ids_all),
+        ):
+            given_up.append(_pick_as_player_row(r[0], r[1] or trade_year))
+        return acquired, given_up
+
+    draft_year = (trade_year + 1) if trade_year else None
     for r in conn.execute(
         f"SELECT draft_round FROM transaction_picks "
         f"WHERE transaction_id = ? "
         f"  AND destination_team_season_id IN ({placeholders})",
         (trade_id, *manager_team_ids_all),
     ):
-        acquired.append(_pick_as_player_row(r[0]))
-    given_up = []
+        acquired.append(_pick_as_player_row(r[0], draft_year))
     for r in conn.execute(
         f"SELECT draft_round FROM transaction_picks "
         f"WHERE transaction_id = ? "
         f"  AND source_team_season_id IN ({placeholders})",
         (trade_id, *manager_team_ids_all),
     ):
-        given_up.append(_pick_as_player_row(r[0]))
+        given_up.append(_pick_as_player_row(r[0], draft_year))
     return acquired, given_up
 
 
-def _pick_as_player_row(draft_round):
+def _pick_as_player_row(draft_round, draft_year=None):
     """Shape a draft pick like a player row so render layer doesn't need to
-    special-case it. Picks have no fantasy points."""
+    special-case it. Picks have no fantasy points. draft_year = the draft
+    the pick is for, labeled so cross-year trades read clearly."""
+    yr = f" ({draft_year} draft)" if draft_year else ""
     return {
         "player_id": None,
-        "name": f"Round {draft_round} draft pick",
+        "name": f"Round {draft_round} draft pick{yr}",
         "position": "Pick",
         "nfl_team": "—",
         "points": {y: {"full": None, "post_trade": None} for y in YEARS},
@@ -402,7 +434,7 @@ def build_trade_history_for_manager(conn, manager_id, manager_team_ids_all, pts_
         ]
 
         pick_acquired, pick_given = _gather_picks_for_trade(
-            conn, tr["trade_id"], manager_team_ids_all
+            conn, tr["trade_id"], manager_team_ids_all, trade_year=trade_year
         )
         acquired.extend(pick_acquired)
         given_up.extend(pick_given)

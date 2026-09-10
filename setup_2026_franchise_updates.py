@@ -26,7 +26,20 @@ from pathlib import Path
 DB = Path(__file__).parent / "fantasy.db"
 
 NEW_TOM_NAME = "Alice in First Down Chains"
-NEW_BRIAN_NAME = "Malco In The High Castle"   # spotted on Yahoo 2026-08-31
+# (Brian rename action removed 2026-09-08: the DB already carries a NEWER
+# name, "Two Mugs But Zero Hugs", set after the 8/31 "Malco In The High
+# Castle" capture - re-applying the old constant would have reverted it.)
+# Dan Vescuso left the league week 1 of 2026 (post-draft); Kyle Wright
+# took over the franchise as "Kowboy Hippie" (Pete, 2026-09-08). The
+# 2026 team row keeps Dan as manager_id (he ran the off-season and the
+# draft; history stays his) - CURRENT_HANDOFFS in generate_dashboard.py
+# makes Kyle the current face. The manager row here is for 2027+ seasons,
+# bold-prediction submissions, and guid reconciliation when the API
+# returns.
+KYLE_GUID = "MANUAL-KYLE-WRIGHT"
+KYLE_NICK = "Kyle"
+KYLE_FULL = "Kyle Wright"
+KOWBOY_NAME = "Kowboy Hippie"
 KEENAN_GUID = "MANUAL-BILL-KEENAN"   # placeholder until the API returns
 KEENAN_NICK = "Bill"
 KEENAN_FULL = "Bill Keenan"
@@ -61,22 +74,36 @@ def main():
                         ("UPDATE teams SET team_name = ? WHERE team_season_id = ?",
                          (NEW_TOM_NAME, row[0]))))
 
-    # --- 1b. Brian rename (2026-08-31, from Yahoo draft-results page) ----
-    row_b = conn.execute("""
+    # --- 1c. Kowboy Hippie rename (Dan V's franchise -> Kyle Wright) ----
+    row_k = conn.execute("""
         SELECT t.team_season_id, t.team_name FROM teams t
         JOIN managers m ON m.manager_id = t.manager_id
-        WHERE m.full_name = 'Brian Malconian' AND t.season = 2026
+        WHERE m.full_name = 'Dan Vescuso' AND t.season = 2026
     """).fetchone()
-    if row_b is None:
-        print("ERROR: no 2026 team found for Brian Malconian")
+    if row_k is None:
+        print("ERROR: no 2026 team found for Dan Vescuso")
         return
-    if row_b[1] == NEW_BRIAN_NAME:
-        print(f"skip (already renamed): Brian Malconian 2026 = {row_b[1]!r}")
+    if row_k[1] == KOWBOY_NAME:
+        print(f"skip (already renamed): franchise 2026 = {row_k[1]!r}")
     else:
         actions.append(("rename",
-                        f"Brian Malconian 2026 team: {row_b[1]!r} -> {NEW_BRIAN_NAME!r}",
+                        f"Dan Vescuso's 2026 team: {row_k[1]!r} -> {KOWBOY_NAME!r} "
+                        f"(Kyle Wright takes over)",
                         ("UPDATE teams SET team_name = ? WHERE team_season_id = ?",
-                         (NEW_BRIAN_NAME, row_b[0]))))
+                         (KOWBOY_NAME, row_k[0]))))
+
+    # --- 1d. Kyle Wright manager row ------------------------------------
+    mgr_k = conn.execute("SELECT manager_id FROM managers WHERE yahoo_guid = ?",
+                         (KYLE_GUID,)).fetchone()
+    if mgr_k:
+        print(f"skip (manager exists): Kyle Wright = manager_id {mgr_k[0]}")
+    else:
+        actions.append(("manager_kyle",
+                        f"INSERT manager {KYLE_FULL!r} (guid {KYLE_GUID}, "
+                        f"placeholder until API returns)",
+                        ("INSERT INTO managers (yahoo_guid, nickname, full_name) "
+                         "VALUES (?, ?, ?)",
+                         (KYLE_GUID, KYLE_NICK, KYLE_FULL))))
 
     # --- 2. Bill Keenan manager row -------------------------------------
     mgr = conn.execute("SELECT manager_id FROM managers WHERE yahoo_guid = ?",

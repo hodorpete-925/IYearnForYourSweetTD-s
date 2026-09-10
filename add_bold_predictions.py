@@ -51,12 +51,41 @@ PREDICTIONS = {
     "Alex Schlosberg": [
         (1, "Someone will spend more than $60 FAAB on a single player "
             "in free agency", None),
+        # Second take added 2026-09-10 (Alex sits at 2 of 3).
+        (2, "Brian will finish outside the top 4 this year", None),
     ],
     "Paul Lewis": [
         (1, "Bhayshul Tuten will not live up to his hype and will "
             "underperform his ADP", None),
         (2, "First starting QB waiver wire claim will go for above "
             "$90 FAAB", None),
+    ],
+    # --- Added 2026-09-10 (Pete). Typos fixed vs the group chat:
+    # "Jaxon" -> Jaxson Dart, "that starter" -> "the starter",
+    # "the the number 1" -> "the number 1", "Raiders start" ->
+    # "Raiders starter". Kyle Wright's row requires his manager record:
+    # run setup_2026_franchise_updates.py --commit BEFORE this script.
+    "Aric Tao": [
+        (1, "Jaxson Dart is going to be a top 5 QB", None),
+    ],
+    "Scott Montgomery": [
+        (1, "Brian will win the regular season, but not win the "
+            "playoffs", None),
+        (2, "Kaelon Black will have more fantasy points this year "
+            "than CMC", None),
+        (3, "DJ Moore will be a top 5 receiver this year", None),
+    ],
+    "Kyle Wright": [
+        (1, "LA Chargers will have two 1000 yard rushers this year", None),
+        (2, "JSN breaks reception record", None),
+        (3, "Cowboys make the playoffs", None),
+    ],
+    "Greg Pearson": [
+        (1, "Tyson Bagent becomes the starter at some point this year "
+            "and is a competitive starting QB in NFL and Fantasy", None),
+        (2, "Harrison Butker will finish as the number 1 kicker in "
+            "fantasy", None),
+        (3, "Fernando Mendoza becomes Raiders starter by week 6", None),
     ],
 }
 

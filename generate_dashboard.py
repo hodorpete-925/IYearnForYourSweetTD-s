@@ -54,7 +54,12 @@ _ALIAS_MISSING_WARNED = set()
 # person who owns it now. Used ONLY for current-season (2026) display slots —
 # roster headers, current-owner chips, 2026 lineage nodes. Historical events
 # keep the historical manager's name so the record reads true.
-CURRENT_HANDOFFS = {"Jon Lewitus": "Bill Keenan"}
+CURRENT_HANDOFFS = {"Jon Lewitus": "Bill Keenan",
+                    # Dan V left the league week 1 of 2026 (post-draft);
+                    # Kyle Wright took over the roster as "Kowboy Hippie"
+                    # (Pete, 2026-09-08). Dan's name stays on historical
+                    # events; Kyle is the current face of the franchise.
+                    "Dan Vescuso": "Kyle Wright"}
 
 # The season the keeper board / trade analyzer now plan FOR. The 2026 draft
 # is done (2026-09-03), so those tools look ahead: every rostered player
@@ -309,8 +314,13 @@ def build_data():
     # add_synthetic_trades.py has migrated; absent = no pick moves yet).
     if conn.execute("SELECT name FROM sqlite_master WHERE type='table' "
                     "AND name='synthetic_transaction_picks'").fetchone():
-        pick_moves = conn.execute("""
+        _sp_cols = [r[1] for r in conn.execute(
+            "PRAGMA table_info(synthetic_transaction_picks)")]
+        _fs = ("COALESCE(sp.for_season, st.season)"
+               if "for_season" in _sp_cols else "st.season")
+        pick_moves = conn.execute(f"""
             SELECT DATE(st.timestamp) AS d, sp.draft_round,
+                   {_fs} AS pick_year,
                    m_src.full_name AS src, m_dst.full_name AS dst,
                    m_orig.full_name AS orig
             FROM synthetic_transaction_picks sp
@@ -332,9 +342,13 @@ def build_data():
         for pm in pick_moves:
             g = _trade_group(pm["d"], pm["dst"], pm["src"])
             orig_team_name = (by_manager.get(pm["orig"]) or {}).get("team_name")
-            slot = pick_by_mgr.get(pm["orig"]) or pick_by_team.get(orig_team_name)
+            year = pm["pick_year"]
+            # 2026 slot numbers come from the 2026 lottery - meaningless
+            # for future-year picks whose draft order doesn't exist yet.
+            slot = (pick_by_mgr.get(pm["orig"]) or pick_by_team.get(orig_team_name)
+                    ) if year == 2026 else None
             entry = {"round": pm["draft_round"], "original": pm["orig"],
-                     "slot": slot}
+                     "slot": slot, "year": year}
             (g["picks_a"] if pm["dst"] == g["mgr_a"] else g["picks_b"]).append(entry)
 
     offseason_trades = sorted(offseason_groups.values(), key=lambda g: g["date"])
@@ -3432,6 +3446,15 @@ tr.history-row > td.history-cell {
   margin: 20px 0 6px 0;
   letter-spacing: -0.003em;
   text-transform: none;
+}
+/* Inline markdown links in desk posts ([text](https://...)). */
+.desk-post-body a.desk-link {
+  color: var(--blue-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.desk-post-body a.desk-link:hover {
+  color: var(--blue-800);
 }
 /* Team-finish header card: bold name + chips for each labelled stat.
    Used in season wrap-ups (one card per team, in finish order). */
@@ -6564,9 +6587,15 @@ def _embed_image_b64(rel_path):
 
 
 def _md_format_inline(text):
-    """Inline markdown: escape HTML then apply **bold** / *italic*."""
+    """Inline markdown: escape HTML then apply [links](https://...),
+    **bold** and *italic*. Links run first so their inserted markup never
+    collides with the emphasis passes; http(s) URLs only, new tab."""
     import re as _re
     text = html.escape(text)
+    text = _re.sub(
+        r"\[([^\]]+)\]\((https?://[^)\s]+)\)",
+        r'<a href="\2" class="desk-link" target="_blank" rel="noopener">\1</a>',
+        text)
     text = _re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
     text = _re.sub(r"\*([^*]+)\*", r"<em>\1</em>", text)
     return text
@@ -6888,8 +6917,9 @@ def _ot_pick_chip(pick):
     lottery_result.json."""
     orig = alias_name(pick["original"])
     slot = pick.get("slot")
-    label = (f'Pick {pick["round"]}.{slot:02d}' if slot
-             else f'R{pick["round"]} pick')
+    year = pick.get("year") or 2026
+    label = (f'{year} Pick {pick["round"]}.{slot:02d}' if slot
+             else f'{year} R{pick["round"]} pick')
     return (f'<div class="ot-pick">{label}'
             f'<span class="ot-pick-orig">orig. {html.escape(orig)}</span></div>')
 
@@ -8068,12 +8098,16 @@ def render_trade_analyzer(by_manager):
         # add_synthetic_trades.py has run its migration; absent = no moves yet.
         if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' "
                         "AND name='synthetic_transaction_picks'").fetchone():
+            _sp_cols2 = [r[1] for r in conn.execute(
+                "PRAGMA table_info(synthetic_transaction_picks)")]
+            _fs2 = ("AND COALESCE(sp.for_season, st.season) = 2026"
+                    if "for_season" in _sp_cols2 else "")
             for mv in conn.execute(
                     "SELECT sp.draft_round rnd, sp.source_team_season_id s, "
                     " sp.destination_team_season_id d, sp.original_team_season_id o "
                     "FROM synthetic_transaction_picks sp "
                     "JOIN synthetic_transactions st ON st.synth_id = sp.synth_id "
-                    "WHERE st.season = 2026 ORDER BY st.timestamp"):
+                    f"WHERE st.season = 2026 {_fs2} ORDER BY st.timestamp"):
                 if mv["rnd"] > 16:
                     last_pick_ious.append((slug_by_tsid.get(mv["s"]),
                                            slug_by_tsid.get(mv["d"])))
@@ -8402,15 +8436,24 @@ def render_bold_predictions(by_manager):
                 FROM bold_predictions WHERE season = 2026
                 ORDER BY manager_id, pred_no"""):
             preds.setdefault(r["manager_id"], []).append(r)
+    # Handed-off franchises: by_manager carries the HISTORICAL manager_id
+    # (Dan V, Jon L), but this season's predictions belong to the current
+    # face (Kyle W, Bill K), who has his own managers row. Resolve the
+    # current face's id and prefer his predictions over the old owner's.
+    name_to_id = {r["full_name"]: r["manager_id"] for r in conn.execute(
+        "SELECT manager_id, full_name FROM managers")}
     conn.close()
 
     entries = sorted(
-        ((data["manager"], data["manager_id"]) for data in by_manager.values()),
+        ((data["manager"], data["manager_id"], data["manager_actual"])
+         for data in by_manager.values()),
         key=lambda x: x[0])
     cards = ""
     n_in = 0
-    for disp, mid in entries:
-        rows = preds.get(mid)
+    for disp, mid, actual in entries:
+        face_id = name_to_id.get(CURRENT_HANDOFFS.get(actual, actual))
+        rows = (preds.get(face_id) if face_id is not None else None) \
+            or preds.get(mid)
         if rows:
             n_in += 1
             items = ""

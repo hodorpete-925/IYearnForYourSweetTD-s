@@ -31,6 +31,7 @@ from datetime import datetime
 from pathlib import Path
 
 DB = Path(__file__).parent / "fantasy.db"
+HAS_FOR_SEASON = False   # set in main() from the live schema
 
 # ============================================================================
 # DECLARE TRADES HERE
@@ -299,6 +300,44 @@ TRADES = [
                 "leg (Aric's 2027 R6 for Dan V's 2027 last pick) "
                 "recorded separately when 2027 boards exist.",
     },
+    {
+        # 2027 LEG of the Scott/Tom deadline trade (for_season plumbing
+        # landed 2026-09-08). Scott acquires Tom's 2027 R6; Tom gets
+        # Scott's 2027 LAST pick back as the 16-pick balance. Last-pick
+        # convention + era ruling: as of the Aug-2026 era both teams
+        # hold full native 2027 sets, so Scott's 2027 last pick is his
+        # own 2027 R16.
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Scott Montgomery", []),
+        "picks_a": [{"round": 6, "original": "Tom Watson",
+                     "for_season": 2027}],
+        "side_b": ("Tom Watson", []),
+        "picks_b": [{"round": 16, "original": "Scott Montgomery",
+                     "for_season": 2027}],
+        "note": "Deadline trade 8/29, 2027 leg: Montgomery gets Watson's "
+                "2027 R6; Watson gets Montgomery's own 2027 R16 (his "
+                "2027 last pick, the balance). Recorded 9/8 once "
+                "for_season support existed.",
+    },
+    {
+        # 2027 LEG of the Aric/Dan V deadline trade. Dan V acquires
+        # Aric's 2027 R6; Aric gets Dan V's 2027 LAST pick back as the
+        # balance - his own 2027 R16 (full native 2027 set as of the
+        # trade era).
+        "date": "2026-08-29",
+        "season": 2026,
+        "side_a": ("Dan Vescuso", []),
+        "picks_a": [{"round": 6, "original": "Aric Tao",
+                     "for_season": 2027}],
+        "side_b": ("Aric Tao", []),
+        "picks_b": [{"round": 16, "original": "Dan Vescuso",
+                     "for_season": 2027}],
+        "note": "Deadline trade 8/29, 2027 leg: Vescuso gets Tao's 2027 "
+                "R6; Tao gets Vescuso's own 2027 R16 (his 2027 last "
+                "pick, the balance). Recorded 9/8 once for_season "
+                "support existed.",
+    },
 ]
 
 
@@ -360,22 +399,37 @@ def trade_already_exists(conn, date, team_dest, pid):
     return row is not None
 
 
-def pick_already_exists(conn, date, dest_team, rnd, orig_team):
-    row = conn.execute("""
+def pick_already_exists(conn, date, dest_team, rnd, orig_team, for_season=None):
+    fs_clause = ""
+    args = [date, dest_team, rnd, orig_team]
+    if HAS_FOR_SEASON:
+        fs_clause = "AND COALESCE(sp.for_season, st.season) = COALESCE(?, st.season)"
+        args.append(for_season)
+    row = conn.execute(f"""
         SELECT 1 FROM synthetic_transactions st
         JOIN synthetic_transaction_picks sp ON sp.synth_id = st.synth_id
         WHERE DATE(st.timestamp) = ?
           AND sp.destination_team_season_id = ?
           AND sp.draft_round = ?
           AND sp.original_team_season_id = ?
+          {fs_clause}
         LIMIT 1
-    """, (date, dest_team, rnd, orig_team)).fetchone()
+    """, args).fetchone()
     return row is not None
 
 
 def ensure_pick_table(conn):
     """Synthetic mirror of transaction_picks, keyed to synth_id. Safe to
     call every run."""
+    # for_season (added 2026-09-08): the DRAFT YEAR the pick is for.
+    # NULL/absent = same as the trade's season (the historical default).
+    # First real use: the two 2027 legs of the Scott/Tom and Aric/DanV
+    # deadline trades - the league's first multi-year pick trades.
+    cols = [r[1] for r in conn.execute(
+        "PRAGMA table_info(synthetic_transaction_picks)")]
+    if cols and "for_season" not in cols:
+        conn.execute("ALTER TABLE synthetic_transaction_picks "
+                     "ADD COLUMN for_season INTEGER")
     conn.execute("""
         CREATE TABLE IF NOT EXISTS synthetic_transaction_picks (
             synth_id                    INTEGER NOT NULL,
@@ -383,6 +437,7 @@ def ensure_pick_table(conn):
             source_team_season_id       INTEGER NOT NULL,
             destination_team_season_id  INTEGER NOT NULL,
             original_team_season_id     INTEGER NOT NULL,
+            for_season                  INTEGER,
             PRIMARY KEY (synth_id, draft_round, source_team_season_id),
             FOREIGN KEY (synth_id) REFERENCES synthetic_transactions(synth_id),
             FOREIGN KEY (source_team_season_id)      REFERENCES teams(team_season_id),
@@ -425,7 +480,8 @@ def insert_movement(conn, synth_id, date, season, pid, dest_team, src_team):
     )
 
 
-def insert_pick_movement(conn, synth_id, date, season, rnd, src_team, dest_team, orig_team):
+def insert_pick_movement(conn, synth_id, date, season, rnd, src_team, dest_team,
+                         orig_team, for_season=None):
     """One pick movement = its own synth row + one synthetic pick row
     (same shape as transaction_picks)."""
     ts = f"{date} 00:00:00"
@@ -437,9 +493,9 @@ def insert_pick_movement(conn, synth_id, date, season, rnd, src_team, dest_team,
     conn.execute(
         "INSERT INTO synthetic_transaction_picks "
         "(synth_id, draft_round, source_team_season_id, "
-        " destination_team_season_id, original_team_season_id) "
-        "VALUES (?, ?, ?, ?, ?)",
-        (synth_id, rnd, src_team, dest_team, orig_team),
+        " destination_team_season_id, original_team_season_id, for_season) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        (synth_id, rnd, src_team, dest_team, orig_team, for_season),
     )
 
 
@@ -449,9 +505,18 @@ def main():
                         help="Actually insert (default is dry-run).")
     args = parser.parse_args()
 
-    conn = sqlite3.connect(DB)
-    conn.execute("PRAGMA foreign_keys = ON;")
-    ensure_pick_table(conn)
+    # Dry-run is STRICTLY read-only (fantasy.db writes are Pete's, and
+    # rw opens over the bridge mount corrupt-lock the DB - 9/2 incident).
+    if args.commit:
+        conn = sqlite3.connect(DB)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        ensure_pick_table(conn)
+    else:
+        conn = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+    global HAS_FOR_SEASON
+    HAS_FOR_SEASON = any(
+        r[1] == "for_season"
+        for r in conn.execute("PRAGMA table_info(synthetic_transaction_picks)"))
     player_cache = {}
     team_cache = {}
     planned = []        # player movements
@@ -495,17 +560,22 @@ def main():
             if not orig_team:
                 print(f"  SKIPPED pick R{spec['round']} (original owner unresolved)")
                 continue
-            if pick_already_exists(conn, date, dest_team, spec["round"], orig_team):
+            fs = spec.get("for_season")
+            if pick_already_exists(conn, date, dest_team, spec["round"],
+                                   orig_team, fs):
                 print(f"  skip (already in DB): R{spec['round']} pick -> {dest_mgr}")
                 continue
             planned_picks.append((date, season, spec["round"], src_team,
-                                  dest_team, orig_team, dest_mgr, spec["original"]))
+                                  dest_team, orig_team, dest_mgr,
+                                  spec["original"], fs))
 
     print(f"\n=== Plan: {len(planned)} player movement(s), {len(planned_picks)} pick movement(s) ===")
     for date, season, pid, pname, dest_team, src_team, dest_mgr in planned:
         print(f"  {date}  {pname:<30} -> {dest_mgr}")
-    for date, season, rnd, src_team, dest_team, orig_team, dest_mgr, orig_mgr in planned_picks:
-        print(f"  {date}  R{rnd} pick (orig {orig_mgr}){'':<8} -> {dest_mgr}")
+    for (date, season, rnd, src_team, dest_team, orig_team, dest_mgr,
+         orig_mgr, fs) in planned_picks:
+        yr = f" [{fs} draft]" if fs and fs != season else ""
+        print(f"  {date}  R{rnd} pick (orig {orig_mgr}){yr} -> {dest_mgr}")
 
     if not args.commit:
         print("\nDRY RUN. Re-run with --commit to apply.")
@@ -519,9 +589,11 @@ def main():
     for date, season, pid, pname, dest_team, src_team, dest_mgr in planned:
         sid = next_synth_id(conn)
         insert_movement(conn, sid, date, season, pid, dest_team, src_team)
-    for date, season, rnd, src_team, dest_team, orig_team, dest_mgr, orig_mgr in planned_picks:
+    for (date, season, rnd, src_team, dest_team, orig_team, dest_mgr,
+         orig_mgr, fs) in planned_picks:
         sid = next_synth_id(conn)
-        insert_pick_movement(conn, sid, date, season, rnd, src_team, dest_team, orig_team)
+        insert_pick_movement(conn, sid, date, season, rnd, src_team,
+                             dest_team, orig_team, for_season=fs)
     conn.commit()
     print("Done.")
 
