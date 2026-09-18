@@ -1,0 +1,704 @@
+{
+ "as_of": "2026-09-17 23:20 EDT",
+ "season": 2026,
+ "source": "Yahoo league transactions page (Chrome capture; API not yet authorized)",
+ "excluded": [
+  "2026-09-03 21:47 commissioner Walker/Love swap (already in draft_picks via add_draft_2026)",
+  "pick trades logged 9/7 (R6 to Scott, R16 to Tom) and 9/13 (R16 to George, R13 to Tom): picks are handled by the trade queue"
+ ],
+ "transactions": [
+  {
+   "ts": "2026-09-16 16:08:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "pos": "K",
+     "nfl": "SF",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 16:07:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Panthers",
+     "pos": "DEF",
+     "nfl": "Car",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 09:24:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Chiefs",
+     "pos": "DEF",
+     "nfl": "KC",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 40114,
+     "name": "Tre Tucker",
+     "pos": "WR",
+     "nfl": "LV",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 06:29:00",
+   "team_id": 3,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 41097,
+     "name": "Devaughn Vele",
+     "pos": "WR",
+     "nfl": "NO",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 40095,
+     "name": "Tank Bigsby",
+     "pos": "RB",
+     "nfl": "Phi",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 9,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Packers",
+     "pos": "DEF",
+     "nfl": "GB",
+     "source": "waivers",
+     "faab": 0
+    },
+    {
+     "dir": "drop",
+     "player_id": null,
+     "name": "Steelers",
+     "pos": "DEF",
+     "nfl": "Pit",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 7,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "49ers",
+     "pos": "DEF",
+     "nfl": "SF",
+     "source": "waivers",
+     "faab": 0
+    },
+    {
+     "dir": "drop",
+     "player_id": null,
+     "name": "Chargers",
+     "pos": "DEF",
+     "nfl": "LAC",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 4,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Buccaneers",
+     "pos": "DEF",
+     "nfl": "TB",
+     "source": "waivers",
+     "faab": 3
+    },
+    {
+     "dir": "drop",
+     "player_id": null,
+     "name": "Jaguars",
+     "pos": "DEF",
+     "nfl": "Jax",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 10,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 30182,
+     "name": "Cooper Kupp",
+     "pos": "WR",
+     "nfl": "Sea",
+     "source": "waivers",
+     "faab": 5
+    },
+    {
+     "dir": "drop",
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "pos": "TE",
+     "nfl": "Dal",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 42693,
+     "name": "Antonio Williams",
+     "pos": "WR",
+     "nfl": "Was",
+     "source": "waivers",
+     "faab": 7
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 7,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 31874,
+     "name": "Drew Lock",
+     "pos": "QB",
+     "nfl": "Sea",
+     "source": "waivers",
+     "faab": 10
+    },
+    {
+     "dir": "drop",
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "pos": "WR",
+     "nfl": "Mia",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 9,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 40201,
+     "name": "Dontayvion Wicks",
+     "pos": "WR",
+     "nfl": "Phi",
+     "source": "waivers",
+     "faab": 11
+    },
+    {
+     "dir": "drop",
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "pos": "QB",
+     "nfl": "Atl",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 42697,
+     "name": "Caleb Douglas",
+     "pos": "WR",
+     "nfl": "Mia",
+     "source": "waivers",
+     "faab": 11
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 31868,
+     "name": "Deebo Samuel Sr.",
+     "pos": "WR",
+     "nfl": "SF",
+     "source": "waivers",
+     "faab": 37
+    },
+    {
+     "dir": "drop",
+     "player_id": 34659,
+     "name": "Rashid Shaheed",
+     "pos": "WR",
+     "nfl": "Sea",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-16 04:35:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 29236,
+     "name": "Carson Wentz",
+     "pos": "QB",
+     "nfl": "Min",
+     "source": "waivers",
+     "faab": 58
+    },
+    {
+     "dir": "drop",
+     "player_id": 40819,
+     "name": "Brandon Aubrey",
+     "pos": "K",
+     "nfl": "Dal",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-15 22:36:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "drop",
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "pos": "WR",
+     "nfl": "NYG",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-15 22:34:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "drop",
+     "player_id": 42687,
+     "name": "Carson Beck",
+     "pos": "QB",
+     "nfl": "Ari",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-15 17:48:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "drop",
+     "player_id": null,
+     "name": "Vikings",
+     "pos": "DEF",
+     "nfl": "Min",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-15 17:47:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "drop",
+     "player_id": 41009,
+     "name": "Troy Franklin",
+     "pos": "WR",
+     "nfl": "Den",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 19:13:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "pos": "WR",
+     "nfl": "NYG",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 33412,
+     "name": "Najee Harris",
+     "pos": "RB",
+     "nfl": "NYG",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 18:14:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 41009,
+     "name": "Troy Franklin",
+     "pos": "WR",
+     "nfl": "Den",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 18:14:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "drop",
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "pos": "QB",
+     "nfl": "Chi",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 15:20:00",
+   "team_id": 9,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 30266,
+     "name": "Jake Elliott",
+     "pos": "K",
+     "nfl": "Phi",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 12:35:00",
+   "team_id": 11,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 34147,
+     "name": "Jalen Nailor",
+     "pos": "WR",
+     "nfl": "LV",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-13 11:06:00",
+   "team_id": 5,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 33537,
+     "name": "Evan McPherson",
+     "pos": "K",
+     "nfl": "Cin",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 41048,
+     "name": "Tyrone Tracy Jr.",
+     "pos": "RB",
+     "nfl": "NYG",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-12 11:54:00",
+   "team_id": 1,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "pos": "QB",
+     "nfl": "Chi",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 41864,
+     "name": "Kyle Williams",
+     "pos": "WR",
+     "nfl": "NE",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-11 13:45:00",
+   "team_id": 7,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "pos": "WR",
+     "nfl": "Mia",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 41819,
+     "name": "Jayden Higgins",
+     "pos": "WR",
+     "nfl": "Hou",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-10 18:13:00",
+   "team_id": 6,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 33113,
+     "name": "Juwan Johnson",
+     "pos": "TE",
+     "nfl": "NO",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-10 14:16:00",
+   "team_id": 9,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "pos": "QB",
+     "nfl": "Atl",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "pos": "K",
+     "nfl": "SF",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-08 19:27:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 33412,
+     "name": "Najee Harris",
+     "pos": "RB",
+     "nfl": "NYG",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-08 07:34:00",
+   "team_id": 10,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "pos": "TE",
+     "nfl": "Dal",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-07 11:19:00",
+   "team_id": 2,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 40835,
+     "name": "Jake Bates",
+     "pos": "K",
+     "nfl": "Det",
+     "source": "freeagents",
+     "faab": null
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 08:53:00",
+   "team_id": 10,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Raiders",
+     "pos": "DEF",
+     "nfl": "LV",
+     "source": "freeagents",
+     "faab": null
+    },
+    {
+     "dir": "drop",
+     "player_id": 40742,
+     "name": "Sean Tucker",
+     "pos": "RB",
+     "nfl": "TB",
+     "dest": "waivers"
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 7,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 41819,
+     "name": "Jayden Higgins",
+     "pos": "WR",
+     "nfl": "Hou",
+     "source": "waivers",
+     "faab": 0
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 9,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Steelers",
+     "pos": "DEF",
+     "nfl": "Pit",
+     "source": "waivers",
+     "faab": 0
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 5,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 34207,
+     "name": "Isiah Pacheco",
+     "pos": "RB",
+     "nfl": "Det",
+     "source": "waivers",
+     "faab": 1
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 7,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": null,
+     "name": "Chargers",
+     "pos": "DEF",
+     "nfl": "LAC",
+     "source": "waivers",
+     "faab": 1
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 3,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 30218,
+     "name": "James Conner",
+     "pos": "RB",
+     "nfl": "Ari",
+     "source": "waivers",
+     "faab": 4
+    }
+   ]
+  },
+  {
+   "ts": "2026-09-06 03:17:00",
+   "team_id": 3,
+   "moves": [
+    {
+     "dir": "add",
+     "player_id": 40958,
+     "name": "Trey Benson",
+     "pos": "RB",
+     "nfl": "Ari",
+     "source": "waivers",
+     "faab": 5
+    }
+   ]
+  }
+ ]
+}

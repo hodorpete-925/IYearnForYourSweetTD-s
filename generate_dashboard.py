@@ -310,6 +310,108 @@ def sanitize_rendered_html(html_str):
 
 # ---------- Data assembly ----------------------------------------------------
 
+IN_SEASON_ACQ_LABEL = {"waiver": "waiver", "fa": "free agent", "trade": "trade"}
+
+
+def _apply_in_season_moves(conn, by_manager, handoff_back, dollar,
+                           adp_2026, adp_by_year, pts_by_year, pos_rank_by_year):
+    """Replay season-2026 synthetic events dated AFTER the draft onto each
+    manager's roster_2026 (Pete 2026-09-17). Sources: the fenced
+    YAHOO_PAGE adds/drops (add_page_transactions.py) and any in-season
+    trades from the trade queue. Rules (league keeper economics):
+      - waiver / free-agent add  -> DRC 16, $10, a fresh cost cycle;
+        a re-add of a dropped player resets the same way (Pete: once on
+        waivers he was free game for the whole league, clean reset)
+      - drop                     -> leaves the roster; cost tracking ends
+      - trade (in-season)        -> mover keeps his 2026 DRC and the NEXT
+        season is a freeze year at that DRC (decrement resumes after)
+    The draft-results board keeps the draft as drafted (draft_2026)."""
+    dmeta = load_draft_results_meta()
+    drafted = (dmeta.get("drafted") or f"{TARGET_SEASON}-09-03")[:16]
+    mgr_by_tsid = {}
+    for r in conn.execute("SELECT t.team_season_id, m.full_name FROM teams t "
+                          "JOIN managers m ON m.manager_id = t.manager_id WHERE t.season=?",
+                          (TARGET_SEASON,)):
+        mgr_by_tsid[r[0]] = handoff_back.get(r[1], r[1])
+    rows = conn.execute("""
+        SELECT st.synth_id, st.timestamp, st.event_type, st.note,
+               sp.player_id, sp.direction, sp.team_season_id, sp.source_type,
+               sp.counterparty_team_season_id,
+               p.player_name, p.position, p.nfl_team
+        FROM synthetic_transactions st
+        JOIN synthetic_transaction_players sp ON sp.synth_id = st.synth_id
+        JOIN players p ON p.player_id = sp.player_id
+        WHERE st.season = ? AND st.timestamp > ?
+        ORDER BY st.timestamp, st.synth_id,
+                 CASE sp.direction WHEN 'outgoing' THEN 0 ELSE 1 END
+    """, (TARGET_SEASON, drafted)).fetchall()
+    n_add = n_drop = n_trade = 0
+
+    def _find(pid):
+        for d in by_manager.values():
+            for e in d["roster_2026"]:
+                if e["player_id"] == pid:
+                    return d, e
+        return None, None
+
+    for r in rows:
+        mgr = mgr_by_tsid.get(r["team_season_id"])
+        data = by_manager.get(mgr)
+        if data is None:
+            print(f"  WARNING: in-season move for unknown team_season_id {r['team_season_id']}")
+            continue
+        when = str(r["timestamp"])[:10]
+        if r["direction"] == "outgoing":
+            if r["event_type"] == "trade":
+                continue   # handled from the incoming side
+            d, e = _find(r["player_id"])
+            if e is None:
+                print(f"  NOTE: drop of {r['player_name']} ({when}) - not on any roster, skipped")
+                continue
+            d["roster_2026"].remove(e)
+            n_drop += 1
+            continue
+        # incoming
+        if r["event_type"] == "trade":
+            d, e = _find(r["player_id"])
+            if e is None:
+                print(f"  WARNING: in-season trade: {r['player_name']} not on any roster; skipped")
+                continue
+            d["roster_2026"].remove(e)
+            e = dict(e)
+            e["acq"] = "trade"
+            e["acq_date"] = when
+            e["acq_from"] = d["manager"]
+            e["drc_next"] = e["drc"]                 # freeze year
+            e["cost_next"] = dollar.get(e["drc_next"], 10)
+            data["roster_2026"].append(e)
+            n_trade += 1
+            continue
+        d, e = _find(r["player_id"])
+        if e is not None:
+            d["roster_2026"].remove(e)   # defensive: Yahoo add implies he left the old team
+        history = hist.build_history_for_player(
+            conn, r["player_id"], r["team_season_id"],
+            adp_by_year, pts_by_year, pos_rank_by_year, player_position=r["position"])
+        entry = {
+            "player_id": r["player_id"], "name": r["player_name"],
+            "position": r["position"] or "—", "nfl_team": r["nfl_team"] or "—",
+            "drc": 16, "drc_dollars": dollar.get(16, 10),
+            "adp_2026": adp_2026.get(r["player_id"]),
+            "chain": f"{'waiver' if r['source_type'] == 'waivers' else 'free agent'} pickup {when} (DRC reset to 16)",
+            "history": history,
+            "acq": "waiver" if r["source_type"] == "waivers" else "fa",
+            "acq_date": when, "owed_2026": 0,
+            "pick": None, "round": None, "overall": 9999,
+            "drc_next": 15, "cost_next": dollar.get(15, 10),
+        }
+        data["roster_2026"].append(entry)
+        n_add += 1
+    if rows:
+        print(f"  in-season moves applied: {n_add} adds, {n_drop} drops, {n_trade} trades "
+              f"(events after {drafted})")
+
+
 def build_data():
     """Walk all 2025 final-rosters, compute DRC for each player, return a
     nested dict ready for the template."""
@@ -620,10 +722,18 @@ def build_data():
         entry["cost_next"] = dollar.get(entry["drc_next"], 10)
         data["roster_2026"].append(entry)
 
+    # Keep the draft as drafted for the draft-results board and player
+    # search, then apply IN-SEASON moves to roster_2026 (the live roster).
+    for data in by_manager.values():
+        data["draft_2026"] = list(data["roster_2026"])
+    if draft_done:
+        _apply_in_season_moves(conn, by_manager, handoff_back, dollar,
+                               adp_2026, adp_by_year, pts_by_year, pos_rank_by_year)
+
     for data in by_manager.values():
         ro = data["roster_2026"]
         data["roster_count"] = len(ro)
-        data["live_pick_count"] = sum(1 for p in ro if p["acq"] == "drafted")
+        data["live_pick_count"] = sum(1 for p in data["draft_2026"] if p["acq"] == "drafted")
         data["roster_owed_2026"] = sum(p["owed_2026"] for p in ro)
         data["roster_cost_next"] = sum(p["cost_next"] for p in ro)
 
@@ -870,10 +980,11 @@ def build_data():
         drafted_truth = {}
         drafted_meta = {}
         for data in by_manager.values():
+            for rp in data["draft_2026"]:
+                drafted_meta[rp["player_id"]] = (rp["acq"], rp["pick"])
             for rp in data["roster_2026"]:
                 drafted_truth[rp["player_id"]] = (
                     data["manager"], rp["drc"], rp["owed_2026"])
-                drafted_meta[rp["player_id"]] = (rp["acq"], rp["pick"])
         undrafted = set(board_truth) - set(drafted_truth)
         board_truth = drafted_truth
     else:
@@ -1129,6 +1240,14 @@ def render_roster26_row(p, slot_label):
         acq = (f'<span class="pill {drc_tier_class(p["drc"])}">DRC {p["drc"]}</span>'
                f'<span class="acq-note">kept &middot; pick {html.escape(p["pick"])}</span>')
         cost = f"${p['owed_2026']}"
+    elif p.get("acq") in ("waiver", "fa"):
+        acq = (f'<span class="pill pill-draft">DRC 16</span>'
+               f'<span class="acq-note">{IN_SEASON_ACQ_LABEL[p["acq"]]} &middot; {html.escape(p.get("acq_date", ""))}</span>')
+        cost = '<span class="muted">&mdash;</span>'
+    elif p.get("acq") == "trade":
+        acq = (f'<span class="pill {drc_tier_class(p["drc"])}">DRC {p["drc"]}</span>'
+               f'<span class="acq-note">trade from {html.escape(p.get("acq_from", ""))} &middot; {html.escape(p.get("acq_date", ""))}</span>')
+        cost = '<span class="muted">&mdash;</span>'
     else:
         acq = (f'<span class="pill pill-draft">R{p["round"]}</span>'
                f'<span class="acq-note">drafted &middot; pick {html.escape(p["pick"])}</span>')
@@ -1145,6 +1264,36 @@ def render_roster26_row(p, slot_label):
           </td>
         </tr>"""
     return main_row + render_history_subrow(pid, p.get("history", {}), colspan=6, player=p)
+
+
+def _lineup_from_yahoo(data):
+    """Team page lineup from current_lineups.json when it covers this team
+    (real Yahoo slots); None -> caller falls back to the ADP estimate.
+    Players Yahoo has that the DB roster lacks are skipped (drift)."""
+    lineups, _meta = load_current_lineups()
+    if not lineups:
+        return None
+    tid = yahoo_team_ids().get(data["team_name"])
+    ts = lineups.get(tid)
+    if not ts or not (ts["ids"] or ts["names"]):
+        return None
+    def slot_of(p):
+        return ts["ids"].get(p["player_id"]) or ts["names"].get(_norm_player_name(p["name"]))
+    order = ["QB", "RB", "RB", "WR", "WR", "WR", "TE", "W/R/T", "Q/W/R/T", "K", "DEF"]
+    by_slot = {}
+    for p in data["roster_2026"]:
+        by_slot.setdefault(slot_of(p) or "BN", []).append(p)
+    starters, used = [], {}
+    for lbl in order:
+        n = used.get(lbl, 0); used[lbl] = n + 1
+        q = by_slot.get(lbl, [])
+        starters.append((lbl, q[n] if n < len(q) else None))
+    bench = list(by_slot.get("BN", [])) + [p for lbl, q in by_slot.items()
+                                          if lbl not in order and lbl != "BN" and lbl != "IR" for p in q]
+    ir = by_slot.get("IR", [])
+    for p in ir:
+        p["_ir"] = True
+    return starters, bench + ir
 
 
 def _lineup_assign(players):
@@ -1736,12 +1885,12 @@ def render_team_section(data, slug, pick_data=None):
         # Post-draft (2026-09-03): the roster is the 16 drafted players -
         # keepers on the picks that seated them plus the live picks - in
         # Yahoo's lineup structure (best 2026 ADP fills each slot).
-        starters, bench = _lineup_assign(data["roster_2026"])
+        starters, bench = _lineup_from_yahoo(data) or _lineup_assign(data["roster_2026"])
         starter_rows = "".join(
             render_roster26_row(pl, slot_label=lbl) if pl is not None
             else render_empty_slot_row(lbl)
             for lbl, pl in starters)
-        bench_rows = ("".join(render_roster26_row(pl, slot_label="BN")
+        bench_rows = ("".join(render_roster26_row(pl, slot_label=("IR" if pl.get("_ir") else "BN"))
                               for pl in bench)
                       or render_empty_slot_row("BN"))
     else:
@@ -1768,11 +1917,11 @@ def render_team_section(data, slug, pick_data=None):
     trades_html = render_trades_tab(data.get("trade_history", []), slug)
     yd = (load_yahoo_draft_day() or {}).get(data["team_name"]) if draft_done else None
     if draft_done:
-        roster_note = (f"The {TARGET_SEASON} roster as drafted on Sep 3 &mdash; {kcount} keepers on the picks that "
-                       f"seated them plus {data.get('live_pick_count', 0)} live picks, laid out in Yahoo&rsquo;s lineup "
-                       f"structure (best 2026 ADP fills each slot). Keepers show the DRC they were kept at and what "
+        roster_note = (f"The current {TARGET_SEASON} roster &mdash; drafted Sep 3 with {kcount} keepers and "
+                       f"{data.get('live_pick_count', 0)} live picks, plus every add and drop since, laid out in Yahoo&rsquo;s "
+                       f"lineup slots. Keepers show the DRC they were kept at and what "
                        f"that owes the pot; drafted players show their round, which is where their own cost cycle "
-                       f"starts. In-season adds, drops and trades are not reflected yet.")
+                       f"starts. In-season adds and drops are applied from Yahoo's transaction log; waiver and free-agent pickups start a fresh cost cycle at DRC 16.")
     else:
         roster_note = (f"The {TARGET_SEASON} roster heading into the draft &mdash; keepers only, since everyone else "
                        f"is back in the draft pool. The best player fills each starting slot, kept overflow rides the "
@@ -8587,7 +8736,7 @@ def render_trade_analyzer(by_manager):
     if draft_done:
         ta_sub = (f"Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out "
                   f"each player's keeper cost for {board_season} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.")
-        ta_foot = (f"Rosters are as drafted on Sep 3 (in-season adds and drops are not reflected yet). Every player carries his {board_season} keep price: "
+        ta_foot = (f"Rosters reflect the draft plus in-season adds and drops from Yahoo's transaction log (pickups start at DRC 16). Every player carries his {board_season} keep price: "
                    f"his 2026 DRC less one, floor 1. A trade made during the 2026 season freezes the player at his 2026 DRC for {board_season} "
                    f"(the acquirer pays that, not the decremented price), with the normal decrement resuming the year after. "
                    f"Each board is laid out like the roster itself: starters in their lineup slots, then the bench, then IR, with the {board_season} picks "
@@ -8781,7 +8930,7 @@ def render_draft_results_board(by_manager):
     n_keep = n_live = 0
     for d in teams:
         sl = manager_slug(d["manager_actual"])
-        for e in d["roster_2026"]:
+        for e in d.get("draft_2026", d["roster_2026"]):
             cells.setdefault((e["round"], sl), []).append(e)
             if e["acq"] == "kept":
                 n_keep += 1

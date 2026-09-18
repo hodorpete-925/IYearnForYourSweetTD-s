@@ -6,6 +6,8 @@ Order, stopping at the first failure (nothing after a failed step runs):
                             API is unauthorized — probe_yahoo.py decides)
   3. commit FINAL panel trades   (add_synthetic_trades.py --commit;
                                   idempotent, pending trades are ignored)
+  3b. commit Yahoo-page adds/drops (add_page_transactions.py --commit;
+                                  fenced stopgap, skipped when no file)
   4. recon_ownership.py          (read-only check)
   5. refresh.py "<message>"      (regenerate, verify, commit, push)
 
@@ -54,9 +56,17 @@ def say(s=""):
 
 
 def run(cmd, step, fatal=True):
+    """Run a step, echoing its output line by line through OUR stdout so it
+    lands in the control panel's capture (and the unattended log) instead
+    of an inherited handle that may go nowhere under pythonw."""
     say(f"\n=== {step} ===")
-    p = subprocess.run([sys.executable, "-u", *cmd], cwd=HERE,
-                       creationflags=FLAGS)
+    p = subprocess.Popen([sys.executable, "-u", *cmd], cwd=HERE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         text=True, encoding="utf-8", errors="replace",
+                         bufsize=1, creationflags=FLAGS)
+    for line in p.stdout:
+        say(line.rstrip("\n"))
+    p.wait()
     if p.returncode != 0 and fatal:
         say(f"\n*** STOPPED at: {step} (exit {p.returncode}). Nothing after this ran.")
         sys.exit(1)
@@ -104,6 +114,10 @@ def main():
         say("\n=== 2. Yahoo pull skipped (no --yahoo) ===")
 
     run(["add_synthetic_trades.py", "--commit"], "3. committing FINAL panel trades")
+    if (HERE / "yahoo_page_transactions.json").exists():
+        # Fenced stopgap while the API is locked (note LIKE 'YAHOO_PAGE|%');
+        # idempotent. Drop this step once ingest_transactions runs live.
+        run(["add_page_transactions.py", "--commit"], "3b. committing Yahoo-page adds/drops (fenced)")
     run(["recon_ownership.py"], "4. ownership recon")
 
     if NO_PUBLISH:
