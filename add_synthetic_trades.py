@@ -25,6 +25,7 @@ Run:  python add_synthetic_trades.py             # dry-run
 """
 import argparse
 import difflib
+import json
 import sqlite3
 import sys
 from datetime import datetime
@@ -499,7 +500,42 @@ def insert_pick_movement(conn, synth_id, date, season, rnd, src_team, dest_team,
     )
 
 
+PENDING_FILE = Path(__file__).parent / "trades_pending.json"
+
+
+def load_panel_trades():
+    """Trades entered through the control panel (trades_pending.json).
+    Same shape as a TRADES entry, with side_a/side_b as [manager, [players]]
+    lists plus a "final" flag. ONLY final trades are returned: a trade still
+    inside the 48-hour counter window sits in the file and never touches the
+    DB (league rule: DRC settles on FINAL trades only). Idempotence is the
+    same date+team+player check the hardcoded list uses, so re-running after
+    a commit is a no-op."""
+    try:
+        doc = json.loads(PENDING_FILE.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return []
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"WARN: trades_pending.json unreadable ({e}); ignoring it")
+        return []
+    out = []
+    for t in doc.get("trades", []):
+        label = f"{t.get('date')} {t.get('side_a', ['?'])[0]} <-> {t.get('side_b', ['?'])[0]}"
+        if not t.get("final"):
+            print(f"PENDING (not final, ignored): {label}")
+            continue
+        out.append({
+            "date": t["date"], "season": int(t.get("season", 2026)),
+            "side_a": (t["side_a"][0], list(t["side_a"][1])),
+            "side_b": (t["side_b"][0], list(t["side_b"][1])),
+            "picks_a": t.get("picks_a", []), "picks_b": t.get("picks_b", []),
+            "note": t.get("note") or "Entered via control panel.",
+        })
+    return out
+
+
 def main():
+    TRADES.extend(load_panel_trades())
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", action="store_true",
                         help="Actually insert (default is dry-run).")

@@ -106,7 +106,10 @@ print(f"  build timestamp OK: {fm.group(1)}")
 print("\nStep 3/6 — staging files ...")
 # Stage the generator alongside its output so source and build always
 # travel together — a published dashboard should never outrun its code.
-run(["git", "add", "dashboard.html", "index.html", "generate_dashboard.py"],
+# scores.json is fetched by the live page (League home matchups), so it
+# must be published next to index.html whenever it exists.
+_extra = [f for f in ("scores.json",) if (HERE / f).exists()]
+run(["git", "add", "dashboard.html", "index.html", "generate_dashboard.py", *_extra],
     "staging files")
 
 print("\nStep 4/6 — checking for real changes ...")
