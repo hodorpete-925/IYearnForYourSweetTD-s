@@ -14,9 +14,19 @@ Out:  dashboard.html
 
 import json
 import sqlite3
+import sys
 import html
 from datetime import datetime
 from pathlib import Path
+
+# Windows consoles default to cp1252 and choke on emoji in team names when
+# we print progress lines (the 9/17 "Gabagool 🤌🏻" crash). Make stdout
+# tolerant; the HTML output is written with an explicit utf-8 encoding.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 import compute_drc as drc  # reuse Phase B walk
 import player_history as hist  # per-year history helper
@@ -98,6 +108,143 @@ def load_yahoo_draft_day():
     if not doc:
         return {}
     return {row["team"]: row for row in doc.get("teams", [])}
+
+
+def yahoo_team_ids():
+    """{DB team_name: yahoo_team_id} for TARGET_SEASON. Yahoo team ids are
+    stable across renames (Brian renames weekly), so the lineup and score
+    sidecars key on them, never on team names."""
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    try:
+        return {r[0]: r[1] for r in conn.execute(
+            "SELECT team_name, yahoo_team_id FROM teams WHERE season = ?",
+            (TARGET_SEASON,))}
+    finally:
+        conn.close()
+
+
+def load_current_lineups():
+    """Yahoo lineup slots per team (current_lineups.json; written by the
+    Yahoo roster pull, or captured from the league pages while the API is
+    down). Shape: {"as_of", "week", "teams": {"<yahoo_team_id>": {"team":
+    name, "players": [{"slot": "QB"|..|"BN"|"IR", "id": yahoo_player_id}
+    or {"slot", "name"} for DEF]}}}. Returns ({yahoo_team_id: {"ids":
+    {player_id: slot}, "names": {normalized name: slot}}}, meta)."""
+    doc = _load_json_sidecar("current_lineups.json", warn=False)
+    if not doc:
+        return {}, {}
+    out = {}
+    for tid, t in (doc.get("teams") or {}).items():
+        ids, names = {}, {}
+        for r in t.get("players") or []:
+            if r.get("id") is not None:
+                ids[int(r["id"])] = r.get("slot")
+            elif r.get("name"):
+                names[_norm_player_name(r["name"])] = r.get("slot")
+        out[int(tid)] = {"ids": ids, "names": names}
+    return out, {"as_of": doc.get("as_of"), "week": doc.get("week")}
+
+
+def _norm_player_name(n):
+    n = (n or "").lower()
+    for suf in (" jr.", " sr.", " jr", " sr", " iii", " ii", " iv"):
+        if n.endswith(suf):
+            n = n[: -len(suf)]
+    return "".join(ch for ch in n if ch.isalnum())
+
+
+def render_matchups_block(by_manager):
+    """In-season League home (Pete 2026-09-17): this week's matchups laid
+    out like Yahoo's league page (one column, both teams with record and
+    rank, actual over projected in the middle), then the standings with
+    FAAB. Data = scores.json, a small sidecar the game-day job pushes on
+    its own; the build embeds the copy on disk and the page re-fetches the
+    file so the frequent refresh never has to rebuild the 9 MB dashboard.
+    No file = returns "" and the home page falls back to the draft-day
+    view."""
+    doc = _load_json_sidecar("scores.json", warn=False)
+    if not doc or not doc.get("matchups"):
+        return ""
+    ytid = yahoo_team_ids()
+    slugs = {str(ytid[d["team_name"]]): manager_slug(d["manager_actual"])
+             for d in by_manager.values() if d["team_name"] in ytid}
+    mgrs = {str(ytid[d["team_name"]]): d["manager"]
+            for d in by_manager.values() if d["team_name"] in ytid}
+    for m in doc["matchups"]:
+        for side in ("a", "b"):
+            if str((m.get(side) or {}).get("tid")) not in slugs:
+                print(f"  WARNING: scores.json side without a known Yahoo team id: {m.get(side)!r}")
+    payload = json.dumps({"doc": doc, "slugs": slugs, "mgrs": mgrs},
+                         separators=(",", ":")).replace("</", "<\\/")
+    return f"""
+      <div class="mu-block" id="matchups">
+        <div class="kpis mu-kpis"></div>
+        <div class="mu-head"><h2 class="mu-title">Matchups</h2><span class="mu-asof"></span></div>
+        <div class="mu-list"></div>
+        <div class="mu-head" style="margin-top:30px"><h2 class="mu-title">Standings</h2><span class="mu-asof mu-st-asof"></span></div>
+        <table class="roster mu-st">
+          <thead><tr><th>#</th><th>Team</th><th class="num">W-L-T</th><th class="num">PF</th><th class="num">PA</th>
+          <th class="num">Streak</th><th class="num">FAAB</th><th class="num">Moves</th></tr></thead>
+          <tbody></tbody></table>
+        <p class="footnote">Scores, projections, standings and FAAB balances from Yahoo. Not live: refreshed hourly on game days, once each morning otherwise. Yahoo has the play-by-play.</p>
+      </div>
+      <script>
+      (function() {{
+        var EMB = {payload};
+        var root = document.getElementById('matchups');
+        var esc = function(s) {{ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }};
+        var num = function(v) {{ return (typeof v === 'number') ? v.toFixed(2) : '&mdash;'; }};
+        var ord = function(n) {{ var s = ['th','st','nd','rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }};
+        function link(x) {{
+          var slug = EMB.slugs[String(x.tid)];
+          return slug ? '<a href="#" data-target="team-' + slug + '">' + esc(x.team) + '</a>' : esc(x.team);
+        }}
+        function team(x, right) {{
+          var meta = (x.rec ? esc(x.rec) : '') + (x.rank ? (x.rec ? ' | ' : '') + ord(x.rank) : '');
+          return '<div class="mu-team' + (right ? ' mu-right' : '') + '"><div class="mu-name">' + link(x) + '</div>' +
+            '<div class="mu-meta">' + (EMB.mgrs[String(x.tid)] ? esc(EMB.mgrs[String(x.tid)]) : '') + (meta ? ' &middot; ' + meta : '') + '</div></div>';
+        }}
+        function score(x, lead) {{
+          return '<div class="mu-score' + (lead ? ' mu-lead' : '') + '"><div class="mu-pts">' + num(x.pts) + '</div><div class="mu-proj">' + num(x.proj) + '</div></div>';
+        }}
+        function draw(doc) {{
+          root.querySelector('.mu-title').textContent = 'Week ' + doc.week + ' matchups';
+          root.querySelector('.mu-asof').textContent = doc.as_of ? 'as of ' + doc.as_of : '';
+          var started = doc.matchups.some(function(m) {{ return (m.a && m.a.pts) || (m.b && m.b.pts); }});
+          root.querySelector('.mu-list').innerHTML = doc.matchups.map(function(m) {{
+            var a = m.a || {{}}, b = m.b || {{}};
+            var av = started ? (a.pts || 0) : (a.proj || 0), bv = started ? (b.pts || 0) : (b.proj || 0);
+            return '<div class="mu-row">' + team(a) + score(a, started && av > bv) + '<div class="mu-vs">vs</div>' + score(b, started && bv > av) + team(b, true) + '</div>';
+          }}).join('') + '<div class="mu-legend">' + (started ? 'Actual points, projection beneath.' : 'Games not started. Projected points shown beneath.') + '</div>';
+          var st = doc.standings || [];
+          root.querySelector('.mu-st-asof').textContent = doc.standings_as_of ? 'as of ' + doc.standings_as_of : '';
+          root.querySelector('.mu-st tbody').innerHTML = st.map(function(r) {{
+            return '<tr><td class="rank">' + r.rank + '</td><td class="player-name">' + link(r) +
+              '<span class="sub-line">' + esc(EMB.mgrs[String(r.tid)] || '') + '</span></td>' +
+              '<td class="num">' + esc(r.rec) + '</td><td class="num">' + num(r.pf) + '</td><td class="num">' + num(r.pa) + '</td>' +
+              '<td class="num">' + esc(r.streak) + '</td><td class="num">$' + esc(r.faab) + '</td>' +
+              '<td class="num">' + (r.moves || 0) + '</td></tr>';
+          }}).join('');
+          root.querySelector('.mu-st').style.display = st.length ? '' : 'none';
+          var kp = '';
+          if (st.length) {{
+            var first = st.slice().sort(function(a, b) {{ return a.rank - b.rank; }})[0];
+            var hi = st.slice().sort(function(a, b) {{ return b.pf - a.pf; }})[0];
+            var lo = st.slice().sort(function(a, b) {{ return a.pf - b.pf; }})[0];
+            var kpi = function(k, r, v) {{ return '<div class="kpi"><div class="k">' + k + '</div><div class="v kpi-text">' + link(r) + '</div><div class="kpi-sub">' + v + '</div></div>'; }};
+            kp = kpi('First place', first, esc(first.rec) + ' &middot; ' + num(first.pf) + ' PF') +
+                 kpi('Highest points for', hi, num(hi.pf) + ' PF') +
+                 kpi('Lowest points for', lo, num(lo.pf) + ' PF');
+          }}
+          root.querySelector('.mu-kpis').innerHTML = kp;
+        }}
+        draw(EMB.doc);
+        if (location.protocol.indexOf('http') === 0) {{
+          fetch('scores.json', {{cache: 'no-store'}}).then(function(r) {{ return r.ok ? r.json() : null; }})
+            .then(function(d) {{ if (d && d.matchups && d.matchups.length) draw(d); }}).catch(function() {{}});
+        }}
+      }})();
+      </script>"""
 
 
 def load_draft_results_meta():
@@ -1861,6 +2008,19 @@ def render_summary_post_draft(by_manager, generated_at, meta=None):
     top_y = (yd.get(top["team_name"]) if top else None) or {}
     top_name = html.escape(top["team_name"]) if top else "&mdash;"
 
+    matchups_block = render_matchups_block(by_manager)
+    if matchups_block:
+        # In season (Pete 2026-09-17): the home page is the week's
+        # matchups and the live standings with FAAB. The draft-day power
+        # rankings below still render whenever scores.json is absent.
+        return f"""
+    <section class="team-section" id="summary">
+      <div class="eyebrow">{TARGET_SEASON} season</div>
+      <h1 class="team-name">League home</h1>
+      {matchups_block}
+      {amend}
+      {_render_updated_widget(generated_at, meta)}
+    </section>"""
     return f"""
     <section class="team-section" id="summary">
       <div class="eyebrow">{TARGET_SEASON} draft complete</div>
@@ -2106,6 +2266,41 @@ h2 {
 }
 
 /* --- KPI cards --------------------------------------------------------- */
+/* League home: weekly matchups + standings (scores.json) */
+.mu-block { margin: 0 0 8px; }
+.mu-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mu-title { margin: 0 0 10px; }
+.mu-asof { font-size: 12px; color: #8e8e93; }
+.mu-list { border: 1px solid #ebebed; border-radius: 10px; background: #fff; overflow: hidden; }
+.mu-row { display: grid; grid-template-columns: 1fr 72px 30px 72px 1fr; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #f1f1f3; }
+.mu-row:last-of-type { border-bottom: none; }
+.mu-team { min-width: 0; }
+.mu-team.mu-right { text-align: right; }
+.mu-name { font-size: 14px; font-weight: 600; color: #2a2a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-name a { color: inherit; text-decoration: none; }
+.mu-name a:hover { text-decoration: underline; }
+.mu-meta { font-size: 11.5px; color: #8e8e93; margin-top: 2px; }
+.mu-score { text-align: center; font-variant-numeric: tabular-nums; }
+.mu-pts { font-size: 18px; font-weight: 700; color: #606C71; line-height: 1.1; }
+.mu-proj { font-size: 11.5px; color: #a0a0a6; margin-top: 2px; }
+.mu-lead .mu-pts { color: #022479; }
+.mu-vs { text-align: center; font-size: 11px; color: #b8b8bc; font-weight: 600; }
+.mu-legend { font-size: 11.5px; color: #8e8e93; padding: 8px 16px; background: #fcfcfd; border-top: 1px solid #f1f1f3; }
+.mu-st td.rank { color: #8e8e93; }
+.mu-st .sub-line { display: block; font-size: 11px; color: #8e8e93; font-weight: 400; }
+@media (max-width: 640px) {
+  .mu-st th:nth-child(6), .mu-st td:nth-child(6),
+  .mu-st th:nth-child(8), .mu-st td:nth-child(8) { display: none; }
+}
+.mu-kpis { margin-bottom: 26px; }
+.mu-kpis .kpi-text a { color: inherit; text-decoration: none; }
+.mu-kpis .kpi-sub { font-size: 12px; color: #8e8e93; margin-top: 4px; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .mu-row { grid-template-columns: 1fr 56px 22px 56px 1fr; padding: 10px 10px; }
+  .mu-name { font-size: 12.5px; white-space: normal; }
+  .mu-pts { font-size: 15px; }
+}
+
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -5174,7 +5369,7 @@ JS = r"""
        arrangement); falls back to DRC for anyone unseated. Costs stay
        DRC-based via c. */
     return (playersBy[slug] || []).map(p =>
-      ({i: p.i, n: p.n, pos: p.p, eff: (p.sr != null ? p.sr : p.d6), pts: p.pts, c: p.c6}));
+      ({i: p.i, n: p.n, pos: p.p, eff: (p.sr != null ? p.sr : p.d6), pts: p.pts, c: p.c6, sl: p.sl, adp: p.adp}));
   }
   const tierOf = d => d <= 2 ? 1 : d <= 5 ? 2 : d <= 9 ? 3 : 4;
   const first = m => String(m || '').split(' ')[0];
@@ -5303,6 +5498,8 @@ JS = r"""
          OUT cards display the FROZEN trade-time DRC (2025 anchor), same as
          the IN card on the other board — in a trade the decrement pauses,
          so the number stays flat across both sides (Pete, 2026-08-19). */
+      lineup: lineupModel(
+        postRosterArr.concat(sendPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, sl: p.sl, adp: p.adp, outgoing: true})))),
       boardPost: groupModel(T, postPicks,
         postRosterArr.concat(sendPlayers.map(p => ({i: p.i, n: p.n, pos: p.p, eff: clampDrc(anchor(p)), pts: p.pts, outgoing: true}))),
         (D.picks_lost[T] || []).concat(picksSent.map((pk, i) => ({pk, i})).filter(x => x.pk.y === Y0)
@@ -5346,6 +5543,54 @@ JS = r"""
       num + (h.acqFrom ? ' from ' + esc(h.acqFrom) : ' acquired') + '</span>';
   }
 
+  /* ---- Trade planner lineup model (2026-09-17, Pete) -------------------
+     The board is laid out by ROSTER SLOT, not draft round: starters in the
+     slot Yahoo has them in, then bench, then IR. Slots come from
+     current_lineups.json (p.sl). A team with no slot data falls back to an
+     ADP-estimated lineup (same fill order as the keeper board's lineup
+     preview) and the board says so. Outgoing players stay in their slot,
+     grayed; incoming players land on the bench. Seating/chasm math is
+     untouched: it still runs on picks + DRC behind the scenes. */
+  const TP_STARTERS = ['QB','RB','RB','WR','WR','WR','TE','W/R/T','Q/W/R/T','K','DEF'];
+  function lineupModel(arr) {
+    const home = arr.filter(p => !p.incoming), inc = arr.filter(p => p.incoming);
+    const hasSlots = home.some(p => p.sl);
+    const starters = [], bench = [], ir = [];
+    if (hasSlots) {
+      const bySlot = {};
+      home.forEach(p => { const k = p.sl || 'BN'; (bySlot[k] = bySlot[k] || []).push(p); });
+      const used = {};
+      TP_STARTERS.forEach(lbl => {
+        const q = bySlot[lbl] || []; const n = used[lbl] || 0; used[lbl] = n + 1;
+        starters.push({lbl, p: q[n] || null});
+      });
+      Object.keys(bySlot).forEach(k => {
+        if (k === 'BN') bySlot[k].forEach(p => bench.push({lbl: 'BN', p}));
+        else if (k === 'IR') bySlot[k].forEach(p => ir.push({lbl: 'IR', p}));
+        else bySlot[k].slice(used[k] || 0).forEach(p => starters.push({lbl: k, p}));
+      });
+    } else {
+      const adpVal = p => (p.adp != null ? p.adp : 1e6);
+      const better = (a, b) => adpVal(a) - adpVal(b) || (b.pts || 0) - (a.pts || 0);
+      const pool = {QB: [], RB: [], WR: [], TE: [], K: [], DEF: []}, other = [];
+      home.slice().sort(better).forEach(p => { (pool[p.pos] || other).push(p); });
+      const takeBest = poss => {
+        let best = null;
+        poss.forEach(pos => { const c = pool[pos][0];
+          if (c && (best == null || better(c, pool[best][0]) < 0)) best = pos; });
+        return best ? pool[best].shift() : null;
+      };
+      TP_STARTERS.forEach(lbl => {
+        const poss = lbl === 'W/R/T' ? ['WR','RB','TE'] : lbl === 'Q/W/R/T' ? ['QB','WR','RB','TE'] : [lbl];
+        starters.push({lbl, p: takeBest(poss)});
+      });
+      [].concat(pool.QB, pool.RB, pool.WR, pool.TE, pool.K, pool.DEF, other).sort(better)
+        .forEach(p => bench.push({lbl: 'BN', p}));
+    }
+    inc.forEach(p => bench.push({lbl: 'BN', p}));
+    return {starters, bench, ir, estimated: !hasSlots};
+  }
+
   function taPlayerCard(p, recvIds) {
     const incoming = recvIds.has(p.i) && !p.outgoing, tier = tierOf(p.eff);
     const chip = 'display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;border:1px solid ' +
@@ -5370,22 +5615,30 @@ JS = r"""
     const capStr = active ? ('cap ' + money(sideVM.capBefore) + ' → ' + money(sideVM.capAfter)) : ('cap ' + money(sideVM.capBefore));
     const deltaStr = active ? (d > 0 ? '▲ +$' + Math.abs(d).toLocaleString() : d < 0 ? '▼ −$' + Math.abs(d).toLocaleString() : '±0') : '';
     const deltaStyle = d > 0 ? 'color:#b42318;font-weight:700;' : d < 0 ? 'color:#1c7a4a;font-weight:700;' : 'color:#606C71;';
-    let rows = '';
+    /* Pick inventory: one wrapped strip in round order (was the left rail
+       of each round row before the slot layout). */
+    let pickStrip = '';
     sideVM.boardPost.forEach(row => {
       let strip = row.held.map(h => taPickChip(h, side)).join('');
       row.goneTo.forEach(g => {
         const clickable = g.tradeIdx != null;
         strip += '<span' + (clickable ? ' class="ta-pill" data-act="rm' + side + '" data-idx="' + g.tradeIdx + '" title="Remove from trade"' : '') +
           ' style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border:1px dashed #e3c4be;border-radius:6px;font-size:10.5px;color:#b06a60;background:#fdf4f2;">' +
-          (g.num ? '<b style="font-variant-numeric:tabular-nums;">' + g.num + '</b> ' : '') + 'traded to ' + esc(g.to) + (clickable ? ' &times;' : '') + '</span>';
+          (g.num ? '<b style="font-variant-numeric:tabular-nums;">' + g.num + '</b> ' : 'R' + row.r + ' ') + 'traded to ' + esc(g.to) + (clickable ? ' &times;' : '') + '</span>';
       });
-      if (!strip) strip = '<span style="display:inline-flex;align-items:center;padding:2px 8px;border:1px dashed #e0e0e3;border-radius:6px;font-size:10.5px;color:#b8b8bc;">no pick</span>';
-      const cards = row.players.map(p => taPlayerCard(p, recvIds)).join('');
-      rows += '<div style="display:flex;align-items:flex-start;gap:8px;padding:3px 0;border-bottom:1px solid #f4f4f6;">' +
-        '<div style="width:30px;flex:none;text-align:center;font-size:11px;font-weight:700;color:#909096;font-variant-numeric:tabular-nums;padding-top:4px;">R' + row.r + '</div>' +
-        '<div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;">' +
-        '<div style="display:flex;flex-wrap:wrap;gap:4px;">' + strip + '</div>' + cards + '</div></div>';
+      pickStrip += strip;
     });
+    const LU = sideVM.lineup;
+    const slotRow = s => '<div style="display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid #f4f4f6;">' +
+      '<div style="width:52px;flex:none;text-align:center;font-size:10.5px;font-weight:700;color:#909096;letter-spacing:.02em;">' + esc(s.lbl) + '</div>' +
+      '<div style="flex:1;min-width:0;">' + (s.p ? taPlayerCard(s.p, recvIds)
+        : '<div style="padding:6px 10px;border:1px dashed #e0e0e3;border-radius:7px;font-size:11.5px;color:#b8b8bc;">empty</div>') + '</div></div>';
+    const grpHead = (t, n) => '<div style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:#8e8e93;font-weight:600;padding:9px 0 3px;">' + t + (n != null ? ' <span style="color:#b8b8bc;">' + n + '</span>' : '') + '</div>';
+    let rows = grpHead('Starters') + LU.starters.map(slotRow).join('') +
+      grpHead('Bench', LU.bench.length) + (LU.bench.map(slotRow).join('') || slotRow({lbl: 'BN', p: null})) +
+      grpHead('IR', LU.ir.length) + (LU.ir.map(slotRow).join('') || slotRow({lbl: 'IR', p: null})) +
+      grpHead(Y0 + ' picks') + '<div style="display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 4px;">' + pickStrip + '</div>';
+    if (LU.estimated) rows = '<div style="font-size:11px;color:#8e8e93;padding:2px 0 0;">Lineup estimated by ADP. No Yahoo slot data for this team yet.</div>' + rows;
     const picksArr = side === 'L' ? st.picksL : st.picksR;
     const dyv = side === 'L' ? st.dyL : st.dyR, drv = side === 'L' ? st.drL : st.drR;
     const yearOpts = [Y0, Y0 + 1].map(y => '<option value="' + y + '"' + (y === dyv ? ' selected' : '') + '>' + y + '</option>').join('');
@@ -5531,7 +5784,7 @@ JS = r"""
     html += positionSwingHTML(vm, active);
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start;margin-top:14px;">' +
       boardHTML(vm.L, 'L', active) + boardHTML(vm.R, 'R', active) + '</div>';
-    html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a player on either board to move them across. Each round shows the picks held there (numbered by lottery order) and every player whose DRC lands in it &mdash; a stack means more keepers than picks in that round. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#1c7a4a;font-weight:600;">green</span> = acquired or incoming · <span style="color:#b06a60;font-weight:600;">red</span> = pick traded away. The <span style="color:#b42318;font-weight:600;">chasm</span> badge counts only keepers a broken slide chain makes impossible, not roster overflow.</p>';
+    html += '<p style="font-size:11.5px;color:#8e8e93;margin:14px 2px 0;">Click a player on either board to move them across. Boards follow the roster: starters in their lineup slots, then bench, then IR, with picks beneath. Sent players stay in place, grayed; received players land on the bench. The number on each card is the keeper DRC. <b style="color:#2a2a2e;">Dot</b> = keeper tier · <span style="color:#1c7a4a;font-weight:600;">green</span> = acquired or incoming · <span style="color:#b06a60;font-weight:600;">red</span> = pick traded away. The <span style="color:#b42318;font-weight:600;">chasm</span> badge counts only keepers a broken slide chain makes impossible, not roster overflow.</p>';
     if (st.warn) {
       const w = st.warn.impact;
       const names = w.names.slice(0, 3).map(esc).join(', ') + (w.names.length > 3 ? ' and ' + (w.names.length - 3) + ' more' : '');
@@ -7011,12 +7264,12 @@ def render_about_section():
           <h2 class="about-h2">Sections you'll find</h2>
 
           <h3 class="about-h3">Summary &amp; standings</h3>
-          <p>The opening view. With the 2026 draft done it shows Yahoo's draft-day power rankings, projected records and draft grades for all twelve rosters, with a column for the commissioner's own grades, plus what the league owes the pot in keeper dollars.</p>
+          <p>The opening view. In season it shows the week's matchups (actual and projected points), the standings with FAAB balances, and who leads the league. Refreshed from Yahoo on a schedule, not live.</p>
 
           <h3 class="about-h3">Player search</h3>
           <p>Type any player's name and a dropdown of matches appears. Click one (or hit Enter) to open that player's full profile: DRC cost over time, season-by-season fantasy production, weekly bar charts, ownership lineage, and where they rank against the players above and below them at their position.</p>
 
-          <h3 class="about-h3">Trade analyzer</h3>
+          <h3 class="about-h3">Trade planner</h3>
           <p>Pick two teams, check the players (and draft picks) going each way, and the tool lays out what's actually exchanged: 2025 production, market value, and &mdash; the part Yahoo can't show you &mdash; what each player costs to keep in 2027 and the out-years under the trade-freeze rule. It states facts and totals only; it will never tell you whether to do the trade.</p>
 
           <h3 class="about-h3">Commissioner's Desk</h3>
@@ -7840,7 +8093,7 @@ def build_sidebar(by_manager):
       <details class="sidebar-teams">
         <summary>League Standings and Records</summary>
         <div class="sidebar-team-list">
-          <a class="nav-link" data-target="summary">Draft-day power rankings</a>
+          <a class="nav-link" data-target="summary">League home</a>
         </div>
       </details>
       <details class="sidebar-teams">
@@ -7848,7 +8101,7 @@ def build_sidebar(by_manager):
         <div class="sidebar-team-list">
           <a class="nav-link" data-target="player-search">Player search</a>
           <a class="nav-link" data-target="player-compare">Player comparison</a>
-          <a class="nav-link" data-target="trade-analyzer">Trade analyzer</a>
+          <a class="nav-link" data-target="trade-analyzer">Trade planner</a>
           <a class="nav-link" data-target="draft-board">{TARGET_SEASON} draft results</a>
           <a class="nav-link" data-target="keeper-board">{NEXT_SEASON} keeper board</a>
         </div>
@@ -7890,8 +8143,23 @@ def render_trade_analyzer(by_manager):
     # anchor (d5), and the pick inventory is next year's.
     draft_done = any(d.get("draft_done") for d in by_manager.values())
     board_season = NEXT_SEASON if draft_done else TARGET_SEASON
+    lineups, lineup_meta = load_current_lineups()
+    ytid = yahoo_team_ids() if lineups else {}
     for name, data in sorted(by_manager.items()):
         slug = manager_slug(data["manager_actual"])
+        team_slots = lineups.get(ytid.get(data["team_name"])) or {"ids": {}, "names": {}}
+        if lineups and not (team_slots["ids"] or team_slots["names"]):
+            print(f"  WARNING: current_lineups.json has no lineup for {data['team_name']!r}")
+
+        def _slot_of(p, _ts=team_slots):
+            return _ts["ids"].get(p["player_id"]) or _ts["names"].get(_norm_player_name(p["name"]))
+        if lineups:
+            _db_ids = {p["player_id"] for p in data.get("roster_2026", [])}
+            _gone = [p["name"] for p in data.get("roster_2026", []) if not _slot_of(p)]
+            _new = sorted(set(team_slots["ids"]) - _db_ids)
+            if _gone or _new:
+                print(f"  ROSTER DRIFT {data['team_name'].encode('ascii', 'ignore').decode().strip()}: on DB roster but not Yahoo: {_gone or '-'}; "
+                      f"on Yahoo but not DB (player ids): {_new or '-'}")
         teams.append({
             "slug": slug,
             "team": data["team_name"],
@@ -7916,6 +8184,7 @@ def render_trade_analyzer(by_manager):
                     "adp": p.get("adp_2026"),
                     "acq": p.get("acq"),
                     "pk": p.get("pick"),
+                    **({"sl": _slot_of(p)} if _slot_of(p) else {}),
                 })
             continue
         for p in data["players"]:
@@ -8321,10 +8590,14 @@ def render_trade_analyzer(by_manager):
         ta_foot = (f"Rosters are as drafted on Sep 3 (in-season adds and drops are not reflected yet). Every player carries his {board_season} keep price: "
                    f"his 2026 DRC less one, floor 1. A trade made during the 2026 season freezes the player at his 2026 DRC for {board_season} "
                    f"(the acquirer pays that, not the decremented price), with the normal decrement resuming the year after. "
-                   f"The boards are an inventory view, not an arrangement: each round shows the {board_season} picks you'd hold there (every team holds its "
-                   f"native sixteen; the two 2027 pick legs already agreed are applied; numbers arrive with next August's lottery) and every player whose "
-                   f"{board_season} DRC lands in that round. The chasm counter flags only STRUCTURAL impossibility. Nobody keeps a whole roster, so having more "
+                   f"Each board is laid out like the roster itself: starters in their lineup slots, then the bench, then IR, with the {board_season} picks "
+                   f"you'd hold listed beneath (every team holds its native sixteen; the two 2027 pick legs already agreed are applied; numbers arrive with "
+                   f"next August's lottery). Players you send stay in place, grayed out; players you receive land on your bench. The chasm counter flags only STRUCTURAL impossibility. Nobody keeps a whole roster, so having more "
                    f"players than picks is not flagged. In-season trades run through Yahoo; the commissioner settles the DRC once a trade is final.")
+        if lineup_meta.get("as_of"):
+            ta_foot += f" Lineup slots are from Yahoo as of {html.escape(str(lineup_meta['as_of']))}."
+        else:
+            ta_foot += " Lineup slots are estimated by ADP until the Yahoo lineup feed is connected."
     else:
         ta_sub = (f"Pick two teams and check what's moving each way. The tool totals the production exchanged and lays out each player's keeper cost "
                   f"for {TARGET_SEASON} and the out-years under the trade-freeze rule. Numbers, not advice &mdash; the call is yours.")
@@ -8332,7 +8605,7 @@ def render_trade_analyzer(by_manager):
     section = f"""
     <section class="team-section" id="trade-analyzer" hidden>
       <header class="section-header">
-        <h1 class="section-title">Trade analyzer</h1>
+        <h1 class="section-title">Trade planner</h1>
         <p class="section-sub">{ta_sub}</p>
       </header>
 

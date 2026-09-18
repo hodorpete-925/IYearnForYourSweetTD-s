@@ -1,0 +1,883 @@
+{
+ "as_of": "2026-09-17 10:20 EDT",
+ "week": 2,
+ "source": "Yahoo league pages (Chrome capture; API not yet authorized)",
+ "teams": {
+  "1": {
+   "team": "Are Bonita Fish Big?",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 31002
+    },
+    {
+     "slot": "RB",
+     "id": 33991
+    },
+    {
+     "slot": "RB",
+     "id": 34120
+    },
+    {
+     "slot": "WR",
+     "id": 41824
+    },
+    {
+     "slot": "WR",
+     "id": 31908
+    },
+    {
+     "slot": "WR",
+     "id": 41804
+    },
+    {
+     "slot": "TE",
+     "id": 41795
+    },
+    {
+     "slot": "W/R/T",
+     "id": 41922
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 29236
+    },
+    {
+     "slot": "BN",
+     "id": 40908
+    },
+    {
+     "slot": "BN",
+     "id": 42744
+    },
+    {
+     "slot": "BN",
+     "id": 41865
+    },
+    {
+     "slot": "BN",
+     "id": 42697
+    },
+    {
+     "slot": "BN",
+     "id": 42693
+    },
+    {
+     "slot": "IR",
+     "id": 30973
+    },
+    {
+     "slot": "IR",
+     "id": 42655
+    },
+    {
+     "slot": "K",
+     "id": 31482
+    },
+    {
+     "slot": "DEF",
+     "name": "Panthers"
+    }
+   ]
+  },
+  "2": {
+   "team": "Briguy’s Strange Boutte",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 29369
+    },
+    {
+     "slot": "RB",
+     "id": 40055
+    },
+    {
+     "slot": "RB",
+     "id": 41821
+    },
+    {
+     "slot": "WR",
+     "id": 33500
+    },
+    {
+     "slot": "WR",
+     "id": 40234
+    },
+    {
+     "slot": "WR",
+     "id": 31868
+    },
+    {
+     "slot": "TE",
+     "id": 40102
+    },
+    {
+     "slot": "W/R/T",
+     "id": 41823
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 29235
+    },
+    {
+     "slot": "BN",
+     "id": 32231
+    },
+    {
+     "slot": "BN",
+     "id": 33998
+    },
+    {
+     "slot": "BN",
+     "id": 40231
+    },
+    {
+     "slot": "BN",
+     "id": 40889
+    },
+    {
+     "slot": "K",
+     "id": 40835
+    },
+    {
+     "slot": "DEF",
+     "name": "Chiefs"
+    },
+    {
+     "slot": "BN",
+     "name": "Broncos"
+    }
+   ]
+  },
+  "3": {
+   "team": "Dreorge Bledsoe",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 30977
+    },
+    {
+     "slot": "RB",
+     "id": 33413
+    },
+    {
+     "slot": "RB",
+     "id": 31905
+    },
+    {
+     "slot": "WR",
+     "id": 40039
+    },
+    {
+     "slot": "WR",
+     "id": 33966
+    },
+    {
+     "slot": "WR",
+     "id": 27535
+    },
+    {
+     "slot": "TE",
+     "id": 31056
+    },
+    {
+     "slot": "W/R/T",
+     "id": 33423
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 41825
+    },
+    {
+     "slot": "BN",
+     "id": 40901
+    },
+    {
+     "slot": "BN",
+     "id": 40883
+    },
+    {
+     "slot": "BN",
+     "id": 34104
+    },
+    {
+     "slot": "BN",
+     "id": 40119
+    },
+    {
+     "slot": "BN",
+     "id": 41097
+    },
+    {
+     "slot": "IR",
+     "id": 40958
+    },
+    {
+     "slot": "IR",
+     "id": 30218
+    },
+    {
+     "slot": "K",
+     "id": 28378
+    },
+    {
+     "slot": "DEF",
+     "name": "Texans"
+    }
+   ]
+  },
+  "4": {
+   "team": "Kowboy Hippie",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 32696
+    },
+    {
+     "slot": "RB",
+     "id": 42625
+    },
+    {
+     "slot": "RB",
+     "id": 32705
+    },
+    {
+     "slot": "WR",
+     "id": 32703
+    },
+    {
+     "slot": "WR",
+     "id": 41793
+    },
+    {
+     "slot": "WR",
+     "id": 33394
+    },
+    {
+     "slot": "TE",
+     "id": 34095
+    },
+    {
+     "slot": "W/R/T",
+     "id": 27581
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 31019
+    },
+    {
+     "slot": "BN",
+     "id": 31833
+    },
+    {
+     "slot": "BN",
+     "id": 40926
+    },
+    {
+     "slot": "BN",
+     "id": 40641
+    },
+    {
+     "slot": "BN",
+     "id": 34047
+    },
+    {
+     "slot": "BN",
+     "id": 40877
+    },
+    {
+     "slot": "K",
+     "id": 41093
+    },
+    {
+     "slot": "DEF",
+     "name": "Buccaneers"
+    }
+   ]
+  },
+  "5": {
+   "team": "High Priest Gabagool 🤌🏻",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 40029
+    },
+    {
+     "slot": "RB",
+     "id": 32711
+    },
+    {
+     "slot": "RB",
+     "id": 42010
+    },
+    {
+     "slot": "WR",
+     "id": 32692
+    },
+    {
+     "slot": "WR",
+     "id": 40899
+    },
+    {
+     "slot": "WR",
+     "id": 33967
+    },
+    {
+     "slot": "TE",
+     "id": 26686
+    },
+    {
+     "slot": "W/R/T",
+     "id": 40971
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 30125
+    },
+    {
+     "slot": "BN",
+     "id": 41786
+    },
+    {
+     "slot": "BN",
+     "id": 34088
+    },
+    {
+     "slot": "BN",
+     "id": 42623
+    },
+    {
+     "slot": "BN",
+     "id": 41930
+    },
+    {
+     "slot": "BN",
+     "id": 40981
+    },
+    {
+     "slot": "IR",
+     "id": 34207
+    },
+    {
+     "slot": "K",
+     "id": 33537
+    },
+    {
+     "slot": "DEF",
+     "name": "Rams"
+    }
+   ]
+  },
+  "6": {
+   "team": "ROOTIN' TUTEN' COWBOY",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 40896
+    },
+    {
+     "slot": "RB",
+     "id": 40196
+    },
+    {
+     "slot": "RB",
+     "id": 41900
+    },
+    {
+     "slot": "WR",
+     "id": 33965
+    },
+    {
+     "slot": "WR",
+     "id": 31896
+    },
+    {
+     "slot": "WR",
+     "id": 30994
+    },
+    {
+     "slot": "TE",
+     "id": 33113
+    },
+    {
+     "slot": "W/R/T",
+     "id": 32725
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 30971
+    },
+    {
+     "slot": "BN",
+     "id": 42712
+    },
+    {
+     "slot": "BN",
+     "id": 42730
+    },
+    {
+     "slot": "BN",
+     "id": 31838
+    },
+    {
+     "slot": "BN",
+     "id": 40051
+    },
+    {
+     "slot": "BN",
+     "id": 40063
+    },
+    {
+     "slot": "IR",
+     "id": 40878
+    },
+    {
+     "slot": "K",
+     "id": 41988
+    },
+    {
+     "slot": "DEF",
+     "name": "Patriots"
+    }
+   ]
+  },
+  "7": {
+   "team": "Wondering Where My FAAB Wentz?",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 32671
+    },
+    {
+     "slot": "RB",
+     "id": 34019
+    },
+    {
+     "slot": "RB",
+     "id": 40118
+    },
+    {
+     "slot": "WR",
+     "id": 33393
+    },
+    {
+     "slot": "WR",
+     "id": 40041
+    },
+    {
+     "slot": "WR",
+     "id": 34007
+    },
+    {
+     "slot": "TE",
+     "id": 34010
+    },
+    {
+     "slot": "W/R/T",
+     "id": 41791
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 40881
+    },
+    {
+     "slot": "BN",
+     "id": 42642
+    },
+    {
+     "slot": "BN",
+     "id": 34042
+    },
+    {
+     "slot": "BN",
+     "id": 30197
+    },
+    {
+     "slot": "BN",
+     "id": 40962
+    },
+    {
+     "slot": "BN",
+     "id": 31874
+    },
+    {
+     "slot": "IR",
+     "id": 32675
+    },
+    {
+     "slot": "IR",
+     "id": 42630
+    },
+    {
+     "slot": "K",
+     "id": 29792
+    },
+    {
+     "slot": "DEF",
+     "name": "49ers"
+    }
+   ]
+  },
+  "8": {
+   "team": "Mr. McGibblets",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 32676
+    },
+    {
+     "slot": "RB",
+     "id": 33100
+    },
+    {
+     "slot": "RB",
+     "id": 33514
+    },
+    {
+     "slot": "WR",
+     "id": 40893
+    },
+    {
+     "slot": "WR",
+     "id": 33989
+    },
+    {
+     "slot": "WR",
+     "id": 28534
+    },
+    {
+     "slot": "TE",
+     "id": 40048
+    },
+    {
+     "slot": "W/R/T",
+     "id": 33508
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 34218
+    },
+    {
+     "slot": "BN",
+     "id": 40121
+    },
+    {
+     "slot": "BN",
+     "id": 9265
+    },
+    {
+     "slot": "BN",
+     "id": 41845
+    },
+    {
+     "slot": "BN",
+     "id": 34107
+    },
+    {
+     "slot": "BN",
+     "id": 41902
+    },
+    {
+     "slot": "K",
+     "id": 32417
+    },
+    {
+     "slot": "DEF",
+     "name": "Seahawks"
+    }
+   ]
+  },
+  "9": {
+   "team": "Alice in First Down Chains",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 32723
+    },
+    {
+     "slot": "RB",
+     "id": 29279
+    },
+    {
+     "slot": "RB",
+     "id": 41807
+    },
+    {
+     "slot": "WR",
+     "id": 33963
+    },
+    {
+     "slot": "WR",
+     "id": 40168
+    },
+    {
+     "slot": "WR",
+     "id": 40201
+    },
+    {
+     "slot": "TE",
+     "id": 30259
+    },
+    {
+     "slot": "W/R/T",
+     "id": 31960
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 30123
+    },
+    {
+     "slot": "BN",
+     "id": 40224
+    },
+    {
+     "slot": "BN",
+     "id": 42702
+    },
+    {
+     "slot": "BN",
+     "id": 42796
+    },
+    {
+     "slot": "BN",
+     "id": 42025
+    },
+    {
+     "slot": "BN",
+     "id": 40075
+    },
+    {
+     "slot": "IR",
+     "id": 34320
+    },
+    {
+     "slot": "IR",
+     "id": 31883
+    },
+    {
+     "slot": "K",
+     "id": 30266
+    },
+    {
+     "slot": "DEF",
+     "name": "Packers"
+    }
+   ]
+  },
+  "10": {
+   "team": "TheDarkKnight06",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 40900
+    },
+    {
+     "slot": "RB",
+     "id": 33996
+    },
+    {
+     "slot": "RB",
+     "id": 40993
+    },
+    {
+     "slot": "WR",
+     "id": 34008
+    },
+    {
+     "slot": "WR",
+     "id": 41808
+    },
+    {
+     "slot": "WR",
+     "id": 40126
+    },
+    {
+     "slot": "TE",
+     "id": 40064
+    },
+    {
+     "slot": "W/R/T",
+     "id": 30295
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 41810
+    },
+    {
+     "slot": "BN",
+     "id": 42626
+    },
+    {
+     "slot": "BN",
+     "id": 33538
+    },
+    {
+     "slot": "BN",
+     "id": 26662
+    },
+    {
+     "slot": "BN",
+     "id": 29269
+    },
+    {
+     "slot": "BN",
+     "id": 30182
+    },
+    {
+     "slot": "IR",
+     "id": 40097
+    },
+    {
+     "slot": "K",
+     "id": 30346
+    },
+    {
+     "slot": "DEF",
+     "name": "Raiders"
+    }
+   ]
+  },
+  "11": {
+   "team": "CeeDeez nuts",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 40030
+    },
+    {
+     "slot": "RB",
+     "id": 30121
+    },
+    {
+     "slot": "RB",
+     "id": 40059
+    },
+    {
+     "slot": "WR",
+     "id": 32687
+    },
+    {
+     "slot": "WR",
+     "id": 33398
+    },
+    {
+     "slot": "WR",
+     "id": 41293
+    },
+    {
+     "slot": "TE",
+     "id": 41877
+    },
+    {
+     "slot": "W/R/T",
+     "id": 34447
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 7200
+    },
+    {
+     "slot": "BN",
+     "id": 32704
+    },
+    {
+     "slot": "BN",
+     "id": 40042
+    },
+    {
+     "slot": "BN",
+     "id": 42661
+    },
+    {
+     "slot": "BN",
+     "id": 29325
+    },
+    {
+     "slot": "BN",
+     "id": 34147
+    },
+    {
+     "slot": "IR",
+     "id": 40954
+    },
+    {
+     "slot": "K",
+     "id": 41062
+    },
+    {
+     "slot": "DEF",
+     "name": "Eagles"
+    }
+   ]
+  },
+  "12": {
+   "team": "The Lady Boys",
+   "players": [
+    {
+     "slot": "QB",
+     "id": 33389
+    },
+    {
+     "slot": "RB",
+     "id": 30972
+    },
+    {
+     "slot": "RB",
+     "id": 42654
+    },
+    {
+     "slot": "WR",
+     "id": 33477
+    },
+    {
+     "slot": "WR",
+     "id": 31010
+    },
+    {
+     "slot": "WR",
+     "id": 40084
+    },
+    {
+     "slot": "TE",
+     "id": 41799
+    },
+    {
+     "slot": "W/R/T",
+     "id": 33392
+    },
+    {
+     "slot": "Q/W/R/T",
+     "id": 40875
+    },
+    {
+     "slot": "BN",
+     "id": 31856
+    },
+    {
+     "slot": "BN",
+     "id": 26699
+    },
+    {
+     "slot": "BN",
+     "id": 42646
+    },
+    {
+     "slot": "BN",
+     "id": 25812
+    },
+    {
+     "slot": "BN",
+     "id": 40915
+    },
+    {
+     "slot": "K",
+     "id": 34344
+    },
+    {
+     "slot": "DEF",
+     "name": "Ravens"
+    }
+   ]
+  }
+ }
+}

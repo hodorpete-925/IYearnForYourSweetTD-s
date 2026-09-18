@@ -1,0 +1,263 @@
+{
+ "as_of": "2026-09-17 10:20 EDT",
+ "week": 2,
+ "status": "pre",
+ "source": "Yahoo league pages (Chrome capture; API not yet authorized)",
+ "matchups": [
+  {
+   "a": {
+    "tid": 1,
+    "team": "Are Bonita Fish Big?",
+    "proj": 138.42,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 11
+   },
+   "b": {
+    "tid": 7,
+    "team": "Wondering Where My FAAB Wentz?",
+    "proj": 165.77,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 10
+   }
+  },
+  {
+   "a": {
+    "tid": 2,
+    "team": "Briguy’s Strange Boutte",
+    "proj": 147.45,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 9
+   },
+   "b": {
+    "tid": 11,
+    "team": "CeeDeez nuts",
+    "proj": 156.3,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 8
+   }
+  },
+  {
+   "a": {
+    "tid": 3,
+    "team": "Dreorge Bledsoe",
+    "proj": 147.28,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 1
+   },
+   "b": {
+    "tid": 5,
+    "team": "High Priest Gabagool 🤌🏻",
+    "proj": 131.79,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 3
+   }
+  },
+  {
+   "a": {
+    "tid": 4,
+    "team": "Kowboy Hippie",
+    "proj": 123.6,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 6
+   },
+   "b": {
+    "tid": 8,
+    "team": "Mr. McGibblets",
+    "proj": 135.73,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 4
+   }
+  },
+  {
+   "a": {
+    "tid": 6,
+    "team": "ROOTIN' TUTEN' COWBOY",
+    "proj": 133.48,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 5
+   },
+   "b": {
+    "tid": 10,
+    "team": "TheDarkKnight06",
+    "proj": 133.14,
+    "pts": 0.0,
+    "rec": "1-0-0",
+    "rank": 2
+   }
+  },
+  {
+   "a": {
+    "tid": 9,
+    "team": "Alice in First Down Chains",
+    "proj": 144.15,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 7
+   },
+   "b": {
+    "tid": 12,
+    "team": "The Lady Boys",
+    "proj": 136.43,
+    "pts": 0.0,
+    "rec": "0-1-0",
+    "rank": 12
+   }
+  }
+ ],
+ "standings": [
+  {
+   "rank": 1,
+   "tid": 3,
+   "team": "Dreorge Bledsoe",
+   "rec": "1-0-0",
+   "pf": 201.36,
+   "pa": 133.18,
+   "streak": "W-1",
+   "faab": 106,
+   "waiver": 11,
+   "moves": 3
+  },
+  {
+   "rank": 2,
+   "tid": 10,
+   "team": "TheDarkKnight06",
+   "rec": "1-0-0",
+   "pf": 174.26,
+   "pa": 153.08,
+   "streak": "W-1",
+   "faab": 95,
+   "waiver": 10,
+   "moves": 3
+  },
+  {
+   "rank": 3,
+   "tid": 5,
+   "team": "High Priest Gabagool 🤌🏻",
+   "rec": "1-0-0",
+   "pf": 163.24,
+   "pa": 135.14,
+   "streak": "W-1",
+   "faab": 84,
+   "waiver": 9,
+   "moves": 2
+  },
+  {
+   "rank": 4,
+   "tid": 8,
+   "team": "Mr. McGibblets",
+   "rec": "1-0-0",
+   "pf": 143.26,
+   "pa": 135.5,
+   "streak": "W-1",
+   "faab": 100,
+   "waiver": 8,
+   "moves": 0
+  },
+  {
+   "rank": 5,
+   "tid": 6,
+   "team": "ROOTIN' TUTEN' COWBOY",
+   "rec": "1-0-0",
+   "pf": 133.5,
+   "pa": 111.48,
+   "streak": "W-1",
+   "faab": 100,
+   "waiver": 7,
+   "moves": 1
+  },
+  {
+   "rank": 6,
+   "tid": 4,
+   "team": "Kowboy Hippie",
+   "rec": "1-0-0",
+   "pf": 131.8,
+   "pa": 102.84,
+   "streak": "W-1",
+   "faab": 97,
+   "waiver": 6,
+   "moves": 1
+  },
+  {
+   "rank": 7,
+   "tid": 9,
+   "team": "Alice in First Down Chains",
+   "rec": "0-1-0",
+   "pf": 153.08,
+   "pa": 174.26,
+   "streak": "L-1",
+   "faab": 79,
+   "waiver": 5,
+   "moves": 5
+  },
+  {
+   "rank": 8,
+   "tid": 11,
+   "team": "CeeDeez nuts",
+   "rec": "0-1-0",
+   "pf": 135.5,
+   "pa": 143.26,
+   "streak": "L-1",
+   "faab": 88,
+   "waiver": 4,
+   "moves": 1
+  },
+  {
+   "rank": 9,
+   "tid": 2,
+   "team": "Briguy’s Strange Boutte",
+   "rec": "0-1-0",
+   "pf": 135.14,
+   "pa": 163.24,
+   "streak": "L-1",
+   "faab": 73,
+   "waiver": 3,
+   "moves": 5
+  },
+  {
+   "rank": 10,
+   "tid": 7,
+   "team": "Wondering Where My FAAB Wentz?",
+   "rec": "0-1-0",
+   "pf": 133.18,
+   "pa": 201.36,
+   "streak": "L-1",
+   "faab": 101,
+   "waiver": 12,
+   "moves": 5
+  },
+  {
+   "rank": 11,
+   "tid": 1,
+   "team": "Are Bonita Fish Big?",
+   "rec": "0-1-0",
+   "pf": 111.48,
+   "pa": 133.5,
+   "streak": "L-1",
+   "faab": 24,
+   "waiver": 2,
+   "moves": 7
+  },
+  {
+   "rank": 12,
+   "tid": 12,
+   "team": "The Lady Boys",
+   "rec": "0-1-0",
+   "pf": 102.84,
+   "pa": 131.8,
+   "streak": "L-1",
+   "faab": 100,
+   "waiver": 1,
+   "moves": 0
+  }
+ ],
+ "standings_as_of": "Thu Sep 17 02:51am EDT (Yahoo)"
+}

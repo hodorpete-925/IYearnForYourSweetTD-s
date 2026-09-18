@@ -4,6 +4,7 @@ venv/
 # Secrets and credentials
 .env
 .env.bak
+.env.*
 private.json
 
 # Python bytecode
@@ -73,3 +74,11 @@ lottery_section_preview.html
 # Design Brief bulk items - dashboard copy is in git history, zip is a transfer bundle
 Design Brief/Current Dashboard (reference - do not edit).html
 Design Brief/GitHub dashboard review setup.zip
+
+# Control-panel trade queue and unattended-run logs (local working state)
+trades_pending.json
+refresh_all.log
+publish_scores.log
+
+# Staged change sets from cloud sessions (installed by copying to the root)
+_staged_*/
