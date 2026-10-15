@@ -2949,6 +2949,8 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .vb-chips { gap: 6px; }
 .vb-chip { font: inherit; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--gray-200); background: #fff; color: var(--gray-500); cursor: pointer; }
 .vb-chip.is-on { background: var(--blue-800); border-color: var(--blue-800); color: #fff; }
+.vb-chip-all { margin-right: 4px; }
+.vb-chip-all.is-on { background: var(--gray-700); border-color: var(--gray-700); }
 .vb-check input { margin: 0; }
 .vb-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gray-600); margin: 0 0 16px; flex-wrap: wrap; }
 .vb-legend-bar { display: inline-block; width: 180px; height: 10px; border-radius: 5px;
@@ -3010,7 +3012,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .tl-side { line-height: 1.4; }
 .tl-row.is-hidden { display: none; }
 @media (max-width: 720px) {
-  .tl-table th:nth-child(2), .tl-table td:nth-child(2) { display: none; }
+  .tl-table:not(.fl-table) th:nth-child(2), .tl-table:not(.fl-table) td:nth-child(2) { display: none; }
   .tl-summary { font-size: 12px; }
 }
 
@@ -3019,7 +3021,12 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .fl-list { font-size: 13.5px; line-height: 1.6; margin: 0 0 6px 18px; padding: 0; }
 @media (max-width: 720px) {
   .fl-summary th:nth-child(n+9), .fl-summary td:nth-child(n+9) { display: none; }
-  .fl-table th:nth-child(6), .fl-table td:nth-child(6), .fl-table th:nth-child(8), .fl-table td:nth-child(8) { display: none; }
+  /* phones: winner, player, bid, other offers, since pickup; drop date, overpay, pts/$ */
+  .fl-table th:nth-child(1), .fl-table td:nth-child(1),
+  .fl-table th:nth-child(6), .fl-table td:nth-child(6),
+  .fl-table th:nth-child(8), .fl-table td:nth-child(8) { display: none; }
+  .fl-table { font-size: 12.5px; }
+  .fl-loser { white-space: normal; }
 }
 </style>
 </head>
@@ -3232,19 +3239,19 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
       <div class="updated-widget">
         <input type="checkbox" id="updated-toggle" class="updated-toggle">
         <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
-          Updated 2026-10-15 00:37 EDT
+          Updated 2026-10-15 00:52 EDT
         </label>
         <div class="updated-details" role="region" aria-labelledby="updated-toggle">
           <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-10-15 00:03 EDT</span></div>
-          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-10-15 00:18 EDT &mdash; Value board: how-to-read guide, points per dollar, manager filter</span></div>
-          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-10-15 00:37 EDT (this page)</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-10-15 00:37 EDT &mdash; Value board guide, FAAB ledger, manager filter</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-10-15 00:52 EDT (this page)</span></div>
           <div class="updated-log">
             <div class="updated-log-h">Recent activity</div>
-            <pre class="updated-log-body">  2026-10-15 00:18  Value board: how-to-read guide, points per dollar, manager filter
+            <pre class="updated-log-body">  2026-10-15 00:37  Value board guide, FAAB ledger, manager filter
+  2026-10-15 00:18  Value board: how-to-read guide, points per dollar, manager filter
   2026-10-15 00:04  API back: live rosters, standings, matchups, DRC value board, transaction log
   2026-10-14 23:56  API back: live rosters, standings, matchups, DRC value board, transaction log
-  2026-10-14 22:42  API back: live transactions, lineups, standings, matchups
-  2026-09-17 23:38  Scores 2026-09-17 23:38</pre>
+  2026-10-14 22:42  API back: live transactions, lineups, standings, matchups</pre>
           </div>
         </div>
       </div>
@@ -19366,7 +19373,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
           <label class="vb-filter">Manager
             <select id="vb-mgr"><option value="">All managers</option><option value="Alex S.">Alex S.</option><option value="Aric T.">Aric T.</option><option value="Bill K.">Bill K.</option><option value="Brian M.">Brian M.</option><option value="Dan M.">Dan M.</option><option value="George M.">George M.</option><option value="Greg P.">Greg P.</option><option value="Kyle W.">Kyle W.</option><option value="Paul L.">Paul L.</option><option value="Pete H.">Pete H.</option><option value="Scott M.">Scott M.</option><option value="Tom W.">Tom W.</option></select>
           </label>
-          <div class="vb-filter vb-chips" id="vb-pos"><button type="button" class="vb-chip is-on" data-pos="QB">QB</button><button type="button" class="vb-chip is-on" data-pos="RB">RB</button><button type="button" class="vb-chip is-on" data-pos="WR">WR</button><button type="button" class="vb-chip is-on" data-pos="TE">TE</button><button type="button" class="vb-chip is-on" data-pos="K">K</button><button type="button" class="vb-chip is-on" data-pos="DEF">DEF</button></div>
+          <div class="vb-filter vb-chips" id="vb-pos"><button type="button" class="vb-chip vb-chip-all is-on" data-all="1">All</button><button type="button" class="vb-chip is-on" data-pos="QB">QB</button><button type="button" class="vb-chip is-on" data-pos="RB">RB</button><button type="button" class="vb-chip is-on" data-pos="WR">WR</button><button type="button" class="vb-chip is-on" data-pos="TE">TE</button><button type="button" class="vb-chip is-on" data-pos="K">K</button><button type="button" class="vb-chip is-on" data-pos="DEF">DEF</button></div>
           <label class="vb-filter vb-check"><input type="checkbox" id="vb-hide-nodata"> Hide players with no games yet</label>
         </div>
         
@@ -19409,6 +19416,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
             <select id="tl-mgr"><option value="">All managers</option><option value="Alex S.">Alex S.</option><option value="Aric T.">Aric T.</option><option value="Bill K.">Bill K.</option><option value="Brian M.">Brian M.</option><option value="Dan M.">Dan M.</option><option value="George M.">George M.</option><option value="Greg P.">Greg P.</option><option value="Kyle W.">Kyle W.</option><option value="Paul L.">Paul L.</option><option value="Pete H.">Pete H.</option><option value="Scott M.">Scott M.</option><option value="Tom W.">Tom W.</option></select>
           </label>
           <div class="vb-filter vb-chips" id="tl-type">
+            <button type="button" class="vb-chip vb-chip-all is-on" data-all="1">All</button>
             <button type="button" class="vb-chip is-on" data-type="add">Adds</button>
             <button type="button" class="vb-chip is-on" data-type="add/drop">Add / drop</button>
             <button type="button" class="vb-chip is-on" data-type="drop">Drops</button>
@@ -58152,12 +58160,35 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 })();
 </script>
 <script>
+// Shared chip behavior (Pete 2026-10-15): clicking a pill isolates it,
+// clicking gray pills adds them back, "All" (present when > 2 options)
+// turns everything on. Clicking the only active pill returns to all.
+function vbChips(container, onChange) {
+  if (!container) return;
+  const opts = Array.from(container.querySelectorAll('.vb-chip:not(.vb-chip-all)'));
+  const all = container.querySelector('.vb-chip-all');
+  function sync() {
+    const on = opts.filter(c => c.classList.contains('is-on'));
+    if (all) all.classList.toggle('is-on', on.length === opts.length);
+    onChange();
+  }
+  opts.forEach(c => c.addEventListener('click', () => {
+    const on = opts.filter(x => x.classList.contains('is-on'));
+    const allOn = on.length === opts.length;
+    if (allOn) { opts.forEach(x => x.classList.toggle('is-on', x === c)); }
+    else if (c.classList.contains('is-on')) {
+      if (on.length === 1) opts.forEach(x => x.classList.add('is-on')); else c.classList.remove('is-on');
+    } else { c.classList.add('is-on'); }
+    sync();
+  }));
+  if (all) all.addEventListener('click', () => { opts.forEach(x => x.classList.add('is-on')); sync(); });
+}
 (function () {
   // ---- DRC value board: filters + hover arithmetic -----------------------
   const grid = document.getElementById('vb-grid');
   if (grid) {
     const sel = document.getElementById('vb-mgr');
-    const chips = Array.from(document.querySelectorAll('#vb-pos .vb-chip'));
+    const chips = Array.from(document.querySelectorAll('#vb-pos .vb-chip:not(.vb-chip-all)'));
     const hideNd = document.getElementById('vb-hide-nodata');
     const tip = document.getElementById('vb-tip');
     function apply() {
@@ -58176,7 +58207,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
     }
     sel.addEventListener('change', apply);
     hideNd.addEventListener('change', apply);
-    chips.forEach(c => c.addEventListener('click', () => { c.classList.toggle('is-on'); apply(); }));
+    vbChips(document.getElementById('vb-pos'), apply);
     function fmt(v, d) { if (v === '' || v === undefined || v === null) return 'n/a'; const n = Number(v); return (d === undefined ? n : n.toFixed(d)); }
     function signed(v, d) { if (v === '' || v === undefined) return 'n/a'; const n = Number(v); return (n >= 0 ? '+' : '') + n.toFixed(d); }
     grid.addEventListener('mousemove', e => {
@@ -58206,7 +58237,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
   const body = document.getElementById('tl-body');
   if (body) {
     const sel = document.getElementById('tl-mgr');
-    const chips = Array.from(document.querySelectorAll('#tl-type .vb-chip'));
+    const chips = Array.from(document.querySelectorAll('#tl-type .vb-chip:not(.vb-chip-all)'));
     function apply() {
       const mgr = sel.value;
       const on = new Set(chips.filter(c => c.classList.contains('is-on')).map(c => c.dataset.type));
@@ -58216,7 +58247,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
       });
     }
     sel.addEventListener('change', apply);
-    chips.forEach(c => c.addEventListener('click', () => { c.classList.toggle('is-on'); apply(); }));
+    vbChips(document.getElementById('tl-type'), apply);
   }
 })();
 
@@ -58234,7 +58265,7 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
     });
   }
   sel.addEventListener('change', apply);
-  chips.forEach(c => c.addEventListener('click', () => { c.classList.toggle('is-on'); apply(); }));
+  vbChips(document.getElementById('fl-type'), apply);
 })();
 </script>
 </body>
