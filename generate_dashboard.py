@@ -8278,6 +8278,7 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="keeper-board">{NEXT_SEASON} keeper board</a>
           <a class="nav-link" data-target="value-board">DRC value board</a>
           <a class="nav-link" data-target="transaction-log">{TARGET_SEASON} transaction log</a>
+          <a class="nav-link" data-target="faab-ledger">FAAB ledger</a>
         </div>
       </details>
 
@@ -9055,8 +9056,12 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
         _vrows, _vmeta = voc.compute(_vconn, by_manager)
         value_board = vbs.render_value_board(_vrows, _vmeta, TARGET_SEASON)
         _drafted = (load_draft_results_meta().get("drafted") or f"{TARGET_SEASON}-09-03")[:16]
-        transaction_log = vbs.render_transaction_log(
-            _vconn, by_manager, _load_json_sidecar("scores.json", warn=False), _drafted, TARGET_SEASON)
+        _scores_doc = _load_json_sidecar("scores.json", warn=False)
+        transaction_log = vbs.render_transaction_log(_vconn, by_manager, _scores_doc, _drafted, TARGET_SEASON)
+        _weekly, _completed = voc.load_weekly(_vconn, TARGET_SEASON)
+        faab_ledger = vbs.render_faab_ledger(
+            _vconn, by_manager, _load_json_sidecar("faab_offers.json", warn=False), _scores_doc,
+            _weekly, _vmeta["replacement"], _completed, TARGET_SEASON)
         print(f"  value board: {len(_vrows)} players through week {_vmeta['weeks']}, "
               f"price line {_vmeta['curve']['intercept']:+.1f} {_vmeta['curve']['slope']:+.2f}/DRC, "
               f"resid sd {_vmeta['resid_sd']}")
@@ -9099,6 +9104,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {draft_board}
 {value_board}
 {transaction_log}
+{faab_ledger}
 {bold_preds}
 {desk}
 {offseason}

@@ -1,0 +1,643 @@
+{
+ "season": 2026,
+ "source": "Yahoo league page: Transactions > FAB Offers (transactionsfilter=faab), read 2026-10-15 00:30 EDT via Claude in Chrome",
+ "note": "Only claims that had at least one competing offer appear on Yahoo's FAB Offers tab; uncontested winning bids come from the API (transactions.faab_bid).",
+ "offers": [
+  {
+   "player": "Blake Grupe",
+   "nfl_team": "LAR",
+   "position": "K",
+   "status": null,
+   "winner": "The Lady Boys",
+   "winner_tid": 12,
+   "winning_bid": 0,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 0,
+     "reason": "Lower waiver priority"
+    }
+   ]
+  },
+  {
+   "player": "Patriots",
+   "nfl_team": "NE",
+   "position": "DEF",
+   "status": null,
+   "winner": "Nightman Cometh For UR Blanket",
+   "winner_tid": 1,
+   "winning_bid": 2,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Chiefs",
+   "nfl_team": "KC",
+   "position": "DEF",
+   "status": null,
+   "winner": "CeeDeez nuts",
+   "winner_tid": 11,
+   "winning_bid": 7,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 2,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 0,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "ROOTIN' TUTEN' COWBOY",
+     "tid": 6,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Chris Godwin Jr.",
+   "nfl_team": "TB",
+   "position": "WR",
+   "status": null,
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 10,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Germie Bernard",
+   "nfl_team": "Pit",
+   "position": "WR",
+   "status": null,
+   "winner": "Briguy’s Strange Boutte",
+   "winner_tid": 2,
+   "winning_bid": 14,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 11,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 9,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "ROOTIN' TUTEN' COWBOY",
+     "tid": 6,
+     "bid": 0,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "The Lady Boys",
+     "tid": 12,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Keaton Mitchell",
+   "nfl_team": "LAC",
+   "position": "RB",
+   "status": null,
+   "winner": "Mr. McGibblets",
+   "winner_tid": 8,
+   "winning_bid": 20,
+   "processed": "2026-10-14 03:58",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Jaguars",
+   "nfl_team": "Jax",
+   "position": "DEF",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 1,
+   "processed": "2026-10-10 03:41",
+   "losing_offers": [
+    {
+     "team": "The Winston Knight Rises",
+     "tid": 10,
+     "bid": 0,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "CeeDeez nuts",
+     "tid": 11,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Jaguars",
+   "nfl_team": "Jax",
+   "position": "DEF",
+   "status": null,
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 0,
+   "processed": "2026-10-07 03:59",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Lower waiver priority"
+    }
+   ]
+  },
+  {
+   "player": "Tyler Huntley",
+   "nfl_team": "Bal",
+   "position": "QB",
+   "status": null,
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 11,
+   "processed": "2026-10-07 03:59",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 6,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Will Shipley",
+   "nfl_team": "Phi",
+   "position": "RB",
+   "status": "D",
+   "winner": "The Lady Boys",
+   "winner_tid": 12,
+   "winning_bid": 50,
+   "processed": "2026-10-07 03:59",
+   "losing_offers": [
+    {
+     "team": "Briguy’s Strange Boutte",
+     "tid": 2,
+     "bid": 27,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 9,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Keenan Allen",
+   "nfl_team": "Ind",
+   "position": "WR",
+   "status": null,
+   "winner": "Briguy’s Strange Boutte",
+   "winner_tid": 2,
+   "winning_bid": 4,
+   "processed": "2026-10-03 03:33",
+   "losing_offers": [
+    {
+     "team": "Kowboy Hippie",
+     "tid": 4,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Bills",
+   "nfl_team": "Buf",
+   "position": "DEF",
+   "status": null,
+   "winner": "Briguy’s Strange Boutte",
+   "winner_tid": 2,
+   "winning_bid": 2,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 1,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Kenyon Sadiq",
+   "nfl_team": "NYJ",
+   "position": "TE",
+   "status": "Q",
+   "winner": "Dreorge Bledsoe",
+   "winner_tid": 3,
+   "winning_bid": 5,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "ROOTIN' TUTEN' COWBOY",
+     "tid": 6,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Austin Ekeler",
+   "nfl_team": "Was",
+   "position": "RB",
+   "status": null,
+   "winner": "The Lady Boys",
+   "winner_tid": 12,
+   "winning_bid": 5,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Jaylen Wright",
+   "nfl_team": "Mia",
+   "position": "RB",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 7,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "Briguy’s Strange Boutte",
+     "tid": 2,
+     "bid": 5,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "MarShawn Lloyd",
+   "nfl_team": "GB",
+   "position": "RB",
+   "status": null,
+   "winner": "Nightman Cometh For UR Blanket",
+   "winner_tid": 1,
+   "winning_bid": 12,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "High Priest Gabagool 🤌🏻",
+     "tid": 5,
+     "bid": 1,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Ollie Gordon II",
+   "nfl_team": "Mia",
+   "position": "RB",
+   "status": null,
+   "winner": "Kowboy Hippie",
+   "winner_tid": 4,
+   "winning_bid": 30,
+   "processed": "2026-09-30 04:02",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 26,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 24,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Briguy’s Strange Boutte",
+     "tid": 2,
+     "bid": 16,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Dreorge Bledsoe",
+     "tid": 3,
+     "bid": 16,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Jameis Winston",
+   "nfl_team": "NYG",
+   "position": "QB",
+   "status": null,
+   "winner": "The Winston Knight Rises",
+   "winner_tid": 10,
+   "winning_bid": 5,
+   "processed": "2026-09-23 04:43",
+   "losing_offers": [
+    {
+     "team": "Dreorge Bledsoe",
+     "tid": 3,
+     "bid": 5,
+     "reason": "Lower waiver priority"
+    }
+   ]
+  },
+  {
+   "player": "Emanuel Wilson",
+   "nfl_team": "Sea",
+   "position": "RB",
+   "status": null,
+   "winner": "Nightman Cometh For UR Blanket",
+   "winner_tid": 1,
+   "winning_bid": 8,
+   "processed": "2026-09-23 04:43",
+   "losing_offers": [
+    {
+     "team": "Kowboy Hippie",
+     "tid": 4,
+     "bid": 7,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Marcus Mariota",
+   "nfl_team": "Was",
+   "position": "QB",
+   "status": "D",
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 11,
+   "processed": "2026-09-23 04:43",
+   "losing_offers": [
+    {
+     "team": "CeeDeez nuts",
+     "tid": 11,
+     "bid": 10,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Brandon Aubrey",
+   "nfl_team": "Dal",
+   "position": "K",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 3,
+   "processed": "2026-09-19 03:48",
+   "losing_offers": [
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "49ers",
+   "nfl_team": "SF",
+   "position": "DEF",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 0,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 0,
+     "reason": "Lower waiver priority"
+    }
+   ]
+  },
+  {
+   "player": "Buccaneers",
+   "nfl_team": "TB",
+   "position": "DEF",
+   "status": null,
+   "winner": "Kowboy Hippie",
+   "winner_tid": 4,
+   "winning_bid": 3,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 1,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Drew Lock",
+   "nfl_team": "Sea",
+   "position": "QB",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 10,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 7,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Dontayvion Wicks",
+   "nfl_team": "Phi",
+   "position": "WR",
+   "status": "Q",
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 11,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "The Winston Knight Rises",
+     "tid": 10,
+     "bid": 2,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Deebo Samuel Sr.",
+   "nfl_team": "SF",
+   "position": "WR",
+   "status": "O",
+   "winner": "Briguy’s Strange Boutte",
+   "winner_tid": 2,
+   "winning_bid": 37,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "Alice in First Down Chains",
+     "tid": 9,
+     "bid": 17,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "The Winston Knight Rises",
+     "tid": 10,
+     "bid": 6,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Carson Wentz",
+   "nfl_team": "Min",
+   "position": "QB",
+   "status": null,
+   "winner": "Nightman Cometh For UR Blanket",
+   "winner_tid": 1,
+   "winning_bid": 58,
+   "processed": "2026-09-16 04:35",
+   "losing_offers": [
+    {
+     "team": "Kowboy Hippie",
+     "tid": 4,
+     "bid": 5,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Steelers",
+   "nfl_team": "Pit",
+   "position": "DEF",
+   "status": null,
+   "winner": "Alice in First Down Chains",
+   "winner_tid": 9,
+   "winning_bid": 0,
+   "processed": "2026-09-06 03:17",
+   "losing_offers": [
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Invalid claim due to previous transaction"
+    }
+   ]
+  },
+  {
+   "player": "Isiah Pacheco",
+   "nfl_team": "Det",
+   "position": "RB",
+   "status": "IR",
+   "winner": "High Priest Gabagool 🤌🏻",
+   "winner_tid": 5,
+   "winning_bid": 1,
+   "processed": "2026-09-06 03:17",
+   "losing_offers": [
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 0,
+     "reason": "Lower Offer"
+    },
+    {
+     "team": "Mean Mug-ging",
+     "tid": 7,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  },
+  {
+   "player": "Chargers",
+   "nfl_team": "LAC",
+   "position": "DEF",
+   "status": null,
+   "winner": "Mean Mug-ging",
+   "winner_tid": 7,
+   "winning_bid": 1,
+   "processed": "2026-09-06 03:17",
+   "losing_offers": [
+    {
+     "team": "The Winston Knight Rises",
+     "tid": 10,
+     "bid": 1,
+     "reason": "Lower waiver priority"
+    }
+   ]
+  },
+  {
+   "player": "James Conner",
+   "nfl_team": "Ari",
+   "position": "RB",
+   "status": "IR-R",
+   "winner": "Dreorge Bledsoe",
+   "winner_tid": 3,
+   "winning_bid": 4,
+   "processed": "2026-09-06 03:17",
+   "losing_offers": [
+    {
+     "team": "Nightman Cometh For UR Blanket",
+     "tid": 1,
+     "bid": 0,
+     "reason": "Lower Offer"
+    }
+   ]
+  }
+ ]
+}
