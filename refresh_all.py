@@ -2,14 +2,17 @@
 
 Order, stopping at the first failure (nothing after a failed step runs):
   1. back up fantasy.db to Backups/ (timestamped; newest 30 kept)
-  2. Yahoo pull            (only with --yahoo; skipped cleanly while the
-                            API is unauthorized — probe_yahoo.py decides)
-  3. commit FINAL panel trades   (add_synthetic_trades.py --commit;
-                                  idempotent, pending trades are ignored)
-  3b. commit Yahoo-page adds/drops (add_page_transactions.py --commit;
-                                  fenced stopgap, skipped when no file)
-  4. recon_ownership.py          (read-only check)
-  5. refresh.py "<message>"      (regenerate, verify, commit, push)
+  2. Yahoo pull (with --yahoo):
+       2a. probe_yahoo.py            read-only; if it fails, the Yahoo steps
+                                     are skipped and the run continues on
+                                     local data (never a silent half-pull)
+       2b. ingest_2026_yahoo.py --commit   2026 transactions -> fantasy.db
+                                     (upsert; flags superseded synthetics)
+       2c. pull_yahoo_week.py        scores.json + current_lineups.json
+  3. commit FINAL panel trades       (add_synthetic_trades.py --commit;
+                                      idempotent, pending trades are ignored)
+  4. recon_ownership.py              (read-only check)
+  5. refresh.py "<message>"          (regenerate, verify, commit, push)
 
 Usage:
     python refresh_all.py "Commit message"
@@ -20,8 +23,13 @@ Usage:
 
 Every DB write here is one Pete already runs by hand; this only chains them.
 Run it host-side only (never through a cloud/bridge session: see the 9/2
-journal incident).
+journal incident and the 10/14 venv truncation).
+
+History: the fenced Yahoo-page add/drop step (add_page_transactions.py) was
+retired 2026-10-14 when the API came back; ingest_2026_yahoo.py superseded
+every row it had produced.
 """
+import os
 import shutil
 import subprocess
 import sys
@@ -33,14 +41,16 @@ DB = HERE / "fantasy.db"
 BACKUPS = HERE / "Backups"
 KEEP_BACKUPS = 30
 FLAGS = 0x08000000 if sys.platform == "win32" else 0
+# Child processes print team names with emoji; with their stdout piped
+# Python would fall back to cp1252 and die on them (10/14). Force UTF-8.
+CHILD_ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
 
-# Yahoo-sourced pulls, in order. Deliberately EMPTY of the historical ingest
-# scripts until the synthetic-vs-Yahoo reconciliation matcher exists:
-# ingest_transactions would double-record the 2026 synthetic trades, and
-# ingest_drafts / ingest_final_rosters clobber hand-maintained rows.
-# Add a script here only after it has been dry-run reviewed.
+# Yahoo-sourced pulls, in order. Each one was dry-run reviewed before it was
+# added here. ingest_drafts / ingest_final_rosters / ingest_teams stay OUT:
+# they clobber hand-maintained rows (and ingest_teams refuses on masked guids).
 YAHOO_STEPS = [
-    # ["pull_yahoo_week.py"],   # scores.json + current_lineups.json (to build once the API answers)
+    ["ingest_2026_yahoo.py", "--commit"],   # transactions (2026 only, upsert)
+    ["pull_yahoo_week.py"],                 # scores.json + current_lineups.json
 ]
 
 args = [a for a in sys.argv[1:]]
@@ -63,7 +73,7 @@ def run(cmd, step, fatal=True):
     p = subprocess.Popen([sys.executable, "-u", *cmd], cwd=HERE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          text=True, encoding="utf-8", errors="replace",
-                         bufsize=1, creationflags=FLAGS)
+                         bufsize=1, creationflags=FLAGS, env=CHILD_ENV)
     for line in p.stdout:
         say(line.rstrip("\n"))
     p.wait()
@@ -100,24 +110,17 @@ def main():
     backup_db()
 
     if WITH_YAHOO:
-        rc = run(["probe_yahoo.py"], "2. Yahoo API probe", fatal=False)
+        rc = run(["probe_yahoo.py"], "2a. Yahoo API probe", fatal=False)
         if rc != 0:
-            say("  Yahoo API still not authorized. Skipping the Yahoo pull; "
+            say("  Yahoo API probe failed. Skipping the Yahoo pull; "
                 "continuing with local data.")
-        elif not YAHOO_STEPS:
-            say("  Probe passed, but no Yahoo pull scripts are enabled yet "
-                "(see YAHOO_STEPS).")
         else:
             for cmd in YAHOO_STEPS:
-                run(cmd, f"2. Yahoo pull: {cmd[0]}")
+                run(cmd, f"2. Yahoo pull: {' '.join(cmd)}")
     else:
         say("\n=== 2. Yahoo pull skipped (no --yahoo) ===")
 
     run(["add_synthetic_trades.py", "--commit"], "3. committing FINAL panel trades")
-    if (HERE / "yahoo_page_transactions.json").exists():
-        # Fenced stopgap while the API is locked (note LIKE 'YAHOO_PAGE|%');
-        # idempotent. Drop this step once ingest_transactions runs live.
-        run(["add_page_transactions.py", "--commit"], "3b. committing Yahoo-page adds/drops (fenced)")
     run(["recon_ownership.py"], "4. ownership recon")
 
     if NO_PUBLISH:

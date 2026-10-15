@@ -1,0 +1,109 @@
+=== RECONCILIATION 2026: synthetic (DB) vs Yahoo ===
+synthetic rows: 71   yahoo rows: 195
+
+--- A. EXACT MATCHES (synthetic == yahoo): 33 ---
+synth 56 2026-09-16 add       == yahoo 74 2026-09-16 add       | Eddy Pineiro->T1
+synth 57 2026-09-16 add       == yahoo 73 2026-09-16 add       | Panthers->T1
+synth 58 2026-09-16 add/drop  == yahoo 72 2026-09-16 add/drop  | Chiefs->T2
+synth 59 2026-09-16 add/drop  == yahoo 71 2026-09-16 add/drop  | Devaughn Vele->T3
+synth 60 2026-09-16 add/drop  == yahoo 64 2026-09-16 add/drop  | Packers->T9
+synth 61 2026-09-16 add/drop  == yahoo 63 2026-09-16 add/drop  | 49ers->T7
+synth 62 2026-09-16 add/drop  == yahoo 62 2026-09-16 add/drop  | Buccaneers->T4
+synth 63 2026-09-16 add/drop  == yahoo 61 2026-09-16 add/drop  | Cooper Kupp->T10
+synth 64 2026-09-16 add       == yahoo 60 2026-09-16 add       | Antonio Williams->T1
+synth 65 2026-09-16 add/drop  == yahoo 59 2026-09-16 add/drop  | Drew Lock->T7
+synth 66 2026-09-16 add/drop  == yahoo 58 2026-09-16 add/drop  | Dontayvion Wicks->T9
+synth 67 2026-09-16 add       == yahoo 57 2026-09-16 add       | Caleb Douglas->T1
+synth 68 2026-09-16 add/drop  == yahoo 56 2026-09-16 add/drop  | Deebo Samuel->T2
+synth 69 2026-09-16 add/drop  == yahoo 55 2026-09-16 add/drop  | Carson Wentz->T1
+synth 74 2026-09-13 add/drop  == yahoo 50 2026-09-13 add/drop  | Malachi Fields->T2
+synth 75 2026-09-13 add       == yahoo 49 2026-09-13 add       | Troy Franklin->T1
+synth 77 2026-09-13 add       == yahoo 47 2026-09-13 add       | Jake Elliott->T9
+synth 78 2026-09-13 add       == yahoo 46 2026-09-13 add       | Jalen Nailor->T11
+synth 79 2026-09-13 add/drop  == yahoo 45 2026-09-13 add/drop  | Evan McPherson->T5
+synth 80 2026-09-12 add/drop  == yahoo 43 2026-09-12 add/drop  | Tyson Bagent->T1
+synth 81 2026-09-11 add/drop  == yahoo 42 2026-09-11 add/drop  | Chris Bell->T7
+synth 82 2026-09-10 add       == yahoo 41 2026-09-10 add       | Juwan Johnson->T6
+synth 83 2026-09-10 add/drop  == yahoo 40 2026-09-10 add/drop  | Cooper Rush->T9
+synth 84 2026-09-08 add       == yahoo 39 2026-09-08 add       | Najee Harris->T2
+synth 85 2026-09-08 add       == yahoo 38 2026-09-08 add       | Jake Ferguson->T10
+synth 86 2026-09-07 add       == yahoo 37 2026-09-07 add       | Jake Bates->T2
+synth 87 2026-09-06 add/drop  == yahoo 35 2026-09-06 add/drop  | Raiders->T10
+synth 88 2026-09-06 add       == yahoo 30 2026-09-06 add       | Jayden Higgins->T7
+synth 89 2026-09-06 add       == yahoo 29 2026-09-06 add       | Steelers->T9
+synth 90 2026-09-06 add       == yahoo 28 2026-09-06 add       | Isiah Pacheco->T5
+synth 91 2026-09-06 add       == yahoo 27 2026-09-06 add       | Chargers->T7
+synth 92 2026-09-06 add       == yahoo 26 2026-09-06 add       | James Conner->T3
+synth 93 2026-09-06 add       == yahoo 25 2026-09-06 add       | Trey Benson->T3
+
+--- B. PARTIAL OVERLAP (needs eyes): 3 ---
+synth 52 2026-08-29 trade     | R6(2027)->T6
+      ~ yahoo 36 2026-09-07 trade     (1 common) | R6->T6; R16->T9
+synth 53 2026-08-29 trade     | R16(2027)->T9
+      ~ yahoo 36 2026-09-07 trade     (1 common) | R6->T6; R16->T9
+synth 54 2026-08-29 trade     | R6(2027)->T4
+      ~ yahoo 84 2026-09-20 trade     (1 common) | R6->T4; R15->T5
+
+--- C. SYNTHETIC ONLY (not on Yahoo): 35 ---
+synth 21 2026-08-01 trade     | Ashton Jeanty->T7  note=None
+synth 22 2026-08-01 trade     | Jonathan Taylor->T5  note=None
+synth 23 2026-08-19 trade     | Terry McLaurin->T1  note=None
+synth 24 2026-08-19 trade     | Bhayshul Tuten->T6  note=None
+synth 25 2026-08-19 trade     | R4(None)->T1  note=None
+synth 26 2026-08-19 trade     | R16(None)->T6  note=None
+synth 27 2026-08-20 trade     | Blake Corum->T7  note=None
+synth 28 2026-08-20 trade     | Woody Marks->T8  note=None
+synth 29 2026-08-20 trade     | Jaylen Waddle->T4  note=None
+synth 30 2026-08-20 trade     | Chris Olave->T3  note=None
+synth 31 2026-08-22 trade     | Tetairoa McMillan->T4  note=None
+synth 32 2026-08-22 trade     | R12(None)->T4  note=None
+synth 33 2026-08-22 trade     | R4(None)->T7  note=None
+synth 34 2026-08-29 trade     | TreVeyon Henderson->T2  note=None
+synth 35 2026-08-29 trade     | Josh Jacobs->T9  note=None
+synth 36 2026-08-29 trade     | R12(None)->T7  note=None
+synth 37 2026-08-29 trade     | R11(None)->T11  note=None
+synth 38 2026-08-27 trade     | A.J. Brown->T9  note=None
+synth 39 2026-08-27 trade     | CeeDee Lamb->T11  note=None
+synth 40 2026-08-27 trade     | Jordan Addison->T11  note=None
+synth 41 2026-08-29 trade     | Quentin Johnston->T6  note=None
+synth 44 2026-08-29 trade     | R7(None)->T8  note=None
+synth 45 2026-08-29 trade     | DeVonta Smith->T11  note=None
+synth 46 2026-08-29 trade     | Rome Odunze->T3  note=None
+synth 47 2026-08-29 trade     | R16(None)->T6  note=None
+synth 48 2026-08-29 trade     | R7(None)->T9  note=None
+synth 49 2026-08-29 trade     | R16(None)->T6  note=None
+synth 50 2026-08-29 trade     | R7(None)->T5  note=None
+synth 51 2026-08-29 trade     | R15(None)->T4  note=None
+synth 55 2026-08-29 trade     | R16(2027)->T5  note=None
+synth 70 2026-09-15 drop      |   note=YAHOO_PAGE|2026-09-15 22:36:00|2
+synth 71 2026-09-15 drop      |   note=YAHOO_PAGE|2026-09-15 22:34:00|2
+synth 72 2026-09-15 drop      |   note=YAHOO_PAGE|2026-09-15 17:48:00|1
+synth 73 2026-09-15 drop      |   note=YAHOO_PAGE|2026-09-15 17:47:00|1
+synth 76 2026-09-13 drop      |   note=YAHOO_PAGE|2026-09-13 18:14:00|1
+
+--- D. YAHOO ONLY (not in DB): 160 ---
+by type: Counter({'add/drop': 88, 'drop': 30, 'add': 30, 'commish': 8, 'trade': 4})
+by month: Counter({'2026-09': 86, '2026-10': 66, '2026-08': 8})
+yahoo 1 2026-08-15 commish   | 
+yahoo 5 2026-08-18 commish   | 
+yahoo 4 2026-08-18 commish   | 
+yahoo 6 2026-08-24 commish   | 
+yahoo 7 2026-08-24 commish   | 
+yahoo 9 2026-08-24 commish   | 
+yahoo 8 2026-08-24 commish   | 
+yahoo 10 2026-08-24 commish   | 
+yahoo 44 2026-09-13 trade     | R16->T3; R13->T9
+yahoo 122 2026-09-25 trade     | Fernando Mendoza->T1; Jameson Williams->T1; Jacory Croskey-Merritt->T1; Kyren Williams->T5; Terry McLaurin->T5
+yahoo 124 2026-09-25 trade     | Lamar Jackson->T12; Ladd McConkey->T12; Trevor Lawrence->T1; Nico Collins->T1
+yahoo 205 2026-10-10 trade     | Breece Hall->T9; Omarion Hampton->T1; R6->T9; R9->T1
+
+Yahoo-only adds/drops BEFORE 9/17 (synthetic window): 9
+  yahoo 20 2026-09-03 21:47 drop      faab=None | Kenneth Walker III->waivers
+  yahoo 21 2026-09-03 21:47 drop      faab=None | Jeremiyah Love->waivers
+  yahoo 22 2026-09-03 21:47 add       faab=None | Jeremiyah Love->T4
+  yahoo 23 2026-09-03 21:47 add       faab=None | Kenneth Walker III->T10
+  yahoo 48 2026-09-13 18:14 drop      faab=None | Tyson Bagent->waivers
+  yahoo 51 2026-09-15 17:47 drop      faab=None | Troy Franklin->waivers
+  yahoo 52 2026-09-15 17:48 drop      faab=None | Vikings->waivers
+  yahoo 53 2026-09-15 22:34 drop      faab=None | Carson Beck->waivers
+  yahoo 54 2026-09-15 22:36 drop      faab=None | Malachi Fields->waivers

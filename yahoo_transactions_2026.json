@@ -1,0 +1,5644 @@
+{
+ "season": 2026,
+ "pulled_at": "2026-10-14 21:16:12.690453",
+ "count": 195,
+ "transactions": [
+  {
+   "yahoo_transaction_id": 1,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-15 14:47:10",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 5,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-18 21:34:06",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 4,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-18 21:34:06",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 6,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-24 19:17:10",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 7,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-24 20:01:15",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 9,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-24 20:05:50",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 8,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-24 20:05:50",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 10,
+   "type": "commish",
+   "status": "successful",
+   "timestamp": "2026-08-24 20:06:43",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 20,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-03 21:47:02",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33996,
+     "name": "Kenneth Walker III",
+     "position": "RB",
+     "nfl_team": "KC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 21,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-03 21:47:20",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42625,
+     "name": "Jeremiyah Love",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 22,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-03 21:47:36",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42625,
+     "name": "Jeremiyah Love",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 23,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-03 21:47:49",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33996,
+     "name": "Kenneth Walker III",
+     "position": "RB",
+     "nfl_team": "KC",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 30,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41819,
+     "name": "Jayden Higgins",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 29,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100023,
+     "name": "Steelers",
+     "position": "DEF",
+     "nfl_team": "Pit",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 28,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34207,
+     "name": "Isiah Pacheco",
+     "position": "RB",
+     "nfl_team": "Det",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 27,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100024,
+     "name": "Chargers",
+     "position": "DEF",
+     "nfl_team": "LAC",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 26,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 4,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30218,
+     "name": "James Conner",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 25,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-06 03:17:23",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40958,
+     "name": "Trey Benson",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 35,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-06 08:53:21",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100013,
+     "name": "Raiders",
+     "position": "DEF",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 40742,
+     "name": "Sean Tucker",
+     "position": "RB",
+     "nfl_team": "TB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 36,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-09-07 03:18:04",
+   "faab_bid": null,
+   "trader_team_id": 9,
+   "tradee_team_id": 6,
+   "players": [],
+   "picks": [
+    {
+     "round": 6,
+     "original_team_id": 9,
+     "source_team_id": 9,
+     "dest_team_id": 6
+    },
+    {
+     "round": 16,
+     "original_team_id": 6,
+     "source_team_id": 6,
+     "dest_team_id": 9
+    }
+   ]
+  },
+  {
+   "yahoo_transaction_id": 37,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-07 11:19:36",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40835,
+     "name": "Jake Bates",
+     "position": "K",
+     "nfl_team": "Det",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 38,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-08 07:34:59",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "position": "TE",
+     "nfl_team": "Dal",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 39,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-08 19:27:28",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33412,
+     "name": "Najee Harris",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 40,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-10 14:16:32",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "position": "QB",
+     "nfl_team": "Atl",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 41,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-10 18:13:13",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33113,
+     "name": "Juwan Johnson",
+     "position": "TE",
+     "nfl_team": "NO",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 42,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-11 13:45:26",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 41819,
+     "name": "Jayden Higgins",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 43,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-12 11:54:39",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 41864,
+     "name": "Kyle Williams",
+     "position": "WR",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 44,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-09-13 03:21:08",
+   "faab_bid": null,
+   "trader_team_id": 9,
+   "tradee_team_id": 3,
+   "players": [],
+   "picks": [
+    {
+     "round": 16,
+     "original_team_id": 9,
+     "source_team_id": 9,
+     "dest_team_id": 3
+    },
+    {
+     "round": 13,
+     "original_team_id": 3,
+     "source_team_id": 3,
+     "dest_team_id": 9
+    }
+   ]
+  },
+  {
+   "yahoo_transaction_id": 45,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-13 11:06:29",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33537,
+     "name": "Evan McPherson",
+     "position": "K",
+     "nfl_team": "Cin",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 41048,
+     "name": "Tyrone Tracy Jr.",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 46,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-13 12:35:19",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34147,
+     "name": "Jalen Nailor",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 47,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-13 15:20:25",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30266,
+     "name": "Jake Elliott",
+     "position": "K",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 48,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-13 18:14:19",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 49,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-13 18:14:51",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41009,
+     "name": "Troy Franklin",
+     "position": "WR",
+     "nfl_team": "Den",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 50,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-13 19:13:18",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "position": "WR",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 33412,
+     "name": "Najee Harris",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 51,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-15 17:47:51",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41009,
+     "name": "Troy Franklin",
+     "position": "WR",
+     "nfl_team": "Den",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 52,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-15 17:48:00",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100016,
+     "name": "Vikings",
+     "position": "DEF",
+     "nfl_team": "Min",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 53,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-15 22:34:41",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42687,
+     "name": "Carson Beck",
+     "position": "QB",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 54,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-15 22:36:13",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "position": "WR",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 64,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100009,
+     "name": "Packers",
+     "position": "DEF",
+     "nfl_team": "GB",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 100023,
+     "name": "Steelers",
+     "position": "DEF",
+     "nfl_team": "Pit",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 63,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100025,
+     "name": "49ers",
+     "position": "DEF",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 100024,
+     "name": "Chargers",
+     "position": "DEF",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 62,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 3,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100027,
+     "name": "Buccaneers",
+     "position": "DEF",
+     "nfl_team": "TB",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 100030,
+     "name": "Jaguars",
+     "position": "DEF",
+     "nfl_team": "Jax",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 61,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30182,
+     "name": "Cooper Kupp",
+     "position": "WR",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "position": "TE",
+     "nfl_team": "Dal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 60,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 7,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42693,
+     "name": "Antonio Williams",
+     "position": "WR",
+     "nfl_team": "Was",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 59,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 10,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31874,
+     "name": "Drew Lock",
+     "position": "QB",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 58,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 11,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40201,
+     "name": "Dontayvion Wicks",
+     "position": "WR",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "position": "QB",
+     "nfl_team": "Atl",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 57,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 11,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42697,
+     "name": "Caleb Douglas",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 56,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 37,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31868,
+     "name": "Deebo Samuel Sr.",
+     "position": "WR",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 34659,
+     "name": "Rashid Shaheed",
+     "position": "WR",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 55,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 04:35:03",
+   "faab_bid": 58,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29236,
+     "name": "Carson Wentz",
+     "position": "QB",
+     "nfl_team": "Min",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 40819,
+     "name": "Brandon Aubrey",
+     "position": "K",
+     "nfl_team": "Dal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 71,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 06:29:18",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41097,
+     "name": "Devaughn Vele",
+     "position": "WR",
+     "nfl_team": "NO",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    },
+    {
+     "player_id": 40095,
+     "name": "Tank Bigsby",
+     "position": "RB",
+     "nfl_team": "Phi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 3,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 72,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-16 09:24:14",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100012,
+     "name": "Chiefs",
+     "position": "DEF",
+     "nfl_team": "KC",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 40114,
+     "name": "Tre Tucker",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 73,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-16 16:07:53",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100029,
+     "name": "Panthers",
+     "position": "DEF",
+     "nfl_team": "Car",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 74,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-16 16:08:18",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 75,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-18 13:42:55",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 76,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-18 13:45:19",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30180,
+     "name": "Alvin Kamara",
+     "position": "RB",
+     "nfl_team": "NO",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 77,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-18 15:09:54",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29399,
+     "name": "Tyreek Hill",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 78,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-18 15:11:31",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29399,
+     "name": "Tyreek Hill",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 80,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-19 03:48:39",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100024,
+     "name": "Chargers",
+     "position": "DEF",
+     "nfl_team": "LAC",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 100029,
+     "name": "Panthers",
+     "position": "DEF",
+     "nfl_team": "Car",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 79,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-19 03:48:39",
+   "faab_bid": 3,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40819,
+     "name": "Brandon Aubrey",
+     "position": "K",
+     "nfl_team": "Dal",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 29792,
+     "name": "Ka'imi Fairbairn",
+     "position": "K",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 82,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-19 13:10:34",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40232,
+     "name": "Xavier Hutchinson",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    },
+    {
+     "player_id": 34147,
+     "name": "Jalen Nailor",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 83,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-19 14:43:05",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33415,
+     "name": "Rashod Bateman",
+     "position": "WR",
+     "nfl_team": "Bal",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 30180,
+     "name": "Alvin Kamara",
+     "position": "RB",
+     "nfl_team": "NO",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 84,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-09-20 03:24:36",
+   "faab_bid": null,
+   "trader_team_id": 5,
+   "tradee_team_id": 4,
+   "players": [],
+   "picks": [
+    {
+     "round": 6,
+     "original_team_id": 5,
+     "source_team_id": 5,
+     "dest_team_id": 4
+    },
+    {
+     "round": 15,
+     "original_team_id": 4,
+     "source_team_id": 4,
+     "dest_team_id": 5
+    }
+   ]
+  },
+  {
+   "yahoo_transaction_id": 85,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-20 10:13:48",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "position": "QB",
+     "nfl_team": "Atl",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 40641,
+     "name": "Keaton Mitchell",
+     "position": "RB",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 86,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-20 15:15:54",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34659,
+     "name": "Rashid Shaheed",
+     "position": "WR",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 87,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-20 19:32:02",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "position": "WR",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 40231,
+     "name": "Chris Rodriguez Jr.",
+     "position": "RB",
+     "nfl_team": "Jax",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 88,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-20 19:38:07",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42859,
+     "name": "Seth McGowan",
+     "position": "RB",
+     "nfl_team": "Ind",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 42696,
+     "name": "Malachi Fields",
+     "position": "WR",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 89,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-20 23:54:58",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 42859,
+     "name": "Seth McGowan",
+     "position": "RB",
+     "nfl_team": "Ind",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 90,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-22 08:12:48",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 91,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-22 10:11:58",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100024,
+     "name": "Chargers",
+     "position": "DEF",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 92,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-22 21:12:52",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34659,
+     "name": "Rashid Shaheed",
+     "position": "WR",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 6,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 100,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29792,
+     "name": "Ka'imi Fairbairn",
+     "position": "K",
+     "nfl_team": "Hou",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 40835,
+     "name": "Jake Bates",
+     "position": "K",
+     "nfl_team": "Det",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 99,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100008,
+     "name": "Lions",
+     "position": "DEF",
+     "nfl_team": "Det",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 100013,
+     "name": "Raiders",
+     "position": "DEF",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 98,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100029,
+     "name": "Panthers",
+     "position": "DEF",
+     "nfl_team": "Car",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 100027,
+     "name": "Buccaneers",
+     "position": "DEF",
+     "nfl_team": "TB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 97,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30180,
+     "name": "Alvin Kamara",
+     "position": "RB",
+     "nfl_team": "NO",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 33998,
+     "name": "Wan'Dale Robinson",
+     "position": "WR",
+     "nfl_team": "Ten",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 96,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 28389,
+     "name": "Jameis Winston",
+     "position": "QB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 30182,
+     "name": "Cooper Kupp",
+     "position": "WR",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 95,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 8,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40707,
+     "name": "Emanuel Wilson",
+     "position": "RB",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 42697,
+     "name": "Caleb Douglas",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 94,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 10,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "position": "TE",
+     "nfl_team": "Dal",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 29269,
+     "name": "Hunter Henry",
+     "position": "TE",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 93,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 04:43:28",
+   "faab_bid": 11,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 28390,
+     "name": "Marcus Mariota",
+     "position": "QB",
+     "nfl_team": "Was",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 40224,
+     "name": "Kayshon Boutte",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 104,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 05:28:42",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40232,
+     "name": "Xavier Hutchinson",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 105,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 05:29:15",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 26483,
+     "name": "Case Keenum",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    },
+    {
+     "player_id": 40954,
+     "name": "Jalen McMillan",
+     "position": "WR",
+     "nfl_team": "TB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 106,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 06:15:11",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31107,
+     "name": "Dalton Schultz",
+     "position": "TE",
+     "nfl_team": "Hou",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 40926,
+     "name": "Jonathon Brooks",
+     "position": "RB",
+     "nfl_team": "Car",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 107,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 06:21:13",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40114,
+     "name": "Tre Tucker",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 30788,
+     "name": "Cooper Rush",
+     "position": "QB",
+     "nfl_team": "Atl",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 108,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:29:51",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29236,
+     "name": "Carson Wentz",
+     "position": "QB",
+     "nfl_team": "Min",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 109,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:30:14",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42693,
+     "name": "Antonio Williams",
+     "position": "WR",
+     "nfl_team": "Was",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 110,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:30:34",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100016,
+     "name": "Vikings",
+     "position": "DEF",
+     "nfl_team": "Min",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 111,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:31:36",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 112,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:32:52",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41006,
+     "name": "Sione Vaki",
+     "position": "RB",
+     "nfl_team": "Det",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 42744,
+     "name": "Mike Washington Jr.",
+     "position": "RB",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 113,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 09:34:13",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40911,
+     "name": "Keon Coleman",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 114,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-23 13:01:20",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40095,
+     "name": "Tank Bigsby",
+     "position": "RB",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    },
+    {
+     "player_id": 34104,
+     "name": "Khalil Shakir",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 3,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 115,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-24 13:54:57",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100004,
+     "name": "Bengals",
+     "position": "DEF",
+     "nfl_team": "Cin",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 116,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-24 16:51:07",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41060,
+     "name": "Joe Milton III",
+     "position": "QB",
+     "nfl_team": "Dal",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    },
+    {
+     "player_id": 26483,
+     "name": "Case Keenum",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 117,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-24 19:35:33",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 118,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-24 19:36:34",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42838,
+     "name": "Trey Smack",
+     "position": "K",
+     "nfl_team": "GB",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 119,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-24 20:11:20",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 32675,
+     "name": "Tua Tagovailoa",
+     "position": "QB",
+     "nfl_team": "Atl",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 120,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-24 20:11:38",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41881,
+     "name": "Kaleb Johnson",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 31874,
+     "name": "Drew Lock",
+     "position": "QB",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 121,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-25 03:30:00",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 40097,
+     "name": "Tank Dell",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 123,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-25 14:24:09",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41006,
+     "name": "Sione Vaki",
+     "position": "RB",
+     "nfl_team": "Det",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 122,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-09-25 14:24:09",
+   "faab_bid": null,
+   "trader_team_id": 5,
+   "tradee_team_id": 1,
+   "players": [
+    {
+     "player_id": 42623,
+     "name": "Fernando Mendoza",
+     "position": "QB",
+     "nfl_team": "LV",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 33967,
+     "name": "Jameson Williams",
+     "position": "WR",
+     "nfl_team": "Det",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 42010,
+     "name": "Jacory Croskey-Merritt",
+     "position": "RB",
+     "nfl_team": "Was",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 34120,
+     "name": "Kyren Williams",
+     "position": "RB",
+     "nfl_team": "LAR",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 31908,
+     "name": "Terry McLaurin",
+     "position": "WR",
+     "nfl_team": "Was",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 124,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-09-25 18:54:28",
+   "faab_bid": null,
+   "trader_team_id": 1,
+   "tradee_team_id": 12,
+   "players": [
+    {
+     "player_id": 31002,
+     "name": "Lamar Jackson",
+     "position": "QB",
+     "nfl_team": "Bal",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 40908,
+     "name": "Ladd McConkey",
+     "position": "WR",
+     "nfl_team": "LAC",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 33389,
+     "name": "Trevor Lawrence",
+     "position": "QB",
+     "nfl_team": "Jax",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 33477,
+     "name": "Nico Collins",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 125,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-25 19:10:37",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40641,
+     "name": "Keaton Mitchell",
+     "position": "RB",
+     "nfl_team": "LAC",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 126,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-25 19:26:00",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100023,
+     "name": "Steelers",
+     "position": "DEF",
+     "nfl_team": "Pit",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 128,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-26 03:49:22",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42744,
+     "name": "Mike Washington Jr.",
+     "position": "RB",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 41881,
+     "name": "Kaleb Johnson",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 127,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-26 03:49:22",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40926,
+     "name": "Jonathon Brooks",
+     "position": "RB",
+     "nfl_team": "Car",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 129,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-26 08:51:08",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42687,
+     "name": "Carson Beck",
+     "position": "QB",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 40971,
+     "name": "MarShawn Lloyd",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 130,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-26 12:28:55",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40063,
+     "name": "Jayden Reed",
+     "position": "WR",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 6,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 131,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-26 12:31:40",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41831,
+     "name": "Terrance Ferguson",
+     "position": "TE",
+     "nfl_team": "LAR",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 132,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-26 13:04:20",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29269,
+     "name": "Hunter Henry",
+     "position": "TE",
+     "nfl_team": "NE",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 133,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-26 13:21:33",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34104,
+     "name": "Khalil Shakir",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 42702,
+     "name": "Ja'Kobi Lane",
+     "position": "WR",
+     "nfl_team": "Bal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 134,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-26 14:08:34",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40905,
+     "name": "J.J. McCarthy",
+     "position": "QB",
+     "nfl_team": "NYG",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 42744,
+     "name": "Mike Washington Jr.",
+     "position": "RB",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 135,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-27 11:28:57",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 26483,
+     "name": "Case Keenum",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 31906,
+     "name": "Devin Singletary",
+     "position": "RB",
+     "nfl_team": "NYG",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 138,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-29 08:53:59",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30218,
+     "name": "James Conner",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 3,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 139,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-29 18:55:22",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40911,
+     "name": "Keon Coleman",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 140,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 03:48:00",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34207,
+     "name": "Isiah Pacheco",
+     "position": "RB",
+     "nfl_team": "Det",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 153,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100005,
+     "name": "Browns",
+     "position": "DEF",
+     "nfl_team": "Cle",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 100025,
+     "name": "49ers",
+     "position": "DEF",
+     "nfl_team": "SF",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 152,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100022,
+     "name": "Cardinals",
+     "position": "DEF",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 100029,
+     "name": "Panthers",
+     "position": "DEF",
+     "nfl_team": "Car",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 151,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29399,
+     "name": "Tyreek Hill",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 150,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41499,
+     "name": "Spencer Shrader",
+     "position": "K",
+     "nfl_team": "Ind",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 30266,
+     "name": "Jake Elliott",
+     "position": "K",
+     "nfl_team": "Phi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 149,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31874,
+     "name": "Drew Lock",
+     "position": "QB",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 29269,
+     "name": "Hunter Henry",
+     "position": "TE",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 148,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 2,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100002,
+     "name": "Bills",
+     "position": "DEF",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 100012,
+     "name": "Chiefs",
+     "position": "DEF",
+     "nfl_team": "KC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 147,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42638,
+     "name": "Kenyon Sadiq",
+     "position": "TE",
+     "nfl_team": "NYJ",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 146,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30423,
+     "name": "Austin Ekeler",
+     "position": "RB",
+     "nfl_team": "Was",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 26699,
+     "name": "Keenan Allen",
+     "position": "WR",
+     "nfl_team": "Ind",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 145,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 6,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41058,
+     "name": "Malik Washington",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 34104,
+     "name": "Khalil Shakir",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 144,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 7,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41010,
+     "name": "Jaylen Wright",
+     "position": "RB",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 40926,
+     "name": "Jonathon Brooks",
+     "position": "RB",
+     "nfl_team": "Car",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 143,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 11,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29631,
+     "name": "Kalif Raymond",
+     "position": "WR",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    },
+    {
+     "player_id": 41060,
+     "name": "Joe Milton III",
+     "position": "QB",
+     "nfl_team": "Dal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 142,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 12,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40971,
+     "name": "MarShawn Lloyd",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 42838,
+     "name": "Trey Smack",
+     "position": "K",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 141,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:02:07",
+   "faab_bid": 30,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41969,
+     "name": "Ollie Gordon II",
+     "position": "RB",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 40114,
+     "name": "Tre Tucker",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 160,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 04:04:37",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42919,
+     "name": "Jalon Daniels",
+     "position": "QB",
+     "nfl_team": "TB",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 42687,
+     "name": "Carson Beck",
+     "position": "QB",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 161,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 05:39:39",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    },
+    {
+     "player_id": 41831,
+     "name": "Terrance Ferguson",
+     "position": "TE",
+     "nfl_team": "LAR",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 6,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 162,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 07:49:59",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31019,
+     "name": "Dallas Goedert",
+     "position": "TE",
+     "nfl_team": "Phi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 163,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-09-30 07:51:18",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100003,
+     "name": "Bears",
+     "position": "DEF",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 100022,
+     "name": "Cardinals",
+     "position": "DEF",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 164,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-01 10:48:50",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42744,
+     "name": "Mike Washington Jr.",
+     "position": "RB",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    },
+    {
+     "player_id": 40119,
+     "name": "Tyjae Spears",
+     "position": "RB",
+     "nfl_team": "Ten",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 3,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 165,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-02 14:39:09",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 32887,
+     "name": "Jauan Jennings",
+     "position": "WR",
+     "nfl_team": "Min",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 166,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-02 23:22:15",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33998,
+     "name": "Wan'Dale Robinson",
+     "position": "WR",
+     "nfl_team": "Ten",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    },
+    {
+     "player_id": 100017,
+     "name": "Patriots",
+     "position": "DEF",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 6,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 168,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-03 03:33:32",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42687,
+     "name": "Carson Beck",
+     "position": "QB",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 100014,
+     "name": "Rams",
+     "position": "DEF",
+     "nfl_team": "LAR",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 167,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-03 03:33:32",
+   "faab_bid": 4,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 26699,
+     "name": "Keenan Allen",
+     "position": "WR",
+     "nfl_team": "Ind",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 33415,
+     "name": "Rashod Bateman",
+     "position": "WR",
+     "nfl_team": "Bal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 170,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-03 10:50:52",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31017,
+     "name": "Christian Kirk",
+     "position": "WR",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 171,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-03 10:51:09",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30231,
+     "name": "Mack Hollins",
+     "position": "WR",
+     "nfl_team": "NE",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 172,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-03 12:43:56",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 29792,
+     "name": "Ka'imi Fairbairn",
+     "position": "K",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 173,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-03 12:47:29",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41031,
+     "name": "Isaiah Davis",
+     "position": "RB",
+     "nfl_team": "NYJ",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 30231,
+     "name": "Mack Hollins",
+     "position": "WR",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 174,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-03 13:29:01",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40835,
+     "name": "Jake Bates",
+     "position": "K",
+     "nfl_team": "Det",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 175,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-04 08:19:38",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41344,
+     "name": "George Holani",
+     "position": "RB",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 176,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-04 10:27:53",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 28592,
+     "name": "Darren Waller",
+     "position": "TE",
+     "nfl_team": "Car",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 31107,
+     "name": "Dalton Schultz",
+     "position": "TE",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 177,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-04 11:11:55",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40108,
+     "name": "Kendre Miller",
+     "position": "RB",
+     "nfl_team": "NO",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 40915,
+     "name": "Adonai Mitchell",
+     "position": "WR",
+     "nfl_team": "NYJ",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 178,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-04 14:35:21",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 41031,
+     "name": "Isaiah Davis",
+     "position": "RB",
+     "nfl_team": "NYJ",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 179,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-05 19:23:41",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34054,
+     "name": "Brian Robinson",
+     "position": "RB",
+     "nfl_team": "Atl",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 180,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-06 18:42:15",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29631,
+     "name": "Kalif Raymond",
+     "position": "WR",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 181,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-06 21:56:46",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100002,
+     "name": "Bills",
+     "position": "DEF",
+     "nfl_team": "Buf",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 189,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29269,
+     "name": "Hunter Henry",
+     "position": "TE",
+     "nfl_team": "NE",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 41344,
+     "name": "George Holani",
+     "position": "RB",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 188,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100030,
+     "name": "Jaguars",
+     "position": "DEF",
+     "nfl_team": "Jax",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 100009,
+     "name": "Packers",
+     "position": "DEF",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 187,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29792,
+     "name": "Ka'imi Fairbairn",
+     "position": "K",
+     "nfl_team": "Hou",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 34085,
+     "name": "Jake Ferguson",
+     "position": "TE",
+     "nfl_team": "Dal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 186,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 5,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40911,
+     "name": "Keon Coleman",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 26483,
+     "name": "Case Keenum",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 185,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 8,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31012,
+     "name": "Mike Gesicki",
+     "position": "TE",
+     "nfl_team": "Cin",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 28592,
+     "name": "Darren Waller",
+     "position": "TE",
+     "nfl_team": "Car",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 184,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 11,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 32993,
+     "name": "Tyler Huntley",
+     "position": "QB",
+     "nfl_team": "Bal",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 28390,
+     "name": "Marcus Mariota",
+     "position": "QB",
+     "nfl_team": "Was",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 183,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 12,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40114,
+     "name": "Tre Tucker",
+     "position": "WR",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 8
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 182,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 03:59:11",
+   "faab_bid": 50,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41002,
+     "name": "Will Shipley",
+     "position": "RB",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 30423,
+     "name": "Austin Ekeler",
+     "position": "RB",
+     "nfl_team": "Was",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 193,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 06:21:24",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100006,
+     "name": "Cowboys",
+     "position": "DEF",
+     "nfl_team": "Dal",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 100030,
+     "name": "Jaguars",
+     "position": "DEF",
+     "nfl_team": "Jax",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 194,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 09:39:43",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40958,
+     "name": "Trey Benson",
+     "position": "RB",
+     "nfl_team": "Ari",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 3,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 195,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-07 09:40:41",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42616,
+     "name": "Dohnte Meyers",
+     "position": "WR",
+     "nfl_team": "Cin",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 3
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 196,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 19:36:37",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31977,
+     "name": "Matt Gay",
+     "position": "K",
+     "nfl_team": "LV",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 197,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-07 19:37:06",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40952,
+     "name": "Roman Wilson",
+     "position": "WR",
+     "nfl_team": "Pit",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 198,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-09 07:50:39",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34104,
+     "name": "Khalil Shakir",
+     "position": "WR",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 34047,
+     "name": "Rachaad White",
+     "position": "RB",
+     "nfl_team": "Was",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 199,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-09 09:50:21",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42693,
+     "name": "Antonio Williams",
+     "position": "WR",
+     "nfl_team": "Was",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 30197,
+     "name": "Chris Godwin Jr.",
+     "position": "WR",
+     "nfl_team": "TB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 200,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-09 09:57:06",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 32887,
+     "name": "Jauan Jennings",
+     "position": "WR",
+     "nfl_team": "Min",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 202,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-10 03:41:43",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100030,
+     "name": "Jaguars",
+     "position": "DEF",
+     "nfl_team": "Jax",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 100005,
+     "name": "Browns",
+     "position": "DEF",
+     "nfl_team": "Cle",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 201,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-10 03:41:43",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42716,
+     "name": "Chris Bell",
+     "position": "WR",
+     "nfl_team": "Mia",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 42693,
+     "name": "Antonio Williams",
+     "position": "WR",
+     "nfl_team": "Was",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 204,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-10 06:23:57",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100020,
+     "name": "Jets",
+     "position": "DEF",
+     "nfl_team": "NYJ",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 206,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-10 17:13:10",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41865,
+     "name": "Isaac TeSlaa",
+     "position": "WR",
+     "nfl_team": "Det",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 205,
+   "type": "trade",
+   "status": "successful",
+   "timestamp": "2026-10-10 17:13:10",
+   "faab_bid": null,
+   "trader_team_id": 1,
+   "tradee_team_id": 9,
+   "players": [
+    {
+     "player_id": 33991,
+     "name": "Breece Hall",
+     "position": "RB",
+     "nfl_team": "NYJ",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 41807,
+     "name": "Omarion Hampton",
+     "position": "RB",
+     "nfl_team": "LAC",
+     "type": "trade",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": [
+    {
+     "round": 6,
+     "original_team_id": 1,
+     "source_team_id": 1,
+     "dest_team_id": 9
+    },
+    {
+     "round": 9,
+     "original_team_id": 9,
+     "source_team_id": 9,
+     "dest_team_id": 1
+    }
+   ]
+  },
+  {
+   "yahoo_transaction_id": 207,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-11 08:50:29",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41881,
+     "name": "Kaleb Johnson",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 40641,
+     "name": "Keaton Mitchell",
+     "position": "RB",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 208,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-11 10:36:22",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41840,
+     "name": "Tre' Harris",
+     "position": "WR",
+     "nfl_team": "LAC",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 209,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-11 14:57:34",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30551,
+     "name": "Kendrick Bourne",
+     "position": "WR",
+     "nfl_team": "Ari",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 210,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-11 16:16:59",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41344,
+     "name": "George Holani",
+     "position": "RB",
+     "nfl_team": "Sea",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 41010,
+     "name": "Jaylen Wright",
+     "position": "RB",
+     "nfl_team": "Mia",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 211,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-11 20:47:07",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100014,
+     "name": "Rams",
+     "position": "DEF",
+     "nfl_team": "LAR",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 41344,
+     "name": "George Holani",
+     "position": "RB",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 212,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-12 17:46:13",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42635,
+     "name": "Ty Simpson",
+     "position": "QB",
+     "nfl_team": "LAR",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 100014,
+     "name": "Rams",
+     "position": "DEF",
+     "nfl_team": "LAR",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 213,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-12 19:40:44",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40980,
+     "name": "Ray Davis",
+     "position": "RB",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 42635,
+     "name": "Ty Simpson",
+     "position": "QB",
+     "nfl_team": "LAR",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "freeagents",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 214,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-13 05:52:50",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 29269,
+     "name": "Hunter Henry",
+     "position": "TE",
+     "nfl_team": "NE",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 215,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-13 07:05:22",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40835,
+     "name": "Jake Bates",
+     "position": "K",
+     "nfl_team": "Det",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 216,
+   "type": "drop",
+   "status": "successful",
+   "timestamp": "2026-10-13 20:39:08",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41840,
+     "name": "Tre' Harris",
+     "position": "WR",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 230,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 41980,
+     "name": "Andy Borregales",
+     "position": "K",
+     "nfl_team": "NE",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    },
+    {
+     "player_id": 33537,
+     "name": "Evan McPherson",
+     "position": "K",
+     "nfl_team": "Cin",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 5,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 229,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 31482,
+     "name": "Eddy Pineiro",
+     "position": "K",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 41093,
+     "name": "Will Reichard",
+     "position": "K",
+     "nfl_team": "Min",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 228,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 33415,
+     "name": "Rashod Bateman",
+     "position": "WR",
+     "nfl_team": "Bal",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 4
+    },
+    {
+     "player_id": 31012,
+     "name": "Mike Gesicki",
+     "position": "TE",
+     "nfl_team": "Cin",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 4,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 227,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100011,
+     "name": "Colts",
+     "position": "DEF",
+     "nfl_team": "Ind",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 100006,
+     "name": "Cowboys",
+     "position": "DEF",
+     "nfl_team": "Dal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 226,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 0,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40296,
+     "name": "Blake Grupe",
+     "position": "K",
+     "nfl_team": "LAR",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 34344,
+     "name": "Cameron Dicker",
+     "position": "K",
+     "nfl_team": "LAC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 225,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42464,
+     "name": "Darius Cooper",
+     "position": "WR",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 30346,
+     "name": "Harrison Butker",
+     "position": "K",
+     "nfl_team": "KC",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 224,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 26483,
+     "name": "Case Keenum",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 10
+    },
+    {
+     "player_id": 31874,
+     "name": "Drew Lock",
+     "position": "QB",
+     "nfl_team": "Sea",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 10,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 223,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 1,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34047,
+     "name": "Rachaad White",
+     "position": "RB",
+     "nfl_team": "Was",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 12
+    },
+    {
+     "player_id": 40108,
+     "name": "Kendre Miller",
+     "position": "RB",
+     "nfl_team": "NO",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 12,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 222,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 2,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100017,
+     "name": "Patriots",
+     "position": "DEF",
+     "nfl_team": "NE",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 221,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 3,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 34063,
+     "name": "Dameon Pierce",
+     "position": "RB",
+     "nfl_team": "Phi",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 7
+    },
+    {
+     "player_id": 40980,
+     "name": "Ray Davis",
+     "position": "RB",
+     "nfl_team": "Buf",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 7,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 220,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 7,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100012,
+     "name": "Chiefs",
+     "position": "DEF",
+     "nfl_team": "KC",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 11
+    },
+    {
+     "player_id": 100020,
+     "name": "Jets",
+     "position": "DEF",
+     "nfl_team": "NYJ",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 11,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 219,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 10,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 30197,
+     "name": "Chris Godwin Jr.",
+     "position": "WR",
+     "nfl_team": "TB",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 9
+    },
+    {
+     "player_id": 32993,
+     "name": "Tyler Huntley",
+     "position": "QB",
+     "nfl_team": "Bal",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 9,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 218,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 14,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42669,
+     "name": "Germie Bernard",
+     "position": "WR",
+     "nfl_team": "Pit",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 2
+    },
+    {
+     "player_id": 31017,
+     "name": "Christian Kirk",
+     "position": "WR",
+     "nfl_team": "SF",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 2,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 217,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 03:58:59",
+   "faab_bid": 20,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 40641,
+     "name": "Keaton Mitchell",
+     "position": "RB",
+     "nfl_team": "LAC",
+     "type": "add",
+     "source_type": "waivers",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 8
+    },
+    {
+     "player_id": 40893,
+     "name": "Marvin Harrison Jr.",
+     "position": "WR",
+     "nfl_team": "Hou",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 8,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 237,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 04:23:38",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 32858,
+     "name": "Tyler Bass",
+     "position": "K",
+     "nfl_team": "Buf",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 1
+    },
+    {
+     "player_id": 41881,
+     "name": "Kaleb Johnson",
+     "position": "RB",
+     "nfl_team": "GB",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 1,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 238,
+   "type": "add/drop",
+   "status": "successful",
+   "timestamp": "2026-10-14 04:36:36",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 100025,
+     "name": "49ers",
+     "position": "DEF",
+     "nfl_team": "SF",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 6
+    },
+    {
+     "player_id": 40504,
+     "name": "Tyson Bagent",
+     "position": "QB",
+     "nfl_team": "Chi",
+     "type": "drop",
+     "source_type": "team",
+     "source_team_id": 6,
+     "dest_type": "waivers",
+     "dest_team_id": null
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 239,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-14 19:45:23",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42702,
+     "name": "Ja'Kobi Lane",
+     "position": "WR",
+     "nfl_team": "Bal",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  },
+  {
+   "yahoo_transaction_id": 240,
+   "type": "add",
+   "status": "successful",
+   "timestamp": "2026-10-14 19:52:15",
+   "faab_bid": null,
+   "trader_team_id": null,
+   "tradee_team_id": null,
+   "players": [
+    {
+     "player_id": 42652,
+     "name": "Omar Cooper Jr.",
+     "position": "WR",
+     "nfl_team": "NYJ",
+     "type": "add",
+     "source_type": "freeagents",
+     "source_team_id": null,
+     "dest_type": "team",
+     "dest_team_id": 5
+    }
+   ],
+   "picks": []
+  }
+ ]
+}

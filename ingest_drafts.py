@@ -16,7 +16,7 @@ DB_PATH = project_dir / "fantasy.db"
 
 # Number of teams per season, needed to compute pick_in_round.
 # 2026 is 11 (Lewitus replacement TBD); 2023-2025 were 12-team.
-TEAM_COUNT_PER_SEASON = {2023: 12, 2024: 12, 2025: 12, 2026: 11}
+TEAM_COUNT_PER_SEASON = {2023: 12, 2024: 12, 2025: 12, 2026: 12}
 
 
 def decode(v):

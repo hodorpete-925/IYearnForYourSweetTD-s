@@ -333,18 +333,39 @@ def _apply_in_season_moves(conn, by_manager, handoff_back, dollar,
                           "JOIN managers m ON m.manager_id = t.manager_id WHERE t.season=?",
                           (TARGET_SEASON,)):
         mgr_by_tsid[r[0]] = handoff_back.get(r[1], r[1])
-    rows = conn.execute("""
-        SELECT st.synth_id, st.timestamp, st.event_type, st.note,
-               sp.player_id, sp.direction, sp.team_season_id, sp.source_type,
-               sp.counterparty_team_season_id,
-               p.player_name, p.position, p.nfl_team
+    # Two sources, one shape (2026-10-14, Yahoo API back): real Yahoo rows in
+    # `transactions` are the source of truth from the draft onward; synthetic
+    # rows still count only while not superseded (ingest_2026_yahoo.py flags
+    # the ones Yahoo also recorded). Commish events carry no players and
+    # drop out of the JOIN.
+    _st_cols = [r[1] for r in conn.execute("PRAGMA table_info(synthetic_transactions)")]
+    _live = ("AND st.superseded_by_yahoo_id IS NULL"
+             if "superseded_by_yahoo_id" in _st_cols else "")
+    rows = conn.execute(f"""
+        SELECT st.synth_id AS synth_id, st.timestamp AS timestamp,
+               st.event_type AS event_type, st.note AS note,
+               sp.player_id AS player_id, sp.direction AS direction,
+               sp.team_season_id AS team_season_id, sp.source_type AS source_type,
+               sp.counterparty_team_season_id AS counterparty_team_season_id,
+               p.player_name AS player_name, p.position AS position, p.nfl_team AS nfl_team,
+               CASE sp.direction WHEN 'outgoing' THEN 0 ELSE 1 END AS dir_ord
         FROM synthetic_transactions st
         JOIN synthetic_transaction_players sp ON sp.synth_id = st.synth_id
         JOIN players p ON p.player_id = sp.player_id
-        WHERE st.season = ? AND st.timestamp > ?
-        ORDER BY st.timestamp, st.synth_id,
-                 CASE sp.direction WHEN 'outgoing' THEN 0 ELSE 1 END
-    """, (TARGET_SEASON, drafted)).fetchall()
+        WHERE st.season = ? AND st.timestamp > ? {_live}
+        UNION ALL
+        SELECT -t.transaction_id, t.timestamp, t.event_type,
+               'YAHOO|' || t.yahoo_transaction_id,
+               tp.player_id, tp.direction, tp.team_season_id, tp.source_type,
+               tp.counterparty_team_season_id,
+               p.player_name, p.position, p.nfl_team,
+               CASE tp.direction WHEN 'outgoing' THEN 0 ELSE 1 END
+        FROM transactions t
+        JOIN transaction_players tp ON tp.transaction_id = t.transaction_id
+        JOIN players p ON p.player_id = tp.player_id
+        WHERE t.season = ? AND t.timestamp > ? AND t.status = 'successful'
+        ORDER BY timestamp, synth_id, dir_ord
+    """, (TARGET_SEASON, drafted, TARGET_SEASON, drafted)).fetchall()
     n_add = n_drop = n_trade = 0
 
     def _find(pid):
