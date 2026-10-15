@@ -9,6 +9,8 @@ Order, stopping at the first failure (nothing after a failed step runs):
        2b. ingest_2026_yahoo.py --commit   2026 transactions -> fantasy.db
                                      (upsert; flags superseded synthetics)
        2c. pull_yahoo_week.py        scores.json + current_lineups.json
+       2d. ingest_player_weekly_stats.py 2026 --weeks <w-1>-<w>
+                                     weekly points (DRC value board)
   3. commit FINAL panel trades       (add_synthetic_trades.py --commit;
                                       idempotent, pending trades are ignored)
   4. recon_ownership.py              (read-only check)
@@ -117,6 +119,19 @@ def main():
         else:
             for cmd in YAHOO_STEPS:
                 run(cmd, f"2. Yahoo pull: {' '.join(cmd)}")
+            # 2d. weekly points for the DRC value board: last week + this
+            # week, so an in-progress week is corrected on the next run.
+            # The week comes from scores.json, which 2c just wrote.
+            try:
+                import json
+                wk = int(json.loads((HERE / "scores.json").read_text(encoding="utf-8")).get("week") or 0)
+            except Exception:
+                wk = 0
+            if wk:
+                run(["ingest_player_weekly_stats.py", "2026", "--weeks", f"{max(1, wk - 1)}-{wk}"],
+                    f"2d. Yahoo pull: weekly points weeks {max(1, wk - 1)}-{wk}")
+            else:
+                say("  (no week in scores.json; weekly points pull skipped)")
     else:
         say("\n=== 2. Yahoo pull skipped (no --yahoo) ===")
 

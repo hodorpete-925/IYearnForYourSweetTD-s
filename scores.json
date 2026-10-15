@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-14 22:42 EDT",
+ "as_of": "2026-10-14 23:55 EDT",
  "week": 6,
  "status": "upcoming",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 135.06,
+    "proj": 135.07,
     "pts": 0.0,
     "rec": "1-4-0",
     "rank": 11,
@@ -277,5 +277,5 @@
    "moves": 5
   }
  ],
- "standings_as_of": "2026-10-14 22:42 EDT"
+ "standings_as_of": "2026-10-14 23:55 EDT"
 }

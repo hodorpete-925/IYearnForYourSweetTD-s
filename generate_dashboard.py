@@ -32,6 +32,8 @@ import compute_drc as drc  # reuse Phase B walk
 import player_history as hist  # per-year history helper
 import draft_history as drafth  # per-manager draft picks
 import trade_history as tradeh  # per-manager trade events with points outcomes
+import value_over_cost as voc  # DRC value board math (2026-10-14)
+import value_board_sections as vbs  # DRC value board + transaction log pages
 
 DB_PATH = Path(__file__).parent / "fantasy.db"
 OUT_PATH = Path(__file__).parent / "dashboard.html"
@@ -8274,6 +8276,8 @@ def build_sidebar(by_manager):
           <a class="nav-link" data-target="trade-analyzer">Trade planner</a>
           <a class="nav-link" data-target="draft-board">{TARGET_SEASON} draft results</a>
           <a class="nav-link" data-target="keeper-board">{NEXT_SEASON} keeper board</a>
+          <a class="nav-link" data-target="value-board">DRC value board</a>
+          <a class="nav-link" data-target="transaction-log">{TARGET_SEASON} transaction log</a>
         </div>
       </details>
 
@@ -9043,6 +9047,21 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
         # the draft board shows the final keepers.
         draft_board = render_draft_board()
     bold_preds = render_bold_predictions(by_manager)
+    # DRC value board + transaction log (2026-10-14): both read the live
+    # Yahoo-fed tables; the value board also needs the replayed rosters.
+    _vconn = sqlite3.connect(DB_PATH)
+    _vconn.row_factory = sqlite3.Row
+    try:
+        _vrows, _vmeta = voc.compute(_vconn, by_manager)
+        value_board = vbs.render_value_board(_vrows, _vmeta, TARGET_SEASON)
+        _drafted = (load_draft_results_meta().get("drafted") or f"{TARGET_SEASON}-09-03")[:16]
+        transaction_log = vbs.render_transaction_log(
+            _vconn, by_manager, _load_json_sidecar("scores.json", warn=False), _drafted, TARGET_SEASON)
+        print(f"  value board: {len(_vrows)} players through week {_vmeta['weeks']}, "
+              f"price line {_vmeta['curve']['intercept']:+.1f} {_vmeta['curve']['slope']:+.2f}/DRC, "
+              f"resid sd {_vmeta['resid_sd']}")
+    finally:
+        _vconn.close()
     desk = render_commissioners_desk_section(comms_posts)
     rules = render_rules_section()
     rules_history = render_rules_history_section()
@@ -9062,7 +9081,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>{CSS}</style>
+<style>{CSS}{vbs.VB_CSS}</style>
 </head>
 <body>
 <div class="layout">
@@ -9078,6 +9097,8 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 {player_compare}
 {trade_analyzer}
 {draft_board}
+{value_board}
+{transaction_log}
 {bold_preds}
 {desk}
 {offseason}
@@ -9088,6 +9109,7 @@ def render_html(by_manager, search_players, comms_posts, generated_at, meta=None
 </main>
 </div>
 <script>{JS}</script>
+<script>{vbs.VB_JS}</script>
 </body>
 </html>"""
 
