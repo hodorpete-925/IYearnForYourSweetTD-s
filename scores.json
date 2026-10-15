@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-14 23:55 EDT",
+ "as_of": "2026-10-15 00:03 EDT",
  "week": 6,
  "status": "upcoming",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 135.07,
+    "proj": 135.02,
     "pts": 0.0,
     "rec": "1-4-0",
     "rank": 11,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 136.21,
+    "proj": 136.15,
     "pts": 0.0,
     "rec": "2-3-0",
     "rank": 9,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 123.83,
+    "proj": 123.77,
     "pts": 0.0,
     "rec": "4-1-0",
     "rank": 4,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 142.37,
+    "proj": 142.34,
     "pts": 0.0,
     "rec": "2-3-0",
     "rank": 8,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 89.28,
+    "proj": 89.27,
     "pts": 0.0,
     "rec": "0-5-0",
     "rank": 12,
@@ -277,5 +277,5 @@
    "moves": 5
   }
  ],
- "standings_as_of": "2026-10-14 23:55 EDT"
+ "standings_as_of": "2026-10-15 00:03 EDT"
 }
