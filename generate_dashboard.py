@@ -8879,8 +8879,10 @@ def render_bold_predictions(by_manager):
     preds = {}
     if conn.execute("SELECT 1 FROM sqlite_master "
                     "WHERE name='bold_predictions'").fetchone():
-        for r in conn.execute("""
-                SELECT manager_id, pred_no, prediction, boldness, outcome
+        _bp_cols = [c[1] for c in conn.execute("PRAGMA table_info(bold_predictions)")]
+        _extra = ", status, note, status_as_of" if "status" in _bp_cols else ", NULL AS status, NULL AS note, NULL AS status_as_of"
+        for r in conn.execute(f"""
+                SELECT manager_id, pred_no, prediction, boldness, outcome{_extra}
                 FROM bold_predictions WHERE season = 2026
                 ORDER BY manager_id, pred_no"""):
             preds.setdefault(r["manager_id"], []).append(r)
@@ -8898,6 +8900,8 @@ def render_bold_predictions(by_manager):
         key=lambda x: x[0])
     cards = ""
     n_in = 0
+    _asof_vals = [r["status_as_of"] for rows_ in preds.values() for r in rows_ if r["status_as_of"]]
+    _asof = f" Status {html.escape(_asof_vals[0])}." if _asof_vals else ""
     for disp, mid, actual in entries:
         face_id = name_to_id.get(CURRENT_HANDOFFS.get(actual, actual))
         rows = (preds.get(face_id) if face_id is not None else None) \
@@ -8916,7 +8920,14 @@ def render_bold_predictions(by_manager):
                     oc = ' <span class="bp-oc bp-right">&#10004; called it</span>'
                 elif r["outcome"] == "wrong":
                     oc = ' <span class="bp-oc bp-wrong">&#10008; missed</span>'
-                items += (f'<li>{html.escape(r["prediction"])} {chip}{oc}</li>')
+                elif r["status"]:
+                    _st = r["status"]
+                    _cls = ("bp-st-bad" if "trailing" in _st or "no sign" in _st
+                            else "bp-st-good" if ("track" in _st or "plausible" in _st or "live" in _st or "close" in _st)
+                            else "bp-st-mid")
+                    oc = f' <span class="bp-oc bp-st {_cls}">{html.escape(_st)}</span>'
+                note = (f'<div class="bp-note">{html.escape(r["note"])}</div>' if r["note"] else "")
+                items += (f'<li>{html.escape(r["prediction"])} {chip}{oc}{note}</li>')
             body = f'<ol class="bp-list">{items}</ol>'
         else:
             body = ('<p class="bp-none">No predictions submitted yet &mdash; '
@@ -8934,7 +8945,7 @@ def render_bold_predictions(by_manager):
         <p class="section-sub">Every manager's boldest calls for the season, on the record before Week 1. Each gets a 1&ndash;3 boldness rating from the commissioner. We review the lot at the summit, laugh at the misses, and crown the boldest take that actually hit. {n_in} of {len(entries)} managers are in &mdash; if your card is empty, you know what to do.</p>
       </header>
       <div class="bp-grid">{cards}</div>
-      <p class="kb-hint">Predictions are logged as submitted (light edits for the public record). Boldness ratings and season-end verdicts come from the commissioner. Want yours in or amended? Message Pete before Week 1 kicks off.</p>
+      <p class="kb-hint">Predictions are logged as submitted (light edits for the public record). Boldness ratings, the in-season read under each call, and season-end verdicts come from the commissioner.{_asof}</p>
     </section>"""
 
 

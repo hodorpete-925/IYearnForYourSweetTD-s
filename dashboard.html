@@ -2942,6 +2942,11 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 }
 
 /* --- DRC value board + transaction log (2026-10-14) --------------------- */
+.bp-st { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.bp-st-bad { background: rgba(180,35,24,.12); color: #b42318; }
+.bp-st-good { background: rgba(28,122,74,.14); color: #1c7a4a; }
+.bp-st-mid { background: var(--gray-100); color: var(--gray-600); }
+.bp-note { font-size: 12px; color: var(--gray-600); margin: 3px 0 2px; line-height: 1.45; }
 .vb-app, .tl-app { max-width: 1240px; }
 .vb-filters { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin: 4px 0 14px; }
 .vb-filter { font-size: 12.5px; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
@@ -3021,12 +3026,14 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
 .fl-list { font-size: 13.5px; line-height: 1.6; margin: 0 0 6px 18px; padding: 0; }
 @media (max-width: 720px) {
   .fl-summary th:nth-child(n+9), .fl-summary td:nth-child(n+9) { display: none; }
-  /* phones: winner, player, bid, other offers, since pickup; drop date, overpay, pts/$ */
+  /* phones: winner, player, bid, other offers; the efficiency table above carries production */
   .fl-table th:nth-child(1), .fl-table td:nth-child(1),
   .fl-table th:nth-child(6), .fl-table td:nth-child(6),
+  .fl-table th:nth-child(7), .fl-table td:nth-child(7),
   .fl-table th:nth-child(8), .fl-table td:nth-child(8) { display: none; }
   .fl-table { font-size: 12.5px; }
   .fl-loser { white-space: normal; }
+  .fl-loser .tl-via { display: none; }
 }
 </style>
 </head>
@@ -3239,19 +3246,19 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
       <div class="updated-widget">
         <input type="checkbox" id="updated-toggle" class="updated-toggle">
         <label for="updated-toggle" class="updated-trigger" aria-label="Show update details">
-          Updated 2026-10-15 00:52 EDT
+          Updated 2026-10-15 01:33 EDT
         </label>
         <div class="updated-details" role="region" aria-labelledby="updated-toggle">
-          <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-10-15 00:03 EDT</span></div>
-          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-10-15 00:37 EDT &mdash; Value board guide, FAAB ledger, manager filter</span></div>
-          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-10-15 00:52 EDT (this page)</span></div>
+          <div class="updated-row"><span class="updated-k">Last data refresh</span><span class="updated-v">2026-10-15 01:33 EDT</span></div>
+          <div class="updated-row"><span class="updated-k">Last deploy</span><span class="updated-v">2026-10-15 00:52 EDT &mdash; FAAB ledger: winner column on phones</span></div>
+          <div class="updated-row"><span class="updated-k">Dashboard rebuilt</span><span class="updated-v">2026-10-15 01:33 EDT (this page)</span></div>
           <div class="updated-log">
             <div class="updated-log-h">Recent activity</div>
-            <pre class="updated-log-body">  2026-10-15 00:37  Value board guide, FAAB ledger, manager filter
+            <pre class="updated-log-body">  2026-10-15 00:52  FAAB ledger: winner column on phones
+  2026-10-15 00:37  Value board guide, FAAB ledger, manager filter
   2026-10-15 00:18  Value board: how-to-read guide, points per dollar, manager filter
   2026-10-15 00:04  API back: live rosters, standings, matchups, DRC value board, transaction log
-  2026-10-14 23:56  API back: live rosters, standings, matchups, DRC value board, transaction log
-  2026-10-14 22:42  API back: live transactions, lineups, standings, matchups</pre>
+  2026-10-14 23:56  API back: live rosters, standings, matchups, DRC value board, transaction log</pre>
           </div>
         </div>
       </div>
@@ -19470,53 +19477,53 @@ tr.group-h td { background: #f7f8fa; font-weight: 700; font-size: 12px; letter-s
       <div class="bp-grid">
         <div class="bp-card">
           <h3 class="bp-mgr">Alex S.</h3>
-          <ol class="bp-list"><li>Someone will spend more than $60 FAAB on a single player in free agency <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Brian will finish outside the top 4 this year <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Someone will spend more than $60 FAAB on a single player in free agency <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-good">close</span><div class="bp-note">High bid so far is $58 (Pete H. for Carson Wentz).</div></li><li>Brian will finish outside the top 4 this year <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Brian is 1st at 4-1.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Aric T.</h3>
-          <ol class="bp-list"><li>Jaxson Dart is going to be a top 5 QB <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Jaxson Dart is going to be a top 5 QB <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-wrong">&#10008; missed</span><div class="bp-note">Dart is out for the season; 31.4 points in five games before the injury.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Bill K.</h3>
-          <ol class="bp-list"><li>Bill will figure out who everyone is by the end of the season <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Brian won&#x27;t win the league <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Joe Burrow will win MVP <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Bill will figure out who everyone is by the end of the season <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-wrong">&#10008; missed</span><div class="bp-note">Commissioner&#x27;s ruling.</div></li><li>Brian won&#x27;t win the league <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Brian is the favorite right now, but he is one of twelve.</div></li><li>Joe Burrow will win MVP <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-good">live</span><div class="bp-note">Burrow 5th in MVP odds at +950 (Oct 12), behind Purdy, Allen, Mahomes, Lawrence.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Brian M.</h3>
-          <ol class="bp-list"><li>Pete H. drops a keeper by week 5 to spend on a waiver wire bid <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Bill K. quits <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Aric T. posts 5 times on the league chat on something that is not related to a trade <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Pete H. drops a keeper by week 5 to spend on a waiver wire bid <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-right">&#10004; called it</span><div class="bp-note">Pete dropped keepers Kyle Williams (9/12) and Isaac TeSlaa (10/10).</div></li><li>Bill K. quits <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-bad">no sign</span><div class="bp-note">Bill K. is making roster moves weekly.</div></li><li>Aric T. posts 5 times on the league chat on something that is not related to a trade <span class="bp-bold bp-b1">boldness 1/3</span></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Dan M.</h3>
-          <ol class="bp-list"><li>AJ Brown has over 1,000 yards receiving <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Mayfield and the Bucs win an NFC playoff game <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Bills make the Super Bowl <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>AJ Brown has over 1,000 yards receiving <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-bad">trailing badly</span><div class="bp-note">4.1 fantasy points in five weeks; he has barely played.</div></li><li>Mayfield and the Bucs win an NFC playoff game <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Buccaneers 1-4.</div></li><li>Bills make the Super Bowl <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Bills 3-1.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">George M.</h3>
-          <ol class="bp-list"><li>Buffalo Bills win the Super Bowl <span class="bp-bold bp-tbd">boldness TBD</span></li><li>A manager will drop from the league this year <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Buffalo Bills win the Super Bowl <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Bills 3-1.</div></li><li>A manager will drop from the league this year <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">No departures; Bill K. is active with four waiver claims.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Greg P.</h3>
-          <ol class="bp-list"><li>Tyson Bagent becomes the starter at some point this year and is a competitive starting QB in NFL and Fantasy <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Harrison Butker will finish as the number 1 kicker in fantasy <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Fernando Mendoza becomes Raiders starter by week 6 <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Tyson Bagent becomes the starter at some point this year and is a competitive starting QB in NFL and Fantasy <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-mid">half true</span><div class="bp-note">Started for Chicago while Caleb Williams was out, then benched for Case Keenum after two INTs vs. Green Bay; 10 fantasy points in two starts.</div></li><li>Harrison Butker will finish as the number 1 kicker in fantasy <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Butker 36.5 points; Will Reichard leads kickers at 74.3.</div></li><li>Fernando Mendoza becomes Raiders starter by week 6 <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-wrong">&#10008; missed</span><div class="bp-note">Kirk Cousins was still the Raiders&#x27; starter through week 6; Mendoza has not started a game.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Kyle W.</h3>
-          <ol class="bp-list"><li>LA Chargers will have two 1000 yard rushers this year <span class="bp-bold bp-tbd">boldness TBD</span></li><li>JSN breaks reception record <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Cowboys make the playoffs <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>LA Chargers will have two 1000 yard rushers this year <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Chargers 0-5; Hampton has 47 fantasy points.</div></li><li>JSN breaks reception record <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-good">plausible</span><div class="bp-note">JSN is the league&#x27;s WR1 at 121 points; receptions pace needs an NFL stat check.</div></li><li>Cowboys make the playoffs <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Cowboys 2-3.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Paul L.</h3>
-          <ol class="bp-list"><li>Bhayshul Tuten will not live up to his hype and will underperform his ADP <span class="bp-bold bp-tbd">boldness TBD</span></li><li>First starting QB waiver wire claim will go for above $90 FAAB <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Bhayshul Tuten will not live up to his hype and will underperform his ADP <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">roughly even</span><div class="bp-note">Tuten: ADP 68, 11.8 points a game, about RB2 range.</div></li><li>First starting QB waiver wire claim will go for above $90 FAAB <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-wrong">&#10008; missed</span><div class="bp-note">The first starting-QB claim was Carson Wentz at $58 on 9/16.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Pete H.</h3>
-          <ol class="bp-list"><li>Jets end the regular season above a .500 record <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Bill K. makes the playoffs <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Brian M. does not get the 1 or 2 seed in the playoffs <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Jets end the regular season above a .500 record <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Jets 2-3 through week 5.</div></li><li>Bill K. makes the playoffs <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-bad">trailing badly</span><div class="bp-note">The Lady Boys are 0-5 and 12th in points.</div></li><li>Brian M. does not get the 1 or 2 seed in the playoffs <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-bad">trailing</span><div class="bp-note">Mean Mug-ging sits 1st at 4-1, 2nd in points for.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Scott M.</h3>
-          <ol class="bp-list"><li>Brian will win the regular season, but not win the playoffs <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Kaelon Black will have more fantasy points this year than CMC <span class="bp-bold bp-tbd">boldness TBD</span></li><li>DJ Moore will be a top 5 receiver this year <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Brian will win the regular season, but not win the playoffs <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-good">first half on track</span><div class="bp-note">Brian is 1st at 4-1; the playoff half waits.</div></li><li>Kaelon Black will have more fantasy points this year than CMC <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-bad">trailing badly</span><div class="bp-note">Black 14.6 points vs. McCaffrey 81.8 through week 5.</div></li><li>DJ Moore will be a top 5 receiver this year <span class="bp-bold bp-b3">boldness 3/3</span> <span class="bp-oc bp-st bp-st-bad">trailing badly</span><div class="bp-note">Moore has 30.3 points; the WR5 pace is 80+.</div></li></ol>
         </div>
         <div class="bp-card">
           <h3 class="bp-mgr">Tom W.</h3>
-          <ol class="bp-list"><li>Brian M. fleeces someone in a trade this season <span class="bp-bold bp-tbd">boldness TBD</span></li><li>Dan V. quits the league after this season <span class="bp-bold bp-tbd">boldness TBD</span></li><li>A trade gets countered at the trade deadline but misses the official cut-off <span class="bp-bold bp-tbd">boldness TBD</span></li></ol>
+          <ol class="bp-list"><li>Brian M. fleeces someone in a trade this season <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Six trades so far, none involving Brian.</div></li><li>Dan V. quits the league after this season <span class="bp-bold bp-b1">boldness 1/3</span> <span class="bp-oc bp-st bp-st-mid">needs a ruling</span><div class="bp-note">Dan V. handed Kowboy Hippie to Kyle W. before the season; commissioner to rule whether this already counts.</div></li><li>A trade gets countered at the trade deadline but misses the official cut-off <span class="bp-bold bp-b2">boldness 2/3</span> <span class="bp-oc bp-st bp-st-mid">open</span><div class="bp-note">Trade deadline not reached.</div></li></ol>
         </div></div>
-      <p class="kb-hint">Predictions are logged as submitted (light edits for the public record). Boldness ratings and season-end verdicts come from the commissioner. Want yours in or amended? Message Pete before Week 1 kicks off.</p>
+      <p class="kb-hint">Predictions are logged as submitted (light edits for the public record). Boldness ratings, the in-season read under each call, and season-end verdicts come from the commissioner. Status through week 5 (updated 2026-10-15).</p>
     </section>
 
     <section class="team-section" id="commissioners-desk" hidden>
