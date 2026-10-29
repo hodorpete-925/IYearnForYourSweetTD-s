@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-29 19:20 EDT",
+ "as_of": "2026-10-29 19:33 EDT",
  "week": 8,
  "status": "upcoming",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -17,7 +17,7 @@
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 133.65,
+    "proj": 133.68,
     "pts": 0.0,
     "rec": "4-3-0",
     "rank": 6,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 151.01,
+    "proj": 151.02,
     "pts": 0.0,
     "rec": "4-3-0",
     "rank": 5,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 127.27,
+    "proj": 127.26,
     "pts": 0.0,
     "rec": "3-4-0",
     "rank": 7,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 134.11,
+    "proj": 134.16,
     "pts": 0.0,
     "rec": "6-1-0",
     "rank": 2,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 163.39,
+    "proj": 163.37,
     "pts": 0.0,
     "rec": "6-1-0",
     "rank": 1,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 144.8,
+    "proj": 144.79,
     "pts": 0.0,
     "rec": "3-4-0",
     "rank": 8,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 147.68,
+    "proj": 147.69,
     "pts": 0.0,
     "rec": "5-2-0",
     "rank": 4,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 131.26,
+    "proj": 131.29,
     "pts": 0.0,
     "rec": "6-1-0",
     "rank": 3,
@@ -277,5 +277,5 @@
    "moves": 13
   }
  ],
- "standings_as_of": "2026-10-29 19:20 EDT"
+ "standings_as_of": "2026-10-29 19:33 EDT"
 }
