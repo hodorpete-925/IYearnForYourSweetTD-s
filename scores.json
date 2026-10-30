@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-29 22:00 EDT",
+ "as_of": "2026-10-29 23:00 EDT",
  "week": 8,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -17,8 +17,8 @@
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 133.78,
-    "pts": 21.06,
+    "proj": 133.79,
+    "pts": 34.54,
     "rec": "4-3-0",
     "rank": 6,
     "win_prob": 0.64
@@ -30,19 +30,19 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 151.08,
-    "pts": 9.7,
+    "pts": 14.3,
     "rec": "4-3-0",
     "rank": 5,
-    "win_prob": 0.68
+    "win_prob": 0.67
    },
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 131.84,
-    "pts": 9.8,
+    "proj": 131.69,
+    "pts": 18.6,
     "rec": "0-7-0",
     "rank": 12,
-    "win_prob": 0.32
+    "win_prob": 0.33
    },
    "status": "in_progress"
   },
@@ -59,8 +59,8 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 141.32,
-    "pts": 12.4,
+    "proj": 141.33,
+    "pts": 17.4,
     "rec": "1-6-0",
     "rank": 11,
     "win_prob": 0.68
@@ -71,20 +71,20 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 134.18,
-    "pts": 0.6,
+    "proj": 134.09,
+    "pts": 11.84,
     "rec": "6-1-0",
     "rank": 2,
-    "win_prob": 0.23
+    "win_prob": 0.25
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 163.37,
+    "proj": 163.35,
     "pts": 0.0,
     "rec": "6-1-0",
     "rank": 1,
-    "win_prob": 0.77
+    "win_prob": 0.75
    },
    "status": "in_progress"
   },
@@ -92,20 +92,20 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 145.01,
+    "proj": 144.99,
     "pts": 0.0,
     "rec": "3-4-0",
     "rank": 8,
-    "win_prob": 0.53
+    "win_prob": 0.48
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 147.67,
-    "pts": 0.0,
+    "proj": 147.66,
+    "pts": 10.5,
     "rec": "5-2-0",
     "rank": 4,
-    "win_prob": 0.47
+    "win_prob": 0.52
    },
    "status": "in_progress"
   },
@@ -113,11 +113,11 @@
    "a": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 131.38,
-    "pts": 25.3,
+    "proj": 131.37,
+    "pts": 33.4,
     "rec": "6-1-0",
     "rank": 3,
-    "win_prob": 0.65
+    "win_prob": 0.63
    },
    "b": {
     "tid": 9,
@@ -126,7 +126,7 @@
     "pts": 0.0,
     "rec": "2-5-0",
     "rank": 9,
-    "win_prob": 0.35
+    "win_prob": 0.37
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 13
   }
  ],
- "standings_as_of": "2026-10-29 22:00 EDT"
+ "standings_as_of": "2026-10-29 23:00 EDT"
 }
