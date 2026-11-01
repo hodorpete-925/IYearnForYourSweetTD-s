@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-01 10:58 EST",
+ "as_of": "2026-11-01 12:02 EST",
  "week": 8,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 134.04,
+    "proj": 133.94,
     "pts": 0.0,
     "rec": "2-5-0",
     "rank": 10,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 139.56,
+    "proj": 139.61,
     "pts": 36.32,
     "rec": "4-3-0",
     "rank": 6,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 151.71,
+    "proj": 151.77,
     "pts": 14.3,
     "rec": "4-3-0",
     "rank": 5,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 132.02,
+    "proj": 131.91,
     "pts": 20.2,
     "rec": "0-7-0",
     "rank": 12,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 129.26,
+    "proj": 129.24,
     "pts": 17.4,
     "rec": "1-6-0",
     "rank": 11,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 142.05,
+    "proj": 142.35,
     "pts": 12.36,
     "rec": "6-1-0",
     "rank": 2,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 177.09,
+    "proj": 177.22,
     "pts": 0.0,
     "rec": "6-1-0",
     "rank": 1,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 147.41,
+    "proj": 147.67,
     "pts": 0.0,
     "rec": "3-4-0",
     "rank": 8,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 147.52,
+    "proj": 147.63,
     "pts": 8.6,
     "rec": "5-2-0",
     "rank": 4,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 137.38,
+    "proj": 137.34,
     "pts": 34.7,
     "rec": "6-1-0",
     "rank": 3,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 118.86,
+    "proj": 118.68,
     "pts": 0.0,
     "rec": "2-5-0",
     "rank": 9,
@@ -277,5 +277,5 @@
    "moves": 14
   }
  ],
- "standings_as_of": "2026-11-01 10:58 EST"
+ "standings_as_of": "2026-11-01 12:02 EST"
 }
