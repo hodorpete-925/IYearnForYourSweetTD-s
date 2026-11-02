@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-02 00:00 EST",
+ "as_of": "2026-11-02 06:00 EST",
  "week": 8,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 133.88,
+    "proj": 133.81,
     "pts": 128.3,
     "rec": "2-5-0",
     "rank": 10,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 137.65,
+    "proj": 137.6,
     "pts": 126.12,
     "rec": "4-3-0",
     "rank": 6,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 152.0,
+    "proj": 151.98,
     "pts": 107.64,
     "rec": "4-3-0",
     "rank": 5,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 108.9,
+    "proj": 108.83,
     "pts": 109.78,
     "rec": "0-7-0",
     "rank": 12,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 124.43,
+    "proj": 124.34,
     "pts": 94.44,
     "rec": "3-4-0",
     "rank": 7,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 129.26,
+    "proj": 129.46,
     "pts": 128.4,
     "rec": "1-6-0",
     "rank": 11,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 142.94,
+    "proj": 142.9,
     "pts": 115.62,
     "rec": "6-1-0",
     "rank": 2,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 177.22,
+    "proj": 177.17,
     "pts": 188.94,
     "rec": "6-1-0",
     "rank": 1,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 147.7,
+    "proj": 147.57,
     "pts": 133.38,
     "rec": "3-4-0",
     "rank": 8,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 147.44,
+    "proj": 147.35,
     "pts": 108.94,
     "rec": "5-2-0",
     "rank": 4,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 137.78,
+    "proj": 137.56,
     "pts": 123.46,
     "rec": "6-1-0",
     "rank": 3,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 129.0,
+    "proj": 128.86,
     "pts": 119.34,
     "rec": "2-5-0",
     "rank": 9,
@@ -277,5 +277,5 @@
    "moves": 14
   }
  ],
- "standings_as_of": "2026-11-02 00:00 EST"
+ "standings_as_of": "2026-11-02 06:00 EST"
 }
