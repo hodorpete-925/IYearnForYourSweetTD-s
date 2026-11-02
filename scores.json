@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-01 23:00 EST",
+ "as_of": "2026-11-02 00:00 EST",
  "week": 8,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -12,16 +12,16 @@
     "pts": 128.3,
     "rec": "2-5-0",
     "rank": 10,
-    "win_prob": 0.95
+    "win_prob": 0.91
    },
    "b": {
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 137.65,
-    "pts": 119.62,
+    "pts": 126.12,
     "rec": "4-3-0",
     "rank": 6,
-    "win_prob": 0.05
+    "win_prob": 0.09
    },
    "status": "in_progress"
   },
@@ -30,10 +30,10 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 152.0,
-    "pts": 97.74,
+    "pts": 107.64,
     "rec": "4-3-0",
     "rank": 5,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "b": {
     "tid": 12,
@@ -42,7 +42,7 @@
     "pts": 109.78,
     "rec": "0-7-0",
     "rank": 12,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "status": "in_progress"
   },
@@ -51,7 +51,7 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 124.43,
-    "pts": 93.18,
+    "pts": 94.44,
     "rec": "3-4-0",
     "rank": 7,
     "win_prob": 0.01
@@ -93,7 +93,7 @@
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 147.7,
-    "pts": 131.78,
+    "pts": 133.38,
     "rec": "3-4-0",
     "rank": 8,
     "win_prob": 0.99
@@ -277,5 +277,5 @@
    "moves": 14
   }
  ],
- "standings_as_of": "2026-11-01 23:00 EST"
+ "standings_as_of": "2026-11-02 00:00 EST"
 }
