@@ -1,27 +1,27 @@
 {
- "as_of": "2026-11-02 06:00 EST",
- "week": 8,
- "status": "in_progress",
+ "as_of": "2026-11-04 22:07 EST",
+ "week": 9,
+ "status": "upcoming",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
  "matchups": [
   {
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 133.81,
-    "pts": 128.3,
-    "rec": "2-5-0",
-    "rank": 10,
-    "win_prob": 0.91
+    "proj": 132.28,
+    "pts": 0.0,
+    "rec": "3-5-0",
+    "rank": 9,
+    "win_prob": 0.5
    },
    "b": {
-    "tid": 4,
-    "team": "Kowboy Hippie",
-    "proj": 137.6,
-    "pts": 126.12,
-    "rec": "4-3-0",
-    "rank": 6,
-    "win_prob": 0.09
+    "tid": 10,
+    "team": "Bucky Begins",
+    "proj": 131.91,
+    "pts": 0.0,
+    "rec": "2-6-0",
+    "rank": 10,
+    "win_prob": 0.5
    },
    "status": "in_progress"
   },
@@ -29,20 +29,20 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 151.98,
-    "pts": 107.64,
-    "rec": "4-3-0",
+    "proj": 152.94,
+    "pts": 0.0,
+    "rec": "4-4-0",
     "rank": 5,
-    "win_prob": null
+    "win_prob": 0.62
    },
    "b": {
-    "tid": 12,
-    "team": "The Lady Boys",
-    "proj": 108.83,
-    "pts": 109.78,
-    "rec": "0-7-0",
-    "rank": 12,
-    "win_prob": 1.0
+    "tid": 9,
+    "team": "Alice in First Down Chains",
+    "proj": 137.84,
+    "pts": 0.0,
+    "rec": "2-6-0",
+    "rank": 11,
+    "win_prob": 0.38
    },
    "status": "in_progress"
   },
@@ -50,41 +50,41 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 124.34,
-    "pts": 94.44,
-    "rec": "3-4-0",
-    "rank": 7,
-    "win_prob": 0.01
+    "proj": 135.82,
+    "pts": 0.0,
+    "rec": "3-5-0",
+    "rank": 8,
+    "win_prob": 0.54
    },
    "b": {
-    "tid": 10,
-    "team": "Bucky Begins",
-    "proj": 129.46,
-    "pts": 128.4,
-    "rec": "1-6-0",
-    "rank": 11,
-    "win_prob": 0.99
+    "tid": 12,
+    "team": "The Lady Boys",
+    "proj": 130.83,
+    "pts": 0.0,
+    "rec": "1-7-0",
+    "rank": 12,
+    "win_prob": 0.46
    },
    "status": "in_progress"
   },
   {
    "a": {
-    "tid": 5,
-    "team": "High Priest Gabagool 🤌🏻",
-    "proj": 142.9,
-    "pts": 115.62,
-    "rec": "6-1-0",
-    "rank": 2,
-    "win_prob": 0.01
+    "tid": 4,
+    "team": "Kowboy Hippie",
+    "proj": 141.13,
+    "pts": 0.0,
+    "rec": "4-4-0",
+    "rank": 6,
+    "win_prob": 0.73
    },
    "b": {
-    "tid": 7,
-    "team": "Mean Mug-ging",
-    "proj": 177.17,
-    "pts": 188.94,
-    "rec": "6-1-0",
-    "rank": 1,
-    "win_prob": 0.99
+    "tid": 5,
+    "team": "High Priest Gabagool 🤌🏻",
+    "proj": 112.97,
+    "pts": 0.0,
+    "rec": "6-2-0",
+    "rank": 3,
+    "win_prob": 0.27
    },
    "status": "in_progress"
   },
@@ -92,41 +92,41 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 147.57,
-    "pts": 133.38,
-    "rec": "3-4-0",
-    "rank": 8,
-    "win_prob": 0.99
+    "proj": 131.01,
+    "pts": 0.0,
+    "rec": "4-4-0",
+    "rank": 7,
+    "win_prob": 0.36
    },
    "b": {
-    "tid": 11,
-    "team": "CeeDeez nuts",
-    "proj": 147.35,
-    "pts": 108.94,
-    "rec": "5-2-0",
-    "rank": 4,
-    "win_prob": 0.01
+    "tid": 8,
+    "team": "Mr. McGibblets",
+    "proj": 147.47,
+    "pts": 0.0,
+    "rec": "7-1-0",
+    "rank": 2,
+    "win_prob": 0.64
    },
    "status": "in_progress"
   },
   {
    "a": {
-    "tid": 8,
-    "team": "Mr. McGibblets",
-    "proj": 137.56,
-    "pts": 123.46,
-    "rec": "6-1-0",
-    "rank": 3,
-    "win_prob": 0.69
+    "tid": 7,
+    "team": "Mean Mug-ging",
+    "proj": 160.38,
+    "pts": 0.0,
+    "rec": "7-1-0",
+    "rank": 1,
+    "win_prob": 0.65
    },
    "b": {
-    "tid": 9,
-    "team": "Alice in First Down Chains",
-    "proj": 128.86,
-    "pts": 119.34,
-    "rec": "2-5-0",
-    "rank": 9,
-    "win_prob": 0.31
+    "tid": 11,
+    "team": "CeeDeez nuts",
+    "proj": 138.96,
+    "pts": 0.0,
+    "rec": "5-3-0",
+    "rank": 4,
+    "win_prob": 0.35
    },
    "status": "in_progress"
   }
@@ -136,146 +136,146 @@
    "rank": 1,
    "tid": 7,
    "team": "Mean Mug-ging",
-   "rec": "6-1-0",
-   "pf": 1177.54,
-   "pa": 909.44,
-   "streak": "W-6",
-   "faab": 20,
-   "waiver": 10,
-   "moves": 30
+   "rec": "7-1-0",
+   "pf": 1387.28,
+   "pa": 1025.06,
+   "streak": "W-7",
+   "faab": 17,
+   "waiver": 11,
+   "moves": 31
   },
   {
    "rank": 2,
+   "tid": 8,
+   "team": "Mr. McGibblets",
+   "rec": "7-1-0",
+   "pf": 1124.88,
+   "pa": 1080.46,
+   "streak": "W-4",
+   "faab": 54,
+   "waiver": 10,
+   "moves": 3
+  },
+  {
+   "rank": 3,
    "tid": 5,
    "team": "High Priest Gabagool 🤌🏻",
-   "rec": "6-1-0",
-   "pf": 1013.06,
-   "pa": 805.34,
-   "streak": "W-4",
+   "rec": "6-2-0",
+   "pf": 1128.68,
+   "pa": 1015.08,
+   "streak": "L-1",
    "faab": 64,
    "waiver": 9,
    "moves": 15
   },
   {
-   "rank": 3,
-   "tid": 8,
-   "team": "Mr. McGibblets",
-   "rec": "6-1-0",
-   "pf": 995.42,
-   "pa": 956.72,
-   "streak": "W-3",
-   "faab": 54,
-   "waiver": 8,
-   "moves": 3
-  },
-  {
    "rank": 4,
    "tid": 11,
    "team": "CeeDeez nuts",
-   "rec": "5-2-0",
-   "pf": 1101.32,
-   "pa": 963.6,
-   "streak": "W-5",
-   "faab": 63,
-   "waiver": 7,
-   "moves": 16
+   "rec": "5-3-0",
+   "pf": 1225.76,
+   "pa": 1096.98,
+   "streak": "L-1",
+   "faab": 12,
+   "waiver": 8,
+   "moves": 17
   },
   {
    "rank": 5,
    "tid": 2,
    "team": "Briguy’s Strange Boutte",
-   "rec": "4-3-0",
-   "pf": 1023.46,
-   "pa": 1035.88,
-   "streak": "W-3",
+   "rec": "4-4-0",
+   "pf": 1131.1,
+   "pa": 1145.66,
+   "streak": "L-1",
    "faab": 36,
-   "waiver": 6,
-   "moves": 28
+   "waiver": 7,
+   "moves": 30
   },
   {
    "rank": 6,
    "tid": 4,
    "team": "Kowboy Hippie",
-   "rec": "4-3-0",
-   "pf": 952.74,
-   "pa": 986.76,
-   "streak": "L-2",
+   "rec": "4-4-0",
+   "pf": 1105.76,
+   "pa": 1159.68,
+   "streak": "L-3",
    "faab": 16,
-   "waiver": 5,
-   "moves": 25
+   "waiver": 6,
+   "moves": 28
   },
   {
    "rank": 7,
+   "tid": 6,
+   "team": "ROOTIN' TUTEN' COWBOY",
+   "rec": "4-4-0",
+   "pf": 944.1,
+   "pa": 1062.62,
+   "streak": "W-1",
+   "faab": 100,
+   "waiver": 5,
+   "moves": 15
+  },
+  {
+   "rank": 8,
    "tid": 3,
    "team": "Dreorge Bledsoe",
-   "rec": "3-4-0",
-   "pf": 1032.54,
-   "pa": 1000.46,
-   "streak": "L-1",
+   "rec": "3-5-0",
+   "pf": 1138.38,
+   "pa": 1144.84,
+   "streak": "L-2",
    "faab": 91,
    "waiver": 4,
    "moves": 15
   },
   {
-   "rank": 8,
-   "tid": 6,
-   "team": "ROOTIN' TUTEN' COWBOY",
-   "rec": "3-4-0",
-   "pf": 810.72,
-   "pa": 938.18,
-   "streak": "L-4",
-   "faab": 100,
-   "waiver": 12,
-   "moves": 12
-  },
-  {
    "rank": 9,
-   "tid": 9,
-   "team": "Alice in First Down Chains",
-   "rec": "2-5-0",
-   "pf": 937.12,
-   "pa": 984.84,
-   "streak": "L-3",
-   "faab": 30,
-   "waiver": 11,
-   "moves": 27
+   "tid": 1,
+   "team": "Nightman Cometh For UR Blanket",
+   "rec": "3-5-0",
+   "pf": 1040.44,
+   "pa": 1174.68,
+   "streak": "W-2",
+   "faab": 8,
+   "waiver": 12,
+   "moves": 33
   },
   {
    "rank": 10,
-   "tid": 1,
-   "team": "Nightman Cometh For UR Blanket",
-   "rec": "2-5-0",
-   "pf": 867.52,
-   "pa": 1021.66,
+   "tid": 10,
+   "team": "Bucky Begins",
+   "rec": "2-6-0",
+   "pf": 1150.58,
+   "pa": 1174.54,
    "streak": "W-1",
-   "faab": 8,
+   "faab": 57,
    "waiver": 3,
-   "moves": 29
+   "moves": 31
   },
   {
    "rank": 11,
-   "tid": 10,
-   "team": "Bucky Begins",
-   "rec": "1-6-0",
-   "pf": 1006.2,
-   "pa": 1068.7,
-   "streak": "L-6",
-   "faab": 59,
+   "tid": 9,
+   "team": "Alice in First Down Chains",
+   "rec": "2-6-0",
+   "pf": 1060.86,
+   "pa": 1114.3,
+   "streak": "L-4",
+   "faab": 0,
    "waiver": 2,
-   "moves": 28
+   "moves": 30
   },
   {
    "rank": 12,
    "tid": 12,
    "team": "The Lady Boys",
-   "rec": "0-7-0",
-   "pf": 700.1,
-   "pa": 946.16,
-   "streak": "L-7",
+   "rec": "1-7-0",
+   "pf": 809.88,
+   "pa": 1053.8,
+   "streak": "W-1",
    "faab": 1,
    "waiver": 1,
    "moves": 14
   }
  ],
- "standings_as_of": "2026-11-02 06:00 EST"
+ "standings_as_of": "2026-11-04 22:07 EST"
 }
