@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-05 22:00 EST",
+ "as_of": "2026-11-05 23:00 EST",
  "week": 9,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -9,10 +9,10 @@
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
     "proj": 131.89,
-    "pts": 25.28,
+    "pts": 30.58,
     "rec": "3-5-0",
     "rank": 9,
-    "win_prob": 0.56
+    "win_prob": 0.53
    },
    "b": {
     "tid": 10,
@@ -21,7 +21,7 @@
     "pts": 0.0,
     "rec": "2-6-0",
     "rank": 10,
-    "win_prob": 0.44
+    "win_prob": 0.47
    },
    "status": "in_progress"
   },
@@ -30,19 +30,19 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 138.99,
-    "pts": 13.6,
+    "pts": 23.3,
     "rec": "4-4-0",
     "rank": 5,
-    "win_prob": 0.6
+    "win_prob": 0.66
    },
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 131.52,
-    "pts": 5.08,
+    "pts": 5.38,
     "rec": "2-6-0",
     "rank": 11,
-    "win_prob": 0.4
+    "win_prob": 0.34
    },
    "status": "in_progress"
   },
@@ -51,10 +51,10 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 130.07,
-    "pts": 2.8,
+    "pts": 3.8,
     "rec": "3-5-0",
     "rank": 8,
-    "win_prob": 0.46
+    "win_prob": 0.43
    },
    "b": {
     "tid": 12,
@@ -63,7 +63,7 @@
     "pts": 0.0,
     "rec": "1-7-0",
     "rank": 12,
-    "win_prob": 0.54
+    "win_prob": 0.57
    },
    "status": "in_progress"
   },
@@ -75,7 +75,7 @@
     "pts": 8.5,
     "rec": "4-4-0",
     "rank": 6,
-    "win_prob": 0.47
+    "win_prob": 0.45
    },
    "b": {
     "tid": 5,
@@ -84,7 +84,7 @@
     "pts": 0.0,
     "rec": "6-2-0",
     "rank": 3,
-    "win_prob": 0.53
+    "win_prob": 0.55
    },
    "status": "in_progress"
   },
@@ -93,10 +93,10 @@
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 129.92,
-    "pts": 8.1,
+    "pts": 8.9,
     "rec": "4-4-0",
     "rank": 7,
-    "win_prob": 0.35
+    "win_prob": 0.32
    },
    "b": {
     "tid": 8,
@@ -105,7 +105,7 @@
     "pts": 0.0,
     "rec": "7-1-0",
     "rank": 2,
-    "win_prob": 0.65
+    "win_prob": 0.68
    },
    "status": "in_progress"
   },
@@ -277,5 +277,5 @@
    "moves": 14
   }
  ],
- "standings_as_of": "2026-11-05 22:00 EST"
+ "standings_as_of": "2026-11-05 23:00 EST"
 }
