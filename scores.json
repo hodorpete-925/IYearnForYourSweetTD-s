@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-09 02:37 EST",
+ "as_of": "2026-11-09 06:00 EST",
  "week": 9,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 138.07,
+    "proj": 137.87,
     "pts": 134.48,
     "rec": "3-5-0",
     "rank": 9,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 138.72,
+    "proj": 139.15,
     "pts": 128.66,
     "rec": "2-6-0",
     "rank": 10,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 150.84,
+    "proj": 151.01,
     "pts": 116.4,
     "rec": "4-4-0",
     "rank": 5,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 143.97,
+    "proj": 143.96,
     "pts": 129.76,
     "rec": "2-6-0",
     "rank": 11,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 133.34,
+    "proj": 133.2,
     "pts": 95.5,
     "rec": "3-5-0",
     "rank": 8,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 132.37,
+    "proj": 132.5,
     "pts": 101.52,
     "rec": "1-7-0",
     "rank": 12,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 130.88,
+    "proj": 130.68,
     "pts": 132.78,
     "rec": "4-4-0",
     "rank": 6,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 141.12,
+    "proj": 141.16,
     "pts": 104.82,
     "rec": "6-2-0",
     "rank": 3,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 128.79,
+    "proj": 128.68,
     "pts": 86.38,
     "rec": "4-4-0",
     "rank": 7,
@@ -101,8 +101,8 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 151.0,
-    "pts": 141.3,
+    "proj": 150.99,
+    "pts": 140.8,
     "rec": "7-1-0",
     "rank": 2,
     "win_prob": 0.99
@@ -113,7 +113,7 @@
    "a": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 155.79,
+    "proj": 155.64,
     "pts": 132.4,
     "rec": "7-1-0",
     "rank": 1,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 150.45,
+    "proj": 150.2,
     "pts": 168.1,
     "rec": "5-3-0",
     "rank": 4,
@@ -277,5 +277,5 @@
    "moves": 15
   }
  ],
- "standings_as_of": "2026-11-09 02:37 EST"
+ "standings_as_of": "2026-11-09 06:00 EST"
 }
