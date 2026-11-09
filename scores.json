@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-08 23:37 EST",
+ "as_of": "2026-11-09 00:37 EST",
  "week": 9,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -12,7 +12,7 @@
     "pts": 134.48,
     "rec": "3-5-0",
     "rank": 9,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "b": {
     "tid": 10,
@@ -21,7 +21,7 @@
     "pts": 128.66,
     "rec": "2-6-0",
     "rank": 10,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "status": "in_progress"
   },
@@ -38,7 +38,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 144.01,
+    "proj": 143.97,
     "pts": 129.76,
     "rec": "2-6-0",
     "rank": 11,
@@ -50,20 +50,20 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 133.41,
-    "pts": 97.5,
+    "proj": 133.34,
+    "pts": 95.5,
     "rec": "3-5-0",
     "rank": 8,
-    "win_prob": 0.94
+    "win_prob": 0.93
    },
    "b": {
     "tid": 12,
     "team": "The Lady Boys",
-    "proj": 132.3,
+    "proj": 132.37,
     "pts": 101.52,
     "rec": "1-7-0",
     "rank": 12,
-    "win_prob": 0.06
+    "win_prob": 0.07
    },
    "status": "in_progress"
   },
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 130.9,
+    "proj": 130.88,
     "pts": 132.78,
     "rec": "4-4-0",
     "rank": 6,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 141.18,
+    "proj": 141.12,
     "pts": 104.82,
     "rec": "6-2-0",
     "rank": 3,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 128.85,
+    "proj": 128.79,
     "pts": 86.38,
     "rec": "4-4-0",
     "rank": 7,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 151.01,
+    "proj": 151.0,
     "pts": 141.3,
     "rec": "7-1-0",
     "rank": 2,
@@ -113,20 +113,20 @@
    "a": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 155.83,
+    "proj": 155.79,
     "pts": 132.4,
     "rec": "7-1-0",
     "rank": 1,
-    "win_prob": 0.12
+    "win_prob": 0.08
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 150.46,
-    "pts": 164.3,
+    "proj": 150.45,
+    "pts": 168.1,
     "rec": "5-3-0",
     "rank": 4,
-    "win_prob": 0.88
+    "win_prob": 0.92
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 15
   }
  ],
- "standings_as_of": "2026-11-08 23:37 EST"
+ "standings_as_of": "2026-11-09 00:37 EST"
 }
