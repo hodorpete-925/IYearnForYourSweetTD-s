@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-11 06:31 EST",
+ "as_of": "2026-11-11 07:31 EST",
  "week": 10,
  "status": "upcoming",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,20 +8,20 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 129.57,
+    "proj": 129.58,
     "pts": 0.0,
     "rec": "4-5-0",
     "rank": 8,
-    "win_prob": 0.79
+    "win_prob": 0.72
    },
    "b": {
     "tid": 12,
-    "team": "The Lady Boys",
-    "proj": 98.01,
+    "team": "The Worst Team in the League",
+    "proj": 106.34,
     "pts": 0.0,
     "rec": "1-8-0",
     "rank": 12,
-    "win_prob": 0.21
+    "win_prob": 0.28
    },
    "status": "in_progress"
   },
@@ -38,7 +38,7 @@
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 124.82,
+    "proj": 124.78,
     "pts": 0.0,
     "rec": "4-5-0",
     "rank": 9,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 131.81,
+    "proj": 131.73,
     "pts": 0.0,
     "rec": "4-5-0",
     "rank": 6,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 139.17,
+    "proj": 139.19,
     "pts": 0.0,
     "rec": "3-6-0",
     "rank": 10,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 107.98,
+    "proj": 108.02,
     "pts": 0.0,
     "rec": "2-7-0",
     "rank": 11,
@@ -92,20 +92,20 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 140.65,
+    "proj": 140.66,
     "pts": 0.0,
     "rec": "6-3-0",
     "rank": 4,
-    "win_prob": 0.37
+    "win_prob": 0.38
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 158.14,
+    "proj": 155.87,
     "pts": 0.0,
     "rec": "6-3-0",
     "rank": 3,
-    "win_prob": 0.63
+    "win_prob": 0.62
    },
    "status": "in_progress"
   },
@@ -113,7 +113,7 @@
    "a": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 163.38,
+    "proj": 163.35,
     "pts": 0.0,
     "rec": "7-2-0",
     "rank": 2,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 129.94,
+    "proj": 129.92,
     "pts": 0.0,
     "rec": "8-1-0",
     "rank": 1,
@@ -267,15 +267,15 @@
   {
    "rank": 12,
    "tid": 12,
-   "team": "The Lady Boys",
+   "team": "The Worst Team in the League",
    "rec": "1-8-0",
    "pf": 914.0,
    "pa": 1177.26,
    "streak": "L-1",
    "faab": 1,
    "waiver": 1,
-   "moves": 15
+   "moves": 16
   }
  ],
- "standings_as_of": "2026-11-11 06:31 EST"
+ "standings_as_of": "2026-11-11 07:31 EST"
 }
