@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-13 00:48 EST",
+ "as_of": "2026-11-13 01:48 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 120.29,
+    "proj": 120.28,
     "pts": 21.2,
     "rec": "5-4-0",
     "rank": 5,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 125.69,
+    "proj": 125.71,
     "pts": 26.0,
     "rec": "2-7-0",
     "rank": 11,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 142.38,
+    "proj": 142.37,
     "pts": 4.9,
     "rec": "6-3-0",
     "rank": 4,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 156.08,
+    "proj": 156.07,
     "pts": 0.0,
     "rec": "6-3-0",
     "rank": 3,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 138.03,
+    "proj": 138.04,
     "pts": 17.3,
     "rec": "8-1-0",
     "rank": 1,
@@ -277,5 +277,5 @@
    "moves": 16
   }
  ],
- "standings_as_of": "2026-11-13 00:48 EST"
+ "standings_as_of": "2026-11-13 01:48 EST"
 }
