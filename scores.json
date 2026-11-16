@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-15 23:00 EST",
+ "as_of": "2026-11-16 00:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -12,7 +12,7 @@
     "pts": 99.1,
     "rec": "4-5-0",
     "rank": 8,
-    "win_prob": 0.37
+    "win_prob": 0.31
    },
    "b": {
     "tid": 12,
@@ -21,7 +21,7 @@
     "pts": 104.48,
     "rec": "1-8-0",
     "rank": 12,
-    "win_prob": 0.63
+    "win_prob": 0.69
    },
    "status": "in_progress"
   },
@@ -33,16 +33,16 @@
     "pts": 185.14,
     "rec": "4-5-0",
     "rank": 7,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 133.7,
-    "pts": 153.68,
+    "pts": 150.58,
     "rec": "4-5-0",
     "rank": 9,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "status": "in_progress"
   },
@@ -75,7 +75,7 @@
     "pts": 102.0,
     "rec": "5-4-0",
     "rank": 5,
-    "win_prob": 0.03
+    "win_prob": 0.01
    },
    "b": {
     "tid": 10,
@@ -84,7 +84,7 @@
     "pts": 125.02,
     "rec": "2-7-0",
     "rank": 11,
-    "win_prob": 0.97
+    "win_prob": 0.99
    },
    "status": "in_progress"
   },
@@ -102,7 +102,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 157.25,
-    "pts": 169.44,
+    "pts": 170.54,
     "rec": "6-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -114,19 +114,19 @@
     "tid": 7,
     "team": "Mean Mug-ging",
     "proj": 165.19,
-    "pts": 226.34,
+    "pts": 226.48,
     "rec": "7-2-0",
     "rank": 2,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
     "proj": 140.5,
-    "pts": 177.02,
+    "pts": 177.72,
     "rec": "8-1-0",
     "rank": 1,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-15 23:00 EST"
+ "standings_as_of": "2026-11-16 00:00 EST"
 }
