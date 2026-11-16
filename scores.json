@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-16 00:00 EST",
+ "as_of": "2026-11-16 06:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 115.05,
+    "proj": 115.07,
     "pts": 99.1,
     "rec": "4-5-0",
     "rank": 8,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 105.89,
+    "proj": 105.97,
     "pts": 104.48,
     "rec": "1-8-0",
     "rank": 12,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 150.2,
+    "proj": 150.16,
     "pts": 185.14,
     "rec": "4-5-0",
     "rank": 7,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 133.7,
+    "proj": 133.69,
     "pts": 150.58,
     "rec": "4-5-0",
     "rank": 9,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 139.87,
+    "proj": 139.72,
     "pts": 89.82,
     "rec": "4-5-0",
     "rank": 6,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 146.19,
+    "proj": 145.86,
     "pts": 140.78,
     "rec": "3-6-0",
     "rank": 10,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 120.64,
+    "proj": 120.59,
     "pts": 125.02,
     "rec": "2-7-0",
     "rank": 11,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 144.25,
+    "proj": 144.3,
     "pts": 83.38,
     "rec": "6-3-0",
     "rank": 4,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 157.25,
+    "proj": 157.45,
     "pts": 170.54,
     "rec": "6-3-0",
     "rank": 3,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 165.19,
+    "proj": 165.13,
     "pts": 226.48,
     "rec": "7-2-0",
     "rank": 2,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 140.5,
+    "proj": 140.47,
     "pts": 177.72,
     "rec": "8-1-0",
     "rank": 1,
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-16 00:00 EST"
+ "standings_as_of": "2026-11-16 06:00 EST"
 }
