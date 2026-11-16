@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-15 21:00 EST",
+ "as_of": "2026-11-15 22:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -9,19 +9,19 @@
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
     "proj": 115.05,
-    "pts": 95.1,
+    "pts": 97.1,
     "rec": "4-5-0",
     "rank": 8,
-    "win_prob": 0.45
+    "win_prob": 0.43
    },
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 105.77,
+    "proj": 105.89,
     "pts": 104.48,
     "rec": "1-8-0",
     "rank": 12,
-    "win_prob": 0.55
+    "win_prob": 0.57
    },
    "status": "in_progress"
   },
@@ -30,7 +30,7 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 150.2,
-    "pts": 184.14,
+    "pts": 185.14,
     "rec": "4-5-0",
     "rank": 7,
     "win_prob": 0.99
@@ -39,7 +39,7 @@
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 133.7,
-    "pts": 116.88,
+    "pts": 126.48,
     "rec": "4-5-0",
     "rank": 9,
     "win_prob": 0.01
@@ -72,7 +72,7 @@
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 121.3,
-    "pts": 96.6,
+    "pts": 102.0,
     "rec": "5-4-0",
     "rank": 5,
     "win_prob": 0.2
@@ -102,7 +102,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 157.25,
-    "pts": 160.74,
+    "pts": 167.94,
     "rec": "6-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -114,19 +114,19 @@
     "tid": 7,
     "team": "Mean Mug-ging",
     "proj": 165.19,
-    "pts": 177.22,
+    "pts": 207.7,
     "rec": "7-2-0",
     "rank": 2,
-    "win_prob": 0.94
+    "win_prob": 0.99
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
     "proj": 140.5,
-    "pts": 173.32,
+    "pts": 174.82,
     "rec": "8-1-0",
     "rank": 1,
-    "win_prob": 0.06
+    "win_prob": 0.01
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-15 21:00 EST"
+ "standings_as_of": "2026-11-15 22:00 EST"
 }
