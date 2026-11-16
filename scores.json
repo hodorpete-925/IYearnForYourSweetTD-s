@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-15 19:00 EST",
+ "as_of": "2026-11-15 20:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 115.1,
+    "proj": 115.07,
     "pts": 91.7,
     "rec": "4-5-0",
     "rank": 8,
@@ -29,20 +29,20 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 150.22,
-    "pts": 158.28,
+    "proj": 150.21,
+    "pts": 184.14,
     "rec": "4-5-0",
     "rank": 7,
-    "win_prob": 0.96
+    "win_prob": 0.99
    },
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 121.42,
-    "pts": 103.28,
+    "proj": 133.68,
+    "pts": 102.38,
     "rec": "4-5-0",
     "rank": 9,
-    "win_prob": 0.04
+    "win_prob": 0.01
    },
    "status": "in_progress"
   },
@@ -51,7 +51,7 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 139.84,
-    "pts": 88.62,
+    "pts": 89.82,
     "rec": "4-5-0",
     "rank": 6,
     "win_prob": 0.01
@@ -60,7 +60,7 @@
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 146.17,
-    "pts": 139.28,
+    "pts": 140.78,
     "rec": "3-6-0",
     "rank": 10,
     "win_prob": 0.99
@@ -71,20 +71,20 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 121.3,
+    "proj": 121.28,
     "pts": 92.9,
     "rec": "5-4-0",
     "rank": 5,
-    "win_prob": 0.48
+    "win_prob": 0.23
    },
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
     "proj": 120.64,
-    "pts": 112.92,
+    "pts": 125.02,
     "rec": "2-7-0",
     "rank": 11,
-    "win_prob": 0.52
+    "win_prob": 0.77
    },
    "status": "in_progress"
   },
@@ -101,8 +101,8 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 157.37,
-    "pts": 137.04,
+    "proj": 157.34,
+    "pts": 160.44,
     "rec": "6-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -113,20 +113,20 @@
    "a": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 165.27,
-    "pts": 145.62,
+    "proj": 165.18,
+    "pts": 158.72,
     "rec": "7-2-0",
     "rank": 2,
-    "win_prob": 0.76
+    "win_prob": 0.81
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 140.5,
-    "pts": 162.28,
+    "proj": 140.49,
+    "pts": 173.32,
     "rec": "8-1-0",
     "rank": 1,
-    "win_prob": 0.24
+    "win_prob": 0.19
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-15 19:00 EST"
+ "standings_as_of": "2026-11-15 20:00 EST"
 }
