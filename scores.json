@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-16 22:00 EST",
+ "as_of": "2026-11-16 23:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -9,19 +9,19 @@
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
     "proj": 114.98,
-    "pts": 106.7,
+    "pts": 112.8,
     "rec": "4-5-0",
     "rank": 8,
-    "win_prob": 0.64
+    "win_prob": 0.98
    },
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
     "proj": 106.12,
-    "pts": 104.48,
+    "pts": 105.58,
     "rec": "1-8-0",
     "rank": 12,
-    "win_prob": 0.36
+    "win_prob": 0.02
    },
    "status": "in_progress"
   },
@@ -51,7 +51,7 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 139.46,
-    "pts": 92.02,
+    "pts": 98.22,
     "rec": "4-5-0",
     "rank": 6,
     "win_prob": 0.01
@@ -60,7 +60,7 @@
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 145.93,
-    "pts": 154.38,
+    "pts": 162.98,
     "rec": "3-6-0",
     "rank": 10,
     "win_prob": 0.99
@@ -72,7 +72,7 @@
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 121.39,
-    "pts": 104.7,
+    "pts": 107.9,
     "rec": "5-4-0",
     "rank": 5,
     "win_prob": 0.01
@@ -93,7 +93,7 @@
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
     "proj": 144.36,
-    "pts": 89.18,
+    "pts": 96.08,
     "rec": "6-3-0",
     "rank": 4,
     "win_prob": 0.01
@@ -102,7 +102,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 157.57,
-    "pts": 175.06,
+    "pts": 179.94,
     "rec": "6-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-16 22:00 EST"
+ "standings_as_of": "2026-11-16 23:00 EST"
 }
