@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-16 23:00 EST",
+ "as_of": "2026-11-17 00:00 EST",
  "week": 10,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -9,10 +9,10 @@
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
     "proj": 114.98,
-    "pts": 112.8,
+    "pts": 114.1,
     "rec": "4-5-0",
     "rank": 8,
-    "win_prob": 0.98
+    "win_prob": 1.0
    },
    "b": {
     "tid": 12,
@@ -21,7 +21,7 @@
     "pts": 105.58,
     "rec": "1-8-0",
     "rank": 12,
-    "win_prob": 0.02
+    "win_prob": null
    },
    "status": "in_progress"
   },
@@ -54,16 +54,16 @@
     "pts": 98.22,
     "rec": "4-5-0",
     "rank": 6,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 145.93,
-    "pts": 162.98,
+    "pts": 164.78,
     "rec": "3-6-0",
     "rank": 10,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "status": "in_progress"
   },
@@ -72,10 +72,10 @@
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 121.39,
-    "pts": 107.9,
+    "pts": 108.3,
     "rec": "5-4-0",
     "rank": 5,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "b": {
     "tid": 10,
@@ -84,7 +84,7 @@
     "pts": 125.02,
     "rec": "2-7-0",
     "rank": 11,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "status": "in_progress"
   },
@@ -96,16 +96,16 @@
     "pts": 96.08,
     "rec": "6-3-0",
     "rank": 4,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 157.57,
-    "pts": 179.94,
+    "pts": 182.34,
     "rec": "6-3-0",
     "rank": 3,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "status": "in_progress"
   },
@@ -277,5 +277,5 @@
    "moves": 18
   }
  ],
- "standings_as_of": "2026-11-16 23:00 EST"
+ "standings_as_of": "2026-11-17 00:00 EST"
 }
