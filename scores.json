@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-19 22:00 EST",
+ "as_of": "2026-11-19 23:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -12,7 +12,7 @@
     "pts": 11.8,
     "rec": "5-5-0",
     "rank": 7,
-    "win_prob": 0.6
+    "win_prob": 0.58
    },
    "b": {
     "tid": 9,
@@ -21,7 +21,7 @@
     "pts": 3.4,
     "rec": "4-6-0",
     "rank": 9,
-    "win_prob": 0.4
+    "win_prob": 0.42
    },
    "status": "in_progress"
   },
@@ -51,19 +51,19 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 145.38,
-    "pts": 6.2,
+    "pts": 11.9,
     "rec": "4-6-0",
     "rank": 8,
-    "win_prob": 0.54
+    "win_prob": 0.57
    },
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 144.54,
-    "pts": 2.36,
+    "pts": 4.06,
     "rec": "4-6-0",
     "rank": 10,
-    "win_prob": 0.46
+    "win_prob": 0.43
    },
    "status": "in_progress"
   },
@@ -72,19 +72,19 @@
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 110.52,
-    "pts": 16.0,
+    "pts": 21.7,
     "rec": "5-5-0",
     "rank": 6,
-    "win_prob": 0.17
+    "win_prob": 0.2
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 159.77,
-    "pts": 15.76,
+    "pts": 23.56,
     "rec": "7-3-0",
     "rank": 3,
-    "win_prob": 0.83
+    "win_prob": 0.8
    },
    "status": "in_progress"
   },
@@ -93,10 +93,10 @@
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
     "proj": 137.53,
-    "pts": 2.1,
+    "pts": 4.7,
     "rec": "6-4-0",
     "rank": 4,
-    "win_prob": 0.62
+    "win_prob": 0.63
    },
    "b": {
     "tid": 8,
@@ -105,7 +105,7 @@
     "pts": 2.3,
     "rec": "8-2-0",
     "rank": 2,
-    "win_prob": 0.38
+    "win_prob": 0.37
    },
    "status": "in_progress"
   },
@@ -114,10 +114,10 @@
     "tid": 10,
     "team": "Bucky Begins",
     "proj": 141.25,
-    "pts": 4.7,
+    "pts": 5.7,
     "rec": "3-7-0",
     "rank": 11,
-    "win_prob": 0.66
+    "win_prob": 0.67
    },
    "b": {
     "tid": 12,
@@ -126,7 +126,7 @@
     "pts": 2.7,
     "rec": "1-9-0",
     "rank": 12,
-    "win_prob": 0.34
+    "win_prob": 0.33
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-19 22:00 EST"
+ "standings_as_of": "2026-11-19 23:00 EST"
 }
