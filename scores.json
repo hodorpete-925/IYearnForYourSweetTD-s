@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-21 06:00 EST",
+ "as_of": "2026-11-22 06:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 128.39,
+    "proj": 129.22,
     "pts": 13.3,
     "rec": "5-5-0",
     "rank": 7,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 128.09,
+    "proj": 129.13,
     "pts": 3.4,
     "rec": "4-6-0",
     "rank": 9,
@@ -29,20 +29,20 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 118.37,
+    "proj": 118.96,
     "pts": 0.0,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.24
+    "win_prob": 0.25
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 151.15,
+    "proj": 151.23,
     "pts": 0.0,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.76
+    "win_prob": 0.75
    },
    "status": "in_progress"
   },
@@ -50,20 +50,20 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 145.94,
+    "proj": 145.75,
     "pts": 13.9,
     "rec": "4-6-0",
     "rank": 8,
-    "win_prob": 0.67
+    "win_prob": 0.66
    },
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 137.04,
+    "proj": 137.41,
     "pts": 4.06,
     "rec": "4-6-0",
     "rank": 10,
-    "win_prob": 0.33
+    "win_prob": 0.34
    },
    "status": "in_progress"
   },
@@ -71,20 +71,20 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 110.99,
+    "proj": 110.59,
     "pts": 21.7,
     "rec": "5-5-0",
     "rank": 6,
-    "win_prob": 0.2
+    "win_prob": 0.19
    },
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 159.74,
+    "proj": 160.07,
     "pts": 26.46,
     "rec": "7-3-0",
     "rank": 3,
-    "win_prob": 0.8
+    "win_prob": 0.81
    },
    "status": "in_progress"
   },
@@ -92,20 +92,20 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 131.47,
+    "proj": 130.56,
     "pts": 4.7,
     "rec": "6-4-0",
     "rank": 4,
-    "win_prob": 0.62
+    "win_prob": 0.6
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 116.13,
+    "proj": 117.28,
     "pts": 2.3,
     "rec": "8-2-0",
     "rank": 2,
-    "win_prob": 0.38
+    "win_prob": 0.4
    },
    "status": "in_progress"
   },
@@ -113,20 +113,20 @@
    "a": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 141.92,
+    "proj": 142.2,
     "pts": 5.7,
     "rec": "3-7-0",
     "rank": 11,
-    "win_prob": 0.67
+    "win_prob": 0.68
    },
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 125.35,
+    "proj": 124.29,
     "pts": 2.7,
     "rec": "1-9-0",
     "rank": 12,
-    "win_prob": 0.33
+    "win_prob": 0.32
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-21 06:00 EST"
+ "standings_as_of": "2026-11-22 06:00 EST"
 }
