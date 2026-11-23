@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-22 23:00 EST",
+ "as_of": "2026-11-23 00:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 129.25,
+    "proj": 129.23,
     "pts": 90.52,
     "rec": "5-5-0",
     "rank": 7,
@@ -30,19 +30,19 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 128.05,
-    "pts": 147.76,
+    "pts": 148.76,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.36
+    "win_prob": 0.35
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 151.07,
+    "proj": 150.85,
     "pts": 104.82,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.64
+    "win_prob": 0.65
    },
    "status": "in_progress"
   },
@@ -59,7 +59,7 @@
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 122.37,
+    "proj": 122.25,
     "pts": 55.46,
     "rec": "4-6-0",
     "rank": 10,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 115.91,
+    "proj": 115.84,
     "pts": 88.7,
     "rec": "5-5-0",
     "rank": 6,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 164.3,
+    "proj": 164.27,
     "pts": 171.94,
     "rec": "7-3-0",
     "rank": 3,
@@ -93,19 +93,19 @@
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
     "proj": 137.35,
-    "pts": 135.68,
+    "pts": 138.58,
     "rec": "6-4-0",
     "rank": 4,
-    "win_prob": 0.31
+    "win_prob": 0.34
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 126.85,
-    "pts": 124.86,
+    "proj": 126.8,
+    "pts": 125.14,
     "rec": "8-2-0",
     "rank": 2,
-    "win_prob": 0.69
+    "win_prob": 0.66
    },
    "status": "in_progress"
   },
@@ -117,16 +117,16 @@
     "pts": 137.58,
     "rec": "3-7-0",
     "rank": 11,
-    "win_prob": 0.99
+    "win_prob": 1.0
    },
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
     "proj": 124.68,
-    "pts": 98.36,
+    "pts": 99.2,
     "rec": "1-9-0",
     "rank": 12,
-    "win_prob": 0.01
+    "win_prob": null
    },
    "status": "in_progress"
   }
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-22 23:00 EST"
+ "standings_as_of": "2026-11-23 00:00 EST"
 }
