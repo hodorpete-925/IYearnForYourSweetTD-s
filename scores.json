@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-22 21:00 EST",
+ "as_of": "2026-11-22 22:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -12,16 +12,16 @@
     "pts": 90.52,
     "rec": "5-5-0",
     "rank": 7,
-    "win_prob": 0.02
+    "win_prob": 0.01
    },
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 135.58,
-    "pts": 110.14,
+    "pts": 119.64,
     "rec": "4-6-0",
     "rank": 9,
-    "win_prob": 0.98
+    "win_prob": 0.99
    },
    "status": "in_progress"
   },
@@ -33,16 +33,16 @@
     "pts": 145.56,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.34
+    "win_prob": 0.39
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
     "proj": 151.07,
-    "pts": 109.32,
+    "pts": 103.32,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.66
+    "win_prob": 0.61
    },
    "status": "in_progress"
   },
@@ -51,10 +51,10 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 146.97,
-    "pts": 124.44,
+    "pts": 141.54,
     "rec": "4-6-0",
     "rank": 8,
-    "win_prob": 0.96
+    "win_prob": 0.99
    },
    "b": {
     "tid": 6,
@@ -63,7 +63,7 @@
     "pts": 55.46,
     "rec": "4-6-0",
     "rank": 10,
-    "win_prob": 0.04
+    "win_prob": 0.01
    },
    "status": "in_progress"
   },
@@ -72,7 +72,7 @@
     "tid": 4,
     "team": "Kowboy Hippie",
     "proj": 115.91,
-    "pts": 83.9,
+    "pts": 88.7,
     "rec": "5-5-0",
     "rank": 6,
     "win_prob": 0.01
@@ -81,7 +81,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 164.3,
-    "pts": 159.54,
+    "pts": 163.24,
     "rec": "7-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -93,19 +93,19 @@
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
     "proj": 137.35,
-    "pts": 128.48,
+    "pts": 130.58,
     "rec": "6-4-0",
     "rank": 4,
-    "win_prob": 0.61
+    "win_prob": 0.31
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
     "proj": 126.85,
-    "pts": 105.14,
+    "pts": 121.98,
     "rec": "8-2-0",
     "rank": 2,
-    "win_prob": 0.39
+    "win_prob": 0.69
    },
    "status": "in_progress"
   },
@@ -123,7 +123,7 @@
     "tid": 12,
     "team": "The Worst Team in the League",
     "proj": 124.68,
-    "pts": 93.56,
+    "pts": 93.54,
     "rec": "1-9-0",
     "rank": 12,
     "win_prob": 0.01
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-22 21:00 EST"
+ "standings_as_of": "2026-11-22 22:00 EST"
 }
