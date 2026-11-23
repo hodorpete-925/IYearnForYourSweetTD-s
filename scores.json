@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-22 22:00 EST",
+ "as_of": "2026-11-22 23:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -18,7 +18,7 @@
     "tid": 9,
     "team": "Alice in First Down Chains",
     "proj": 135.58,
-    "pts": 119.64,
+    "pts": 124.14,
     "rec": "4-6-0",
     "rank": 9,
     "win_prob": 0.99
@@ -30,19 +30,19 @@
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
     "proj": 128.05,
-    "pts": 145.56,
+    "pts": 147.76,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.39
+    "win_prob": 0.36
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
     "proj": 151.07,
-    "pts": 103.32,
+    "pts": 104.82,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.61
+    "win_prob": 0.64
    },
    "status": "in_progress"
   },
@@ -51,7 +51,7 @@
     "tid": 3,
     "team": "Dreorge Bledsoe",
     "proj": 146.97,
-    "pts": 141.54,
+    "pts": 146.34,
     "rec": "4-6-0",
     "rank": 8,
     "win_prob": 0.99
@@ -81,7 +81,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 164.3,
-    "pts": 163.24,
+    "pts": 171.94,
     "rec": "7-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -93,7 +93,7 @@
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
     "proj": 137.35,
-    "pts": 130.58,
+    "pts": 135.68,
     "rec": "6-4-0",
     "rank": 4,
     "win_prob": 0.31
@@ -102,7 +102,7 @@
     "tid": 8,
     "team": "Mr. McGibblets",
     "proj": 126.85,
-    "pts": 121.98,
+    "pts": 124.86,
     "rec": "8-2-0",
     "rank": 2,
     "win_prob": 0.69
@@ -123,7 +123,7 @@
     "tid": 12,
     "team": "The Worst Team in the League",
     "proj": 124.68,
-    "pts": 93.54,
+    "pts": 98.36,
     "rec": "1-9-0",
     "rank": 12,
     "win_prob": 0.01
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-22 22:00 EST"
+ "standings_as_of": "2026-11-22 23:00 EST"
 }
