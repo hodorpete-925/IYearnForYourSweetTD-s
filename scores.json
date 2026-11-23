@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-23 00:00 EST",
+ "as_of": "2026-11-23 06:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 129.23,
+    "proj": 129.22,
     "pts": 90.52,
     "rec": "5-5-0",
     "rank": 7,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 135.58,
+    "proj": 135.57,
     "pts": 124.14,
     "rec": "4-6-0",
     "rank": 9,
@@ -29,7 +29,7 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 128.05,
+    "proj": 128.12,
     "pts": 148.76,
     "rec": "5-5-0",
     "rank": 5,
@@ -38,7 +38,7 @@
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 150.85,
+    "proj": 150.65,
     "pts": 104.82,
     "rec": "8-2-0",
     "rank": 1,
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 146.97,
+    "proj": 146.82,
     "pts": 146.34,
     "rec": "4-6-0",
     "rank": 8,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 122.25,
+    "proj": 121.99,
     "pts": 55.46,
     "rec": "4-6-0",
     "rank": 10,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 115.84,
+    "proj": 115.79,
     "pts": 88.7,
     "rec": "5-5-0",
     "rank": 6,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 164.27,
+    "proj": 164.23,
     "pts": 171.94,
     "rec": "7-3-0",
     "rank": 3,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 137.35,
+    "proj": 137.29,
     "pts": 138.58,
     "rec": "6-4-0",
     "rank": 4,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 126.8,
+    "proj": 126.45,
     "pts": 125.14,
     "rec": "8-2-0",
     "rank": 2,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 142.68,
+    "proj": 142.6,
     "pts": 137.58,
     "rec": "3-7-0",
     "rank": 11,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 124.68,
+    "proj": 124.98,
     "pts": 99.2,
     "rec": "1-9-0",
     "rank": 12,
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-23 00:00 EST"
+ "standings_as_of": "2026-11-23 06:00 EST"
 }
