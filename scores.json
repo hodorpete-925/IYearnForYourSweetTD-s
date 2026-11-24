@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-23 22:00 EST",
+ "as_of": "2026-11-23 23:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -9,7 +9,7 @@
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
     "proj": 129.33,
-    "pts": 95.32,
+    "pts": 96.32,
     "rec": "5-5-0",
     "rank": 7,
     "win_prob": 0.01
@@ -33,16 +33,16 @@
     "pts": 148.76,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.49
+    "win_prob": 0.7
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
     "proj": 150.98,
-    "pts": 125.18,
+    "pts": 141.86,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.51
+    "win_prob": 0.3
    },
    "status": "in_progress"
   },
@@ -60,7 +60,7 @@
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
     "proj": 130.48,
-    "pts": 80.26,
+    "pts": 95.34,
     "rec": "4-6-0",
     "rank": 10,
     "win_prob": 0.01
@@ -81,7 +81,7 @@
     "tid": 11,
     "team": "CeeDeez nuts",
     "proj": 164.28,
-    "pts": 174.64,
+    "pts": 178.44,
     "rec": "7-3-0",
     "rank": 3,
     "win_prob": 0.99
@@ -96,16 +96,16 @@
     "pts": 138.58,
     "rec": "6-4-0",
     "rank": 4,
-    "win_prob": 0.49
+    "win_prob": 0.27
    },
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
     "proj": 126.52,
-    "pts": 130.34,
+    "pts": 139.44,
     "rec": "8-2-0",
     "rank": 2,
-    "win_prob": 0.51
+    "win_prob": 0.73
    },
    "status": "in_progress"
   },
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-23 22:00 EST"
+ "standings_as_of": "2026-11-23 23:00 EST"
 }
