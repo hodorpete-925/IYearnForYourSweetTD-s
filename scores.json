@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-23 06:00 EST",
+ "as_of": "2026-11-23 20:00 EST",
  "week": 11,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 129.22,
+    "proj": 129.33,
     "pts": 90.52,
     "rec": "5-5-0",
     "rank": 7,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 135.57,
+    "proj": 135.58,
     "pts": 124.14,
     "rec": "4-6-0",
     "rank": 9,
@@ -33,16 +33,16 @@
     "pts": 148.76,
     "rec": "5-5-0",
     "rank": 5,
-    "win_prob": 0.35
+    "win_prob": 0.34
    },
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 150.65,
+    "proj": 150.98,
     "pts": 104.82,
     "rec": "8-2-0",
     "rank": 1,
-    "win_prob": 0.65
+    "win_prob": 0.66
    },
    "status": "in_progress"
   },
@@ -54,16 +54,16 @@
     "pts": 146.34,
     "rec": "4-6-0",
     "rank": 8,
-    "win_prob": 0.99
+    "win_prob": 0.98
    },
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 121.99,
+    "proj": 130.48,
     "pts": 55.46,
     "rec": "4-6-0",
     "rank": 10,
-    "win_prob": 0.01
+    "win_prob": 0.02
    },
    "status": "in_progress"
   },
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 115.79,
+    "proj": 115.82,
     "pts": 88.7,
     "rec": "5-5-0",
     "rank": 6,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 164.23,
+    "proj": 164.28,
     "pts": 171.94,
     "rec": "7-3-0",
     "rank": 3,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 126.45,
+    "proj": 126.52,
     "pts": 125.14,
     "rec": "8-2-0",
     "rank": 2,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 142.6,
+    "proj": 142.59,
     "pts": 137.58,
     "rec": "3-7-0",
     "rank": 11,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 124.98,
+    "proj": 124.94,
     "pts": 99.2,
     "rec": "1-9-0",
     "rank": 12,
@@ -250,7 +250,7 @@
    "streak": "L-2",
    "faab": 78,
    "waiver": 2,
-   "moves": 21
+   "moves": 22
   },
   {
    "rank": 11,
@@ -277,5 +277,5 @@
    "moves": 19
   }
  ],
- "standings_as_of": "2026-11-23 06:00 EST"
+ "standings_as_of": "2026-11-23 20:00 EST"
 }
