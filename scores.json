@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-27 10:40 EST",
+ "as_of": "2026-11-27 13:24 EST",
  "week": 12,
  "status": "in_progress",
  "source": "Yahoo Fantasy Sports API (pull_yahoo_week.py)",
@@ -8,7 +8,7 @@
    "a": {
     "tid": 1,
     "team": "Nightman Cometh For UR Blanket",
-    "proj": 137.28,
+    "proj": 137.18,
     "pts": 5.0,
     "rec": "5-6-0",
     "rank": 9,
@@ -17,7 +17,7 @@
    "b": {
     "tid": 6,
     "team": "ROOTIN' TUTEN' COWBOY",
-    "proj": 145.45,
+    "proj": 145.39,
     "pts": 0.0,
     "rec": "4-7-0",
     "rank": 11,
@@ -29,20 +29,20 @@
    "a": {
     "tid": 2,
     "team": "Briguy’s Strange Boutte",
-    "proj": 138.69,
+    "proj": 138.93,
     "pts": 74.26,
     "rec": "5-6-0",
     "rank": 5,
-    "win_prob": 0.52
+    "win_prob": 0.46
    },
    "b": {
     "tid": 5,
     "team": "High Priest Gabagool 🤌🏻",
-    "proj": 129.58,
+    "proj": 135.49,
     "pts": 23.6,
     "rec": "6-5-0",
     "rank": 4,
-    "win_prob": 0.48
+    "win_prob": 0.54
    },
    "status": "in_progress"
   },
@@ -50,7 +50,7 @@
    "a": {
     "tid": 3,
     "team": "Dreorge Bledsoe",
-    "proj": 137.34,
+    "proj": 137.35,
     "pts": 48.14,
     "rec": "5-6-0",
     "rank": 6,
@@ -59,7 +59,7 @@
    "b": {
     "tid": 7,
     "team": "Mean Mug-ging",
-    "proj": 169.13,
+    "proj": 169.04,
     "pts": 66.6,
     "rec": "9-2-0",
     "rank": 1,
@@ -71,7 +71,7 @@
    "a": {
     "tid": 4,
     "team": "Kowboy Hippie",
-    "proj": 138.62,
+    "proj": 138.7,
     "pts": 36.32,
     "rec": "5-6-0",
     "rank": 8,
@@ -80,7 +80,7 @@
    "b": {
     "tid": 12,
     "team": "The Worst Team in the League",
-    "proj": 118.57,
+    "proj": 118.23,
     "pts": 9.1,
     "rec": "1-10-0",
     "rank": 12,
@@ -92,7 +92,7 @@
    "a": {
     "tid": 8,
     "team": "Mr. McGibblets",
-    "proj": 128.46,
+    "proj": 128.55,
     "pts": 1.6,
     "rec": "9-2-0",
     "rank": 2,
@@ -101,7 +101,7 @@
    "b": {
     "tid": 11,
     "team": "CeeDeez nuts",
-    "proj": 158.0,
+    "proj": 157.9,
     "pts": 107.6,
     "rec": "8-3-0",
     "rank": 3,
@@ -113,7 +113,7 @@
    "a": {
     "tid": 9,
     "team": "Alice in First Down Chains",
-    "proj": 127.09,
+    "proj": 127.02,
     "pts": 38.16,
     "rec": "5-6-0",
     "rank": 7,
@@ -122,7 +122,7 @@
    "b": {
     "tid": 10,
     "team": "Bucky Begins",
-    "proj": 150.56,
+    "proj": 150.22,
     "pts": 55.1,
     "rec": "4-7-0",
     "rank": 10,
@@ -178,7 +178,7 @@
    "streak": "L-4",
    "faab": 64,
    "waiver": 9,
-   "moves": 19
+   "moves": 20
   },
   {
    "rank": 5,
@@ -277,5 +277,5 @@
    "moves": 21
   }
  ],
- "standings_as_of": "2026-11-27 10:40 EST"
+ "standings_as_of": "2026-11-27 13:24 EST"
 }
